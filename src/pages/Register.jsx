@@ -5,9 +5,11 @@ import baImage from '../assets/ba.jpg'
 
 export default function Register() {
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    name: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -30,7 +32,7 @@ export default function Register() {
     setError('')
     setSuccess('')
     
-    if (!formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.username || !formData.email || !formData.password || !formData.confirmPassword || !formData.name) {
       setError('Please fill in all fields.')
       return
     }
@@ -48,16 +50,17 @@ export default function Register() {
     setIsLoading(true)
 
     try {
-      const result = await register({
+      const result = register({
+        username: formData.username,
         email: formData.email,
         password: formData.password,
-        role: 'PARTICIPANT' // Default role for all registrations
+        name: formData.name
       })
       
       if (result.success) {
-        setSuccess(result.message || 'Registration successful! You can now login.')
+        setSuccess('Registration successful! You can now login as a participant.')
         setTimeout(() => {
-          navigate('/dashboard')
+          navigate('/login')
         }, 2000)
       } else {
         setError(result.error)
@@ -80,6 +83,26 @@ export default function Register() {
             {success && <div className="success-message">{success}</div>}
           </div>
           <form className="form" onSubmit={handleSubmit}>
+            <div className="form-control">
+              <label>Full Name</label>
+              <input 
+                name="name"
+                value={formData.name} 
+                onChange={handleInputChange} 
+                placeholder="Enter your full name" 
+                required 
+              />
+            </div>
+            <div className="form-control">
+              <label>Username</label>
+              <input 
+                name="username"
+                value={formData.username} 
+                onChange={handleInputChange} 
+                placeholder="Choose a unique username" 
+                required 
+              />
+            </div>
             <div className="form-control">
               <label>Email</label>
               <input 
