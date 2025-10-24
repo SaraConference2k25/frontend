@@ -54,17 +54,23 @@ export default function Register() {
         role: 'PARTICIPANT' // Default role for all registrations
       })
       
+      console.log('Registration result:', result)
+      
       if (result.success) {
-        setSuccess(result.message || 'Registration successful! You can now login.')
+        setSuccess(result.message || 'Registration successful! Redirecting to login...')
+        setIsLoading(false)
+        // Redirect to login page after showing success message
         setTimeout(() => {
-          navigate('/dashboard')
-        }, 2000)
+          console.log('Redirecting to login page...')
+          navigate('/login', { replace: true })
+        }, 1500)
       } else {
-        setError(result.error)
+        setError(result.error || 'Registration failed')
+        setIsLoading(false)
       }
     } catch (err) {
+      console.error('Registration error:', err)
       setError('Registration failed. Please try again.')
-    } finally {
       setIsLoading(false)
     }
   }

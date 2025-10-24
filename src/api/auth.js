@@ -29,11 +29,11 @@ export async function register({ email, password, role }) {
 
 /**
  * Login user
- * Backend expects: LoginRequest { email, password }
+ * Backend expects: LoginRequest { email, password, role }
  * Returns: LoginResponse { token?, user?, message?, ... }
  */
-export async function login({ email, password }) {
-  return postJson('/api/auth/login', { email, password })
+export async function login({ email, password, role }) {
+  return postJson('/api/auth/login', { email, password, role })
 }
 
 export default { login, register }

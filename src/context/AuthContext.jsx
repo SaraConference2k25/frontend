@@ -28,17 +28,18 @@ export const AuthProvider = ({ children }) => {
     const { username, password, role } = credentials
     
     try {
-      // Call backend API - expects email field
+      // Call backend API - expects email, password, and requestedRole
       const response = await authApi.login({ 
         email: username, // Backend uses email field
-        password 
+        password,
+        role // Send the requested role to backend
       })
       
-      // Backend returns: { message, email, role? }
+      // Backend returns: { message, email, role }
       if (response && response.email) {
         const userSession = {
           email: response.email,
-          role: role, // Use role selected from frontend
+          role: response.role || role, // Use role from backend response or fallback to requested role
           loginTime: new Date().toISOString()
         }
         
@@ -65,8 +66,11 @@ export const AuthProvider = ({ children }) => {
         role: userData.role || 'PARTICIPANT' // Default to participant
       })
       
+      console.log('Backend register response:', response)
+      
       // Backend returns: { message, success }
-      if (response && response.success) {
+      // Check for success in multiple ways to be robust
+      if (response && (response.success === true || response.message?.toLowerCase().includes('success'))) {
         return { success: true, message: response.message || 'Registration successful! Please login.' }
       } else {
         return { success: false, error: response.message || 'Registration failed' }
