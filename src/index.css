@@ -2052,26 +2052,52 @@ html {
 /* Admin Papers Table */
 .papers-table-container {
     width: 100%;
-    overflow: visible;
+    overflow-x: auto;
+    overflow-y: visible;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    background: var(--panel-background-color);
+}
+
+/* Custom scrollbar styling for the table container */
+.papers-table-container::-webkit-scrollbar {
+    height: 12px;
+}
+
+.papers-table-container::-webkit-scrollbar-track {
+    background: var(--light-gray);
+    border-radius: 10px;
+}
+
+.papers-table-container::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+    border: 2px solid var(--light-gray);
+}
+
+.papers-table-container::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color-hover);
 }
 
 .admin-papers-table {
     width: 100%;
     table-layout: fixed;
+    min-width: 1400px;
 }
 
-.admin-papers-table th:nth-child(1) { width: 5%; }
-.admin-papers-table th:nth-child(2) { width: 25%; }
-.admin-papers-table th:nth-child(3) { width: 15%; }
-.admin-papers-table th:nth-child(4) { width: 20%; }
-.admin-papers-table th:nth-child(5) { width: 10%; }
-.admin-papers-table th:nth-child(6) { width: 15%; }
-.admin-papers-table th:nth-child(7) { width: 10%; }
+.admin-papers-table th:nth-child(1) { width: 60px; min-width: 60px; }
+.admin-papers-table th:nth-child(2) { width: 300px; min-width: 300px; }
+.admin-papers-table th:nth-child(3) { width: 180px; min-width: 180px; }
+.admin-papers-table th:nth-child(4) { width: 250px; min-width: 250px; }
+.admin-papers-table th:nth-child(5) { width: 150px; min-width: 150px; }
+.admin-papers-table th:nth-child(6) { width: 200px; min-width: 200px; }
+.admin-papers-table th:nth-child(7) { width: 150px; min-width: 150px; }
 
 .admin-papers-table td {
     word-wrap: break-word;
-    overflow: hidden;
+    overflow: visible;
     text-overflow: ellipsis;
+    padding: 1rem 0.75rem;
 }
 
 .paper-title h4 {
@@ -2128,9 +2154,10 @@ html {
 
 .completed-actions {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 0.5rem;
     align-items: center;
+    justify-content: center;
 }
 
 .evaluation-result {
@@ -2143,6 +2170,24 @@ html {
     font-size: 0.8rem;
     color: var(--text-light);
     font-style: italic;
+}
+
+.btn-sm {
+    padding: 0.5rem 1.2rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    width: auto;
+    min-width: 110px;
+}
+
+.paper-actions {
+    text-align: center;
+}
+
+.paper-actions .btn {
+    display: inline-block;
+    width: auto;
+    min-width: 110px;
 }
 
 /* Assignment Modal */
@@ -2232,6 +2277,185 @@ html {
     background: rgba(155, 89, 182, 0.1);
     color: #9b59b6;
     border: 1px solid rgba(155, 89, 182, 0.3);
+}
+
+/* ==================== ADMIN EVALUATORS PAGE ==================== */
+
+.admin-evaluators-content {
+    padding: 2rem;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.page-header h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.evaluators-section h2 {
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.evaluators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.evaluator-card-large {
+    background: var(--panel-background-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.evaluator-card-large:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.evaluator-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+    border-bottom: 1px solid var(--border-color);
+}
+
+.evaluator-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.evaluator-card-info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.evaluator-email {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.evaluator-card-body {
+    padding: 1.5rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.info-value {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.expertise-section {
+    margin-top: 1rem;
+}
+
+.expertise-section .info-label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.expertise-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.expertise-tag {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.evaluator-card-actions {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: var(--light-gray);
+    border-top: 1px solid var(--border-color);
+}
+
+.evaluator-card-actions .btn {
+    flex: 1;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+    color: white;
+    border: none;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+    transform: translateY(-2px);
+}
+
+.evaluator-modal {
+    max-width: 600px;
+}
+
+.evaluator-form .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0;
+}
+
+.evaluator-form .form-group {
+    flex: 1;
 }
 
 /* ==================== ADMIN RESPONSIVE DESIGN ==================== */

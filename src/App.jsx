@@ -10,6 +10,7 @@ import EvaluatorDashboard from './pages/EvaluatorDashboard'
 import EvaluatePapers from './pages/EvaluatePapers'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminPapers from './pages/AdminPapers'
+import AdminEvaluators from './pages/AdminEvaluators'
 
 export default function App() {
   return (
@@ -55,6 +56,14 @@ export default function App() {
           element={
             <ProtectedRoute requiredRole="admin">
               <AdminPapers />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin-evaluators" 
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminEvaluators />
             </ProtectedRoute>
           } 
         />

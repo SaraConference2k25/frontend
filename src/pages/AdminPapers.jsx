@@ -272,15 +272,12 @@ export default function AdminPapers() {
                           {paper.status === 'pending_assignment' ? (
                             <button 
                               onClick={() => openAssignModal(paper)}
-                              className="btn btn-primary btn-xs"
+                              className="btn btn-primary btn-sm"
                             >
                               Assign
                             </button>
                           ) : paper.status === 'completed' ? (
                             <div className="completed-actions">
-                              <span className="evaluation-result">
-                                Score: {paper.score}/100
-                              </span>
                               <button className="btn btn-secondary btn-sm">
                                 View Details
                               </button>
