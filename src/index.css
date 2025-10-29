@@ -3163,3 +3163,30 @@ html {
         margin: 1rem;
     }
 }
+
+
+.back-btn {
+  background-color: #667eea;     /* Blue-purple background */
+  color: white;                  /* White arrow */
+  border: none;                  /* No border */
+  border-radius: 50%;            /* Makes it round */
+  width: 60px;                   /* Button size */
+  height: 60px;                  /* Equal width & height = circle */
+  font-size: 28px;               /* Bigger arrow */
+  cursor: pointer;               /* Pointer cursor on hover */
+  display: flex;                 /* Center arrow */
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.back-btn:hover {
+  background-color: #5a67d8;     /* Slightly darker on hover */
+  transform: scale(1.05);        /* Grows a bit */
+}
+
+.back-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+}
