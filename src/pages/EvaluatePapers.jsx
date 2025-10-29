@@ -7,6 +7,9 @@ export default function EvaluatePapers() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [selectedPaper, setSelectedPaper] = useState(null)
   const [showEvaluationModal, setShowEvaluationModal] = useState(false)
+  const [expandedPapers, setExpandedPapers] = useState({})
+  const [paperDecisions, setPaperDecisions] = useState({})
+  const [paperFeedback, setPaperFeedback] = useState({})
   const [evaluationData, setEvaluationData] = useState({
     status: '',
     feedback: '',
@@ -33,6 +36,27 @@ export default function EvaluatePapers() {
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+
+  const toggleExpandPaper = (paperId) => {
+    setExpandedPapers(prev => ({
+      ...prev,
+      [paperId]: !prev[paperId]
+    }))
+  }
+
+  const handleDecisionChange = (paperId, decision) => {
+    setPaperDecisions(prev => ({
+      ...prev,
+      [paperId]: decision
+    }))
+  }
+
+  const handleFeedbackChange = (paperId, feedback) => {
+    setPaperFeedback(prev => ({
+      ...prev,
+      [paperId]: feedback
+    }))
   }
 
   const openEvaluationModal = (paper) => {
@@ -278,22 +302,90 @@ export default function EvaluatePapers() {
             <h2>Recently Evaluated ({evaluatedPapers.length})</h2>
             <div className="papers-grid">
               {evaluatedPapers.map(paper => (
-                <div key={paper.id} className="paper-card evaluated">
+                <div 
+                  key={paper.id} 
+                  className={`paper-card evaluated ${expandedPapers[paper.id] ? 'expanded' : ''}`}
+                >
                   <div className="paper-header">
-                    <h3>{paper.title}</h3>
-                    <span className={`status-badge ${getStatusBadge(paper.status)}`}>
-                      {paper.status.charAt(0).toUpperCase() + paper.status.slice(1)}
-                    </span>
+                    <h3 onClick={() => toggleExpandPaper(paper.id)}>{paper.title}</h3>
+                    <div className="header-right">
+                      <button 
+                        className="btn-view-paper"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          alert('Opening paper PDF...');
+                        }}
+                        title="View Paper"
+                      >
+                        View
+                      </button>
+                      <span className={`status-badge ${getStatusBadge(paper.status)}`}>
+                        {paper.status.charAt(0).toUpperCase() + paper.status.slice(1)}
+                      </span>
+                      <span className="expand-icon" onClick={() => toggleExpandPaper(paper.id)}>
+                        {expandedPapers[paper.id] ? '▼' : '▶'}
+                      </span>
+                    </div>
                   </div>
-                  <div className="paper-info">
-                    <p><strong>Author:</strong> {paper.author}</p>
-                    <p><strong>Department:</strong> {paper.department}</p>
-                    <p><strong>Evaluated:</strong> {paper.evaluatedDate}</p>
-                    {paper.score && <p><strong>Score:</strong> {paper.score}/100</p>}
-                  </div>
-                  <div className="paper-feedback">
-                    <p><strong>Feedback:</strong> {paper.feedback}</p>
-                  </div>
+                  {expandedPapers[paper.id] && (
+                    <div className="paper-expanded-content" onClick={(e) => e.stopPropagation()}>
+                      <div className="evaluation-section">
+                        <div className="feedback-section">
+                          <h4>Feedback</h4>
+                          <textarea
+                            className="feedback-textarea"
+                            placeholder="Select a decision first to provide feedback..."
+                            disabled={!paperDecisions[paper.id]}
+                            value={paperFeedback[paper.id] || paper.feedback || ''}
+                            onChange={(e) => handleFeedbackChange(paper.id, e.target.value)}
+                            rows="8"
+                          />
+                        </div>
+                        
+                        <div className="decision-section">
+                          <h4>Evaluation Decision</h4>
+                          <div className="radio-group">
+                            <label className="radio-label">
+                              <input
+                                type="radio"
+                                name={`decision-${paper.id}`}
+                                value="accept-minor"
+                                checked={paperDecisions[paper.id] === 'accept-minor'}
+                                onChange={(e) => handleDecisionChange(paper.id, e.target.value)}
+                              />
+                              <span>Accept with minor changes</span>
+                            </label>
+                            <label className="radio-label">
+                              <input
+                                type="radio"
+                                name={`decision-${paper.id}`}
+                                value="accept-major"
+                                checked={paperDecisions[paper.id] === 'accept-major'}
+                                onChange={(e) => handleDecisionChange(paper.id, e.target.value)}
+                              />
+                              <span>Accept with major changes</span>
+                            </label>
+                            <label className="radio-label">
+                              <input
+                                type="radio"
+                                name={`decision-${paper.id}`}
+                                value="decline"
+                                checked={paperDecisions[paper.id] === 'decline'}
+                                onChange={(e) => handleDecisionChange(paper.id, e.target.value)}
+                              />
+                              <span>Decline</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {paper.evaluatedBy && (
+                        <div className="evaluation-meta">
+                          <p><strong>Evaluated by:</strong> {paper.evaluatedBy}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
