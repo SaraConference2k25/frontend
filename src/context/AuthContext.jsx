@@ -59,14 +59,20 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      // Call backend API - expects { email, password, role }
-      const response = await authApi.register({
+      // Ensure role is always set to PARTICIPANT
+      const registrationData = {
+        fullName: userData.fullName,
         email: userData.email,
         password: userData.password,
-        role: userData.role || 'PARTICIPANT' // Default to participant
-      })
+        role: 'PARTICIPANT' // Always PARTICIPANT for registration
+      }
       
-      console.log('Backend register response:', response)
+      console.log('📤 Sending registration data:', { ...registrationData, password: '***' })
+      
+      // Call backend API - expects { fullName, email, password, role }
+      const response = await authApi.register(registrationData)
+      
+      console.log('📥 Backend register response:', response)
       
       // Backend returns: { message, success }
       // Check for success in multiple ways to be robust

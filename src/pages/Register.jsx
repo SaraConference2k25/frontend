@@ -5,6 +5,7 @@ import baImage from '../assets/ba.jpg'
 
 export default function Register() {
   const [formData, setFormData] = useState({
+    fullName: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -30,7 +31,7 @@ export default function Register() {
     setError('')
     setSuccess('')
     
-    if (!formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all fields.')
       return
     }
@@ -49,6 +50,7 @@ export default function Register() {
 
     try {
       const result = await register({
+        fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
         role: 'PARTICIPANT' // Default role for all registrations
@@ -86,6 +88,17 @@ export default function Register() {
             {success && <div className="success-message">{success}</div>}
           </div>
           <form className="form" onSubmit={handleSubmit}>
+            <div className="form-control">
+              <label>Full Name</label>
+              <input 
+                name="fullName"
+                type="text"
+                value={formData.fullName} 
+                onChange={handleInputChange} 
+                placeholder="Enter your full name" 
+                required 
+              />
+            </div>
             <div className="form-control">
               <label>Email</label>
               <input 
