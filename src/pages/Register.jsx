@@ -72,10 +72,17 @@ export default function Register() {
     }
   }
 
+  function backButton(){
+    navigate("/login");
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-panel">
         <div className="auth-form-wrapper">
+          <div classname="testing">
+          <button class="back-btn" onClick={backButton}>←</button>
+          </div>
           <div className="form-header">
             <h2>Join Our Community</h2>
             <p>Create your account and become part of our academic excellence journey.</p>

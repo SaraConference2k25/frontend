@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import Home from './Home'
 import baImage from '../assets/ba.jpg'
 
 export default function Login() {
@@ -29,6 +30,10 @@ export default function Login() {
         return '/'
     }
   }
+
+  function backButton(){
+    navigate("/"); 
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -62,6 +67,9 @@ export default function Login() {
     <div className="auth-container">
       <div className="auth-panel">
         <div className="auth-form-wrapper">
+          <div classname="testing">
+          <button class="back-btn" onClick={backButton}>←</button>
+          </div>
           <div className="form-header">
             <h2>Welcome Back!</h2>
             <p>Sign in to access your personalized college portal experience.</p>
