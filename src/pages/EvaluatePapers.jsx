@@ -10,9 +10,7 @@ export default function EvaluatePapers() {
   const [expandedPapers, setExpandedPapers] = useState({})
   const [paperDecisions, setPaperDecisions] = useState({})
   const [paperFeedback, setPaperFeedback] = useState({})
-  const [expandedPapers, setExpandedPapers] = useState({})
-  const [paperDecisions, setPaperDecisions] = useState({})
-  const [paperFeedback, setPaperFeedback] = useState({})
+
   const [evaluationData, setEvaluationData] = useState({
     status: '',
     feedback: '',
@@ -379,20 +377,129 @@ export default function EvaluatePapers() {
                   className={`paper-card evaluated ${expandedPapers[paper.id] ? 'expanded' : ''}`}
                 >
                   <div className="paper-header">
-                    <h3>{paper.title}</h3>
-                    <span className={`status-badge ${getStatusBadge(paper.status)}`}>
-                      {paper.status.charAt(0).toUpperCase() + paper.status.slice(1)}
-                    </span>
+                    <h3 onClick={() => toggleExpandPaper(paper.id)} style={{ margin: 0 }}>{paper.title}</h3>
+                    <div className="header-right">
+                      <button 
+                        className="btn-view-paper btn-icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          viewPaper(paper)
+                        }}
+                        title="View Paper"
+                        aria-label={`View ${paper.title}`}
+                        style={{ display: 'inline-flex', alignItems: 'center', padding: 6 }}
+                      >
+                        {/* Eye / view SVG (icon-only) */}
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ verticalAlign: 'middle' }}>
+                          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                      <button
+                        className="btn-view-paper btn-secondary btn-icon"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          downloadPaper(paper)
+                        }}
+                        title={`Download ${paper.title}`}
+                        aria-label={`Download ${paper.title}`}
+                        style={{ marginLeft: 8, display: 'inline-flex', alignItems: 'center', padding: 6 }}
+                      >
+                        {/* Download SVG icon (icon-only) */}
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ verticalAlign: 'middle' }}>
+                          <path d="M12 3v10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M5 12l7 7 7-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M21 21H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                      <span className={`status-badge ${getStatusBadge(paper.status)}`}>
+                        {paper.status.charAt(0).toUpperCase() + paper.status.slice(1)}
+                      </span>
+                      <span className="expand-icon" onClick={() => toggleExpandPaper(paper.id)}>
+                        {expandedPapers[paper.id] ? '▼' : '▶'}
+                      </span>
+                    </div>
                   </div>
-                  <div className="paper-info">
-                    <p><strong>Author:</strong> {paper.author}</p>
-                    <p><strong>Department:</strong> {paper.department}</p>
-                    <p><strong>Evaluated:</strong> {paper.evaluatedDate}</p>
-                    {paper.score && <p><strong>Score:</strong> {paper.score}/100</p>}
-                  </div>
-                  <div className="paper-feedback">
-                    <p><strong>Feedback:</strong> {paper.feedback}</p>
-                  </div>
+                  {expandedPapers[paper.id] && (
+                    <div className="paper-expanded-content" onClick={(e) => e.stopPropagation()}>
+                      <div className="evaluation-section">
+                        <div className="feedback-section">
+                          <h4>Comments</h4>
+                          <textarea
+                            className="feedback-textarea"
+                            placeholder="Select a decision first to provide comments..."
+                            disabled={!paperDecisions[paper.id]}
+                            value={paperFeedback[paper.id] || paper.feedback || ''}
+                            onChange={(e) => handleFeedbackChange(paper.id, e.target.value)}
+                            rows="8"
+                          />
+
+                          <div className="form-actions" style={{ marginTop: 8, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                            <button
+                              type="button"
+                              className="btn btn-primary btn-sm"
+                              onClick={() => handleSaveComments(paper.id)}
+                              disabled={
+                                !paperDecisions[paper.id] || !(paperFeedback[paper.id] && paperFeedback[paper.id].trim().length > 0)
+                              }
+                              title="Save Comments"
+                              style={{ padding: '6px 10px', fontSize: '0.85rem', minWidth: 72 }}
+                            >
+                              Save
+                            </button>
+
+                            {savedComments[paper.id] && (
+                              <small style={{ marginTop: 6, color: 'var(--text-light)' }}>
+                                Saved {new Date(savedComments[paper.id]).toLocaleString()}
+                              </small>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="decision-section">
+                          <h4>Evaluation Decision</h4>
+                          <div className="radio-group">
+                            <label className="radio-label">
+                              <input
+                                type="radio"
+                                name={`decision-${paper.id}`}
+                                value="accept-minor"
+                                checked={paperDecisions[paper.id] === 'accept-minor'}
+                                onChange={(e) => handleDecisionChange(paper.id, e.target.value)}
+                              />
+                              <span>Accept with minor changes</span>
+                            </label>
+                            <label className="radio-label">
+                              <input
+                                type="radio"
+                                name={`decision-${paper.id}`}
+                                value="accept-major"
+                                checked={paperDecisions[paper.id] === 'accept-major'}
+                                onChange={(e) => handleDecisionChange(paper.id, e.target.value)}
+                              />
+                              <span>Accept with major changes</span>
+                            </label>
+                            <label className="radio-label">
+                              <input
+                                type="radio"
+                                name={`decision-${paper.id}`}
+                                value="reject"
+                                checked={paperDecisions[paper.id] === 'reject'}
+                                onChange={(e) => handleDecisionChange(paper.id, e.target.value)}
+                              />
+                              <span>Reject</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {paper.evaluatedBy && (
+                        <div className="evaluation-meta">
+                          <p><strong>Evaluated by:</strong> {paper.evaluatedBy}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
