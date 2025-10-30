@@ -97,6 +97,12 @@ export default function AdminPapers() {
         <h2>Manage Papers</h2>
         <div className="header-actions">
           <span>Welcome, {user?.name || user?.username} (Admin)</span>
+          <button onClick={handleLogout} className="btn-logout-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+            Logout
+          </button>
         </div>
       </header>
 
@@ -184,114 +190,144 @@ export default function AdminPapers() {
 
       {/* Main Content */}
       <main className="dashboard-main">
-        <div className="dashboard-content admin-papers-content">
-          <header>
-            <h1>Paper Management</h1>
-            <p>Assign evaluators to submitted papers and monitor evaluation progress.</p>
+        <div className="dashboard-content admin-evaluators-content">
+          <header className="page-header-modern">
+            <div className="page-header-content">
+              <div className="page-title-section">
+                <h1>Paper Management</h1>
+                <p className="page-subtitle">Assign evaluators to submitted papers and monitor evaluation progress</p>
+              </div>
+              <div className="filter-controls-modern">
+                <label htmlFor="status-filter" className="filter-label">Status:</label>
+                <select 
+                  id="status-filter"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="status-filter-modern"
+                >
+                  <option value="all">All Papers</option>
+                  <option value="pending_assignment">Pending Assignment</option>
+                  <option value="under_evaluation">Under Evaluation</option>
+                  <option value="completed">Completed</option>
+                </select>
+              </div>
+            </div>
           </header>
 
-          {/* Filter Section */}
-          <section className="filter-section">
-            <div className="filter-controls">
-              <label htmlFor="status-filter">Filter by Status:</label>
-              <select 
-                id="status-filter"
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="status-filter"
-              >
-                <option value="all">All Papers ({papers.length})</option>
-                <option value="pending_assignment">Pending Assignment ({papers.filter(p => p.status === 'pending_assignment').length})</option>
-                <option value="under_evaluation">Under Evaluation ({papers.filter(p => p.status === 'under_evaluation').length})</option>
-                <option value="completed">Completed ({papers.filter(p => p.status === 'completed').length})</option>
-              </select>
+          {/* Stats Overview */}
+          <div className="evaluators-stats-bar">
+            <div className="stat-item">
+              <span className="stat-label">Total Papers</span>
+              <span className="stat-value">{papers.length}</span>
             </div>
-          </section>
+            <div className="stat-item">
+              <span className="stat-label">Pending Assignment</span>
+              <span className="stat-value">{papers.filter(p => p.status === 'pending_assignment').length}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Under Evaluation</span>
+              <span className="stat-value">{papers.filter(p => p.status === 'under_evaluation').length}</span>
+            </div>
+            <div className="stat-item">
+              <span className="stat-label">Completed</span>
+              <span className="stat-value">{papers.filter(p => p.status === 'completed').length}</span>
+            </div>
+          </div>
 
           {/* Papers Table */}
-          <section className="papers-section">
-            <div className="papers-table-container">
-              <table className="papers-table admin-papers-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Paper Title</th>
-                    <th>Author & Department</th>
-                    <th>Keywords</th>
-                    <th>Status</th>
-                    <th>Assigned Evaluator</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredPapers.map(paper => {
-                    const statusInfo = getStatusBadge(paper.status)
-                    return (
-                      <tr key={paper.id} className="paper-row">
-                        <td className="paper-id">#{paper.id}</td>
-                        <td className="paper-title">
-                          <div className="title-content">
-                            <h4>{paper.title}</h4>
-                            <div className="paper-meta">
-                              <span>{paper.college}</span>
-                              <span>Submitted: {paper.submittedDate}</span>
+          <section className="table-section-professional">
+            {filteredPapers.length > 0 ? (
+              <div className="table-wrapper-professional" style={{ overflowX: 'auto' }}>
+                <table className="evaluator-table-professional papers-table-professional" style={{ minWidth: '1200px' }}>
+                  <thead>
+                    <tr>
+                      <th>Paper ID</th>
+                      <th>Title</th>
+                      <th>Author</th>
+                      <th>Department</th>
+                      <th>Submitted</th>
+                      <th>Keywords</th>
+                      <th>Evaluator</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredPapers.map(paper => {
+                      const statusInfo = getStatusBadge(paper.status)
+                      return (
+                        <tr key={paper.id}>
+                          <td data-label="Paper ID">#{paper.id}</td>
+                          <td data-label="Title" className="paper-title-cell">
+                            <div className="paper-title-content">
+                              {paper.title}
                             </div>
-                          </div>
-                        </td>
-                        <td className="paper-author">
-                          <div className="author-info">
-                            <strong>{paper.author}</strong>
-                            <small>{paper.department}</small>
-                          </div>
-                        </td>
-                        <td className="paper-keywords">
-                          <div className="keywords-list">
-                            {paper.keywords.map((keyword, index) => (
-                              <span key={index} className="keyword-tag">{keyword}</span>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="paper-status">
-                          <span className={`status-badge ${statusInfo.class}`}>
-                            {statusInfo.text}
-                          </span>
-                        </td>
-                        <td className="assigned-evaluator">
-                          {paper.evaluatorName ? (
-                            <div className="evaluator-assigned">
-                              <strong>{paper.evaluatorName}</strong>
-                              {paper.assignedDate && (
-                                <small>Assigned: {paper.assignedDate}</small>
+                          </td>
+                          <td data-label="Author">{paper.author}</td>
+                          <td data-label="Department">{paper.department}</td>
+                          <td data-label="Submitted">{paper.submittedDate}</td>
+                          <td data-label="Keywords">
+                            <div className="keywords-cell">
+                              {paper.keywords.slice(0, 3).map((keyword, index) => (
+                                <span key={index} className="keyword-badge">{keyword}</span>
+                              ))}
+                              {paper.keywords.length > 3 && (
+                                <span className="keyword-more">+{paper.keywords.length - 3}</span>
                               )}
                             </div>
-                          ) : (
-                            <span className="no-evaluator">Not assigned</span>
-                          )}
-                        </td>
-                        <td className="paper-actions">
-                          {paper.status === 'pending_assignment' ? (
-                            <button 
-                              onClick={() => openAssignModal(paper)}
-                              className="btn btn-primary btn-sm"
-                            >
-                              Assign
-                            </button>
-                          ) : paper.status === 'completed' ? (
-                            <div className="completed-actions">
-                              <button className="btn btn-secondary btn-sm">
-                                View Details
+                          </td>
+                          <td data-label="Evaluator">
+                            {paper.evaluatorName ? (
+                              <div className="evaluator-info-cell">
+                                <span className="evaluator-name">{paper.evaluatorName}</span>
+                                {paper.assignedDate && (
+                                  <small className="assigned-date">{paper.assignedDate}</small>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="no-evaluator-badge">Not assigned</span>
+                            )}
+                          </td>
+                          <td data-label="Status">
+                            <span className={`status-badge-modern status-${paper.status}`}>
+                              {statusInfo.text}
+                            </span>
+                          </td>
+                          <td data-label="Actions" className="actions-cell">
+                            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                              <button 
+                                onClick={() => openAssignModal(paper)}
+                                className="action-btn assign-btn-modern"
+                                title={paper.evaluatorName ? "Manage Evaluator" : "Assign Evaluator"}
+                              >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                {paper.evaluatorName ? 'Manage' : 'Assign'}
+                              </button>
+                              <button 
+                                className="action-btn view-btn-modern"
+                                title="View Details"
+                              >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                View
                               </button>
                             </div>
-                          ) : (
-                            <span className="status-text">In Progress</span>
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="empty-state">
+                <p>No papers found matching the selected status.</p>
+              </div>
+            )}
           </section>
         </div>
       </main>
