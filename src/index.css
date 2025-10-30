@@ -732,7 +732,7 @@ html {
     justify-content: space-between;
     align-items: center;
     padding: 0 2rem;
-    min-height: 60px;
+    min-height: 40px;
 }
 
 .navbar-menu {
@@ -740,7 +740,7 @@ html {
     list-style: none;
     margin: 0;
     padding: 0;
-    gap: 2rem;
+    gap: 0.8rem;
 }
 
 .navbar-menu .nav-item {
@@ -751,8 +751,8 @@ html {
     color: white;
     text-decoration: none;
     font-weight: 500;
-    font-size: 1rem;
-    padding: 1rem 1.5rem;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.9rem;
     border-radius: var(--border-radius-sm);
     transition: all 0.3s ease;
     position: relative;
@@ -789,8 +789,9 @@ html {
     background: rgba(255, 255, 255, 0.15);
     color: white;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    font-size: 0.9rem;
     border-radius: var(--border-radius-sm);
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
@@ -802,6 +803,21 @@ html {
     border-color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Announcement Marquee */
+.announcement-marquee {
+    background: transparent;
+    padding: 18px 0;
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 20px;
+    overflow: hidden;
+}
+
+.announcement-marquee marquee {
+    color: #2c3e50;
+    text-shadow: none;
 }
 
 /* Mobile Navigation */
@@ -1087,6 +1103,148 @@ html {
     
     .important-note {
         padding: 1rem;
+    }
+}
+
+/* Home Page Sections - Professional Style */
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    font-weight: 400;
+    margin-bottom: 2.5rem !important;
+    text-align: center;
+    font-style: italic;
+}
+
+.home-section {
+    margin: 2.5rem 0;
+    padding: 0;
+}
+
+.home-section h2 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 0.5rem;
+}
+
+.home-section p {
+    color: #555;
+    line-height: 1.8;
+    text-align: justify;
+    margin-bottom: 1rem;
+}
+
+.home-section strong {
+    color: #2c3e50;
+}
+
+/* Info Table */
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+}
+
+.info-table tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.info-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.info-table td {
+    padding: 1rem 0.5rem;
+    color: #555;
+}
+
+.info-table td:first-child {
+    width: 40%;
+    color: #2c3e50;
+}
+
+.info-table td:last-child {
+    color: #667eea;
+    font-weight: 500;
+}
+
+/* Tracks List */
+.tracks-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+}
+
+.tracks-list li {
+    padding: 1rem 0;
+    border-bottom: 1px solid #e0e0e0;
+    color: #555;
+    line-height: 1.8;
+}
+
+.tracks-list li:last-child {
+    border-bottom: none;
+}
+
+.tracks-list li strong {
+    color: #667eea;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+/* Buttons */
+.instruction-content .buttons {
+    margin-top: 3rem;
+}
+
+/* Responsive Home Sections */
+@media (max-width: 768px) {
+    .home-section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .info-table td {
+        padding: 0.8rem 0.3rem;
+        font-size: 0.95rem;
+    }
+    
+    .info-table td:first-child {
+        width: 50%;
+    }
+}
+
+@media (max-width: 480px) {
+    .home-section {
+        margin: 2rem 0;
+    }
+    
+    .home-section h2 {
+        font-size: 1.3rem;
+    }
+    
+    .info-table {
+        font-size: 0.9rem;
+    }
+    
+    .info-table td {
+        display: block;
+        width: 100% !important;
+        padding: 0.5rem 0;
+    }
+    
+    .info-table td:first-child {
+        font-weight: 600;
+    }
+    
+    .tracks-list li {
+        padding: 0.8rem 0;
     }
 }
 
