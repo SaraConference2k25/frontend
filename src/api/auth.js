@@ -32,10 +32,14 @@ export async function register({ username, email, password, role }) {
 /**
  * Login user
  * Backend expects: LoginRequest { email, password, role }
- * Returns: LoginResponse { token?, user?, message?, ... }
+ * Returns: LoginResponse { message, email, role }
  */
 export async function login({ email, password, role }) {
-  return postJson('/api/auth/login', { email, password, role })
+  const payload = { email, password, role }
+  console.log('🌐 API: Sending login request with payload:', { ...payload, password: '***' })
+  const response = await postJson('/api/auth/login', payload)
+  console.log('🌐 API: Received login response:', response)
+  return response
 }
 
 export default { login, register }

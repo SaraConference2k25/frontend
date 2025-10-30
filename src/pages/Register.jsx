@@ -5,11 +5,10 @@ import baImage from '../assets/ba.jpg'
 
 export default function Register() {
   const [formData, setFormData] = useState({
-    fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    name: ''
+    fullName: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -53,8 +52,7 @@ export default function Register() {
       const result = await register({
         fullName: formData.fullName,
         email: formData.email,
-        password: formData.password,
-        name: formData.name
+        password: formData.password
       })
       
       console.log('Registration result:', result)
@@ -100,7 +98,6 @@ export default function Register() {
               <label>Full Name</label>
               <input 
                 name="fullName"
-                type="text"
                 value={formData.fullName} 
                 onChange={handleInputChange} 
                 placeholder="Enter your full name" 

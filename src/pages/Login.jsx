@@ -19,13 +19,14 @@ export default function Login() {
   const from = location.state?.from?.pathname || getDefaultRoute(role)
 
   function getDefaultRoute(userRole) {
-    switch(userRole) {
+    const role = userRole?.toLowerCase()
+    switch(role) {
       case 'participant':
         return '/dashboard'
       case 'evaluator':
         return '/evaluator-dashboard'
       case 'admin':
-        return '/admin-dashboard' // For future use
+        return '/admin-dashboard'
       default:
         return '/'
     }
@@ -47,17 +48,22 @@ export default function Login() {
     setIsLoading(true)
 
     try {
-      const result = login({ username, password, role })
+      const result = await login({ username, password, role })
+      
+      console.log('Login result:', result)
       
       if (result.success) {
-        // Redirect based on user role
-        const redirectPath = getDefaultRoute(role)
+        // Redirect based on user role from the response
+        const userRole = result.user?.role?.toLowerCase() || role.toLowerCase()
+        const redirectPath = getDefaultRoute(userRole)
+        console.log('Redirecting to:', redirectPath)
         navigate(redirectPath, { replace: true })
       } else {
-        setError(result.error)
+        setError(result.error || 'Login failed')
       }
     } catch (err) {
-      setError('Login failed. Please try again.')
+      console.error('Login error:', err)
+      setError(err.message || 'Login failed. Please try again.')
     } finally {
       setIsLoading(false)
     }

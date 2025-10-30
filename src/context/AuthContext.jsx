@@ -127,18 +127,29 @@ export const AuthProvider = ({ children }) => {
     const { username, password, role } = credentials
     
     try {
-      // Call backend API - expects email, password, and requestedRole
-      const response = await authApi.login({ 
-        email: username, // Backend uses email field
+      // Always send PARTICIPANT as the role for now
+      const requestData = {
+        email: username.trim().toLowerCase(), // Backend uses email field, trim and lowercase
         password,
-        role // Send the requested role to backend
+        role: 'PARTICIPANT' // Always PARTICIPANT
+      }
+      
+      console.log('📤 Sending login request:', { 
+        email: requestData.email, 
+        password: '***', 
+        role: requestData.role 
       })
+      
+      // Call backend API - expects email, password, and role
+      const response = await authApi.login(requestData)
+      
+      console.log('✅ Backend login response:', response)
       
       // Backend returns: { message, email, role }
       if (response && response.email) {
         const userSession = {
           email: response.email,
-          role: response.role || role, // Use role from backend response or fallback to requested role
+          role: response.role, // Use role from backend response
           loginTime: new Date().toISOString()
         }
         
@@ -151,7 +162,7 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: response.message || 'Login failed' }
       }
     } catch (error) {
-      console.error('Login error:', error)
+      console.error('❌ Login error:', error)
       return { success: false, error: error.message || 'Invalid credentials' }
     }
   }
@@ -160,13 +171,18 @@ export const AuthProvider = ({ children }) => {
     try {
       // Ensure role is always set to PARTICIPANT
       const registrationData = {
-        username: userData.fullName, // Backend expects username field
-        email: userData.email,
+        username: userData.fullName.trim(), // Backend expects username field
+        email: userData.email.trim().toLowerCase(), // Normalize email to lowercase
         password: userData.password,
-        role: 'PARTICIPANT' // Always PARTICIPANT for registration PARTICIPANT
+        role: 'PARTICIPANT' // Always PARTICIPANT for registration
       }
       
-      console.log('📤 Sending registration data:', { ...registrationData, password: '***' })
+      console.log('📤 Sending registration data:', { 
+        username: registrationData.username,
+        email: registrationData.email, 
+        password: '***',
+        role: registrationData.role 
+      })
       
       // Call backend API - expects { username, email, password, role }
       const response = await authApi.register(registrationData)
@@ -196,19 +212,19 @@ export const AuthProvider = ({ children }) => {
   }
 
   const hasRole = (requiredRole) => {
-    return user && user.role === requiredRole
+    return user && user.role?.toLowerCase() === requiredRole?.toLowerCase()
   }
 
   const canAccessDashboard = () => {
-    return user && user.role === 'participant'
+    return user && user.role?.toLowerCase() === 'participant'
   }
 
   const canAccessEvaluatorDashboard = () => {
-    return user && user.role === 'evaluator'
+    return user && user.role?.toLowerCase() === 'evaluator'
   }
 
   const canAccessAdminDashboard = () => {
-    return user && user.role === 'admin'
+    return user && user.role?.toLowerCase() === 'admin'
   }
 
   const value = {
