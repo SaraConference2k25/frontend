@@ -23,7 +23,7 @@ export default function Dashboard() {
         </button>
         <h2>Dashboard</h2>
         <div className="header-actions">
-          <span>Welcome, {user?.name || user?.username}</span>
+          <span>Welcome, {user?.username || user?.email}</span>
         </div>
       </header>
 
@@ -71,7 +71,7 @@ export default function Dashboard() {
       <main className="dashboard-main">
         <div className="dashboard-content">
           <header>
-            <h1>Welcome to Your Dashboard</h1>
+            <h1>Welcome back, {user?.username || 'User'}! 👋</h1>
             <p>Your personalized hub for academic excellence, campus activities, and institutional resources.</p>
           </header>
           

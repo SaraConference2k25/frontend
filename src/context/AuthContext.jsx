@@ -145,15 +145,16 @@ export const AuthProvider = ({ children }) => {
       
       console.log('✅ Backend login response:', response)
       
-      // Backend returns: { message, email, role }
+      // Backend returns: { message, email, role, username }
       if (response && response.email) {
         const userSession = {
           email: response.email,
           role: response.role, // Use role from backend response
+          username: response.username, // Store username from backend
           loginTime: new Date().toISOString()
         }
         
-        console.log('✅ Login successful:', { email: userSession.email, role: userSession.role })
+        console.log('✅ Login successful:', { email: userSession.email, role: userSession.role, username: userSession.username })
         
         setUser(userSession)
         localStorage.setItem('user', JSON.stringify(userSession))
