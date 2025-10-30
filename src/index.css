@@ -3797,27 +3797,46 @@ html {
 
 
 .back-btn {
-  background-color: #667eea;     /* Blue-purple background */
-  color: white;                  /* White arrow */
+  background: none;              /* No background */
+  color: #000000;                /* Black arrow */
   border: none;                  /* No border */
-  border-radius: 50%;            /* Makes it round */
-  width: 60px;                   /* Button size */
-  height: 60px;                  /* Equal width & height = circle */
-  font-size: 28px;               /* Bigger arrow */
+  font-size: 36px;               /* Arrow size */
+  font-weight: bold;             /* Bold arrow */
   cursor: pointer;               /* Pointer cursor on hover */
-  display: flex;                 /* Center arrow */
-  align-items: center;
-  justify-content: center;
-  transition: background 0.3s, transform 0.2s;
+  padding: 0;                    /* No padding */
+  transition: all 0.3s ease;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  /* Subtle shadow */
+  position: fixed;
+  top: 20px;
+  left: 40px;
 }
 
 .back-btn:hover {
-  background-color: #5a67d8;     /* Slightly darker on hover */
-  transform: scale(1.05);        /* Grows a bit */
+  color: #667eea;                /* Blue on hover */
+  transform: translateX(-5px) scale(1.2);   /* Moves left and grows */
+  text-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);  /* Colored shadow on hover */
 }
 
-.back-btn {
-  position: fixed;
-  top: 20px;
-  left: 20px;
+.back-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 10px;
+  padding: 6px 12px;
+  background: #000000;
+  color: white;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: normal;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.back-btn:hover::after {
+  opacity: 1;
 }
