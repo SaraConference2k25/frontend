@@ -12,41 +12,48 @@ export default function MyPapers() {
 
   // Sample data for demonstration
   const [myPapers] = useState([
-    {
-      id: 1,
-      title: 'Deep Learning Applications in Healthcare',
-      author: 'John Doe',
-      department: 'Computer Science',
-      college: 'MIT College of Engineering',
-      submittedDate: '2025-10-15',
-      status: 'under_evaluation',
-      keywords: ['Deep Learning', 'Healthcare', 'AI'],
-      abstract: 'This paper explores the various applications of deep learning in the healthcare sector...'
-    },
-    {
-      id: 2,
-      title: 'Blockchain Technology for Secure Data Storage',
-      author: 'John Doe',
-      department: 'Computer Science',
-      college: 'MIT College of Engineering',
-      submittedDate: '2025-10-10',
-      status: 'completed',
-      keywords: ['Blockchain', 'Security', 'Data Storage'],
-      abstract: 'An analysis of blockchain technology and its implementation for secure data storage...',
-      evaluationScore: 85,
-      evaluatorFeedback: 'Excellent work! The paper demonstrates a clear understanding of blockchain technology.'
-    },
-    {
-      id: 3,
-      title: 'IoT Systems in Smart Cities',
-      author: 'John Doe',
-      department: 'Computer Science',
-      college: 'MIT College of Engineering',
-      submittedDate: '2025-10-05',
-      status: 'pending_assignment',
-      keywords: ['IoT', 'Smart Cities', 'Technology'],
-      abstract: 'This research discusses the integration of IoT systems in developing smart city infrastructure...'
-    }
+  {
+    id: 1,
+    title: 'Deep Learning Applications in Healthcare',
+    author: 'John Doe',
+    department: 'Computer Science',
+    college: 'MIT College of Engineering',
+    submittedDate: '2025-10-15',
+    status: 'under_evaluation',
+    phoneNumber: '+1 555-123-4567',
+    keywords: ['Deep Learning', 'Healthcare', 'AI'],
+    abstract:
+      'This paper explores the various applications of deep learning in the healthcare sector...',
+  },
+  {
+    id: 2,
+    title: 'Blockchain Technology for Secure Data Storage',
+    author: 'John Doe',
+    department: 'Computer Science',
+    college: 'MIT College of Engineering',
+    submittedDate: '2025-10-10',
+    status: 'completed',
+    phoneNumber: '+1 555-234-5678',
+    keywords: ['Blockchain', 'Security', 'Data Storage'],
+    abstract:
+      'An analysis of blockchain technology and its implementation for secure data storage...',
+    evaluationScore: 85,
+    evaluatorFeedback:
+      'Excellent work! The paper demonstrates a clear understanding of blockchain technology.',
+  },
+  {
+    id: 3,
+    title: 'IoT Systems in Smart Cities',
+    author: 'John Doe',
+    department: 'Computer Science',
+    college: 'MIT College of Engineering',
+    submittedDate: '2025-10-05',
+    status: 'pending_assignment',
+    phoneNumber: '+1 555-345-6789',
+    keywords: ['IoT', 'Smart Cities', 'Technology'],
+    abstract:
+      'This research discusses the integration of IoT systems in developing smart city infrastructure...',
+  },
   ])
 
   const [activeFilter, setActiveFilter] = useState('all')
@@ -177,16 +184,17 @@ export default function MyPapers() {
         <div className="dashboard-content my-papers-content">
           <header className="page-header">
             <div className="page-header-text">
-              <h2 style={{
+              <h1 style={{
                 color: "#5a67d8",
-                fontSize: "1.5rem",
-                fontWeight: 700,
-                margin: "0 0 0.5rem 0",
+                fontSize: "2.0rem",
+                fontWeight: 900,
+                textAlign: "center",
+                margin: "0 0 2rem 0",
                 fontFamily: "'Inter', sans-serif"}}>
-                My Submitted Papers</h2>
+                My Submitted Papers</h1>
               <p>View and track the status of your submitted research papers.</p>
             </div>
-            <Link to="/upload-paper" className="btn btn-primary btn-compact">
+            <Link to="/upload-paper" className="btn btn-primary">
               + Submit New Paper
             </Link>
           </header>
@@ -275,6 +283,10 @@ export default function MyPapers() {
                                   <span className="meta-label">Current Status</span>
                                   <span className="meta-value status-text">{statusInfo.text}</span>
                                 </div>
+                                <div className="meta-block">
+                                  <span className="meta-label">Phone Number</span>
+                                  <span className="meta-value">{paper.phoneNumber}</span>
+                                </div>
                               </div>
 
                               <div className="paper-info-grid">
@@ -289,15 +301,6 @@ export default function MyPapers() {
                                 <div className="info-item">
                                   <span className="info-label">College</span>
                                   <span className="info-value">{paper.college}</span>
-                                </div>
-                              </div>
-
-                              <div className="paper-keywords-section">
-                                <span className="info-label">Keywords</span>
-                                <div className="keywords-list">
-                                  {paper.keywords.map((keyword, index) => (
-                                    <span key={index} className="keyword-tag">{keyword}</span>
-                                  ))}
                                 </div>
                               </div>
 

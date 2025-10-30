@@ -2554,7 +2554,7 @@ html {
   color: var(--text-color);
   font-size: 1.5rem;
   font-weight: 700;
-  margin: 0 0 0.5rem 0;
+  margin: 0 1rem 0.5rem 0;
   font-family: 'Inter', sans-serif;
 }
 
@@ -3111,24 +3111,6 @@ html {
     font-weight: 500;
 }
 
-.paper-keywords-section {
-    margin-bottom: 1.25rem;
-    padding: 1rem;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(229, 231, 235, 0.9);
-    box-shadow: 0 6px 18px rgba(79, 114, 205, 0.08);
-}
-
-.paper-keywords-section .info-label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
 
 .paper-abstract {
     margin-bottom: 1.25rem;
@@ -4336,4 +4318,53 @@ html {
   position: fixed;
   top: 20px;
   left: 20px;
+}
+
+.dashboard-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.dashboard-info-card {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.info-title {
+  color: #4c51bf;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.scroll-box {
+  height: 120px;
+  overflow: hidden;
+  position: relative;
+}
+
+.scroll-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  animation: scroll-up 10s linear infinite;
+}
+
+@keyframes scroll-up {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.scroll-box p {
+  margin: 0;
+  font-size: 1rem;
+  color: #2d3748;
 }
