@@ -72,41 +72,6 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="dashboard-main">
-<<<<<<< HEAD
-        <div className="dashboard-content">
-          <header>
-            <h1>Welcome back, {user?.username || 'User'}! 👋</h1>
-            <p>Your personalized hub for academic excellence, campus activities, and institutional resources.</p>
-          </header>
-          
-          <div className="dashboard-stats">
-            <div className="stat-card">
-              <h3>📄</h3>
-              <p>Submitted Papers</p>
-              <h2>3</h2>
-            </div>
-            <div className="stat-card">
-              <h3>⏳</h3>
-              <p>Under Review</p>
-              <h2>1</h2>
-            </div>
-            <div className="stat-card">
-              <h3>✅</h3>
-              <p>Completed</p>
-              <h2>1</h2>
-            </div>
-            <div className="stat-card">
-              <h3>⌛</h3>
-              <p>Pending</p>
-              <h2>1</h2>
-            </div>
-          </div>
-
-          <div className="dashboard-actions">
-            <Link to="/upload-paper" className="btn btn-primary">Submit New Paper</Link>
-            <Link to="/my-papers" className="btn btn-secondary">View My Papers</Link>
-          </div>
-=======
         <div className="dashboard-content my-papers-content">
           <header className="page-header">
             <div className="page-header-text">
@@ -161,7 +126,6 @@ export default function Dashboard() {
               </div>
             </div>
           </section>
->>>>>>> origin/feat/participant-managepapers
         </div>
       </main>
     </div>

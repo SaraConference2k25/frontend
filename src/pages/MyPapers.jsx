@@ -1,60 +1,122 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import * as paperApi from '../api/papers'
 import '../index.css'
 
 
 export default function MyPapers() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [expandedPapers, setExpandedPapers] = useState({})
+  const [myPapers, setMyPapers] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
-  // Sample data for demonstration
-  const [myPapers] = useState([
-  {
-    id: 1,
-    title: 'Deep Learning Applications in Healthcare',
-    author: 'John Doe',
-    department: 'Computer Science',
-    college: 'MIT College of Engineering',
-    submittedDate: '2025-10-15',
-    status: 'under_evaluation',
-    phoneNumber: '+1 555-123-4567',
-    keywords: ['Deep Learning', 'Healthcare', 'AI'],
-    abstract:
-      'This paper explores the various applications of deep learning in the healthcare sector...',
-  },
-  {
-    id: 2,
-    title: 'Blockchain Technology for Secure Data Storage',
-    author: 'John Doe',
-    department: 'Computer Science',
-    college: 'MIT College of Engineering',
-    submittedDate: '2025-10-10',
-    status: 'completed',
-    phoneNumber: '+1 555-234-5678',
-    keywords: ['Blockchain', 'Security', 'Data Storage'],
-    abstract:
-      'An analysis of blockchain technology and its implementation for secure data storage...',
-    evaluationScore: 85,
-    evaluatorFeedback:
-      'Excellent work! The paper demonstrates a clear understanding of blockchain technology.',
-  },
-  {
-    id: 3,
-    title: 'IoT Systems in Smart Cities',
-    author: 'John Doe',
-    department: 'Computer Science',
-    college: 'MIT College of Engineering',
-    submittedDate: '2025-10-05',
-    status: 'pending_assignment',
-    phoneNumber: '+1 555-345-6789',
-    keywords: ['IoT', 'Smart Cities', 'Technology'],
-    abstract:
-      'This research discusses the integration of IoT systems in developing smart city infrastructure...',
-  },
-  ])
+  // Fetch papers from backend
+  useEffect(() => {
+    fetchMyPapers()
+  }, [user?.email])
+
+  const fetchMyPapers = async () => {
+    if (!user?.email) {
+      setError('User email not found')
+      setIsLoading(false)
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      setError('')
+      console.log('📥 Fetching papers for email:', user.email)
+      const papers = await paperApi.getPapersByEmail(user.email)
+      console.log('✅ Received papers:', papers)
+      setMyPapers(papers || [])
+    } catch (err) {
+      console.error('❌ Error fetching papers:', err)
+      setError('Failed to load papers: ' + err.message)
+      setMyPapers([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDownload = async (paperId, fileName, paper) => {
+    try {
+      console.log('📥 Attempting to download paper ID:', paperId)
+      console.log('📥 Paper data:', paper)
+      
+      // Check if paper has a direct file URL (Azure Blob URL)
+      if (paper?.paperFileUrl) {
+        const fileUrl = paper.paperFileUrl
+        console.log('✅ Using direct file URL:', fileUrl)
+        
+        // Open in new tab or trigger download
+        const a = document.createElement('a')
+        a.href = fileUrl
+        a.download = fileName || paper.paperFileName || 'paper.pdf'
+        a.target = '_blank' // Open in new tab if download doesn't work
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        
+        console.log('✅ Download initiated from URL')
+        return
+      }
+      
+      // Fallback: Try backend download endpoint
+      console.log('📥 No direct URL found, trying backend endpoint...')
+      const { blob, filename } = await paperApi.downloadPaper(paperId)
+      
+      console.log('✅ Received blob:', { 
+        size: blob.size, 
+        type: blob.type 
+      })
+      
+      if (blob.size === 0) {
+        throw new Error('Downloaded file is empty')
+      }
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename || fileName || 'paper.pdf'
+      document.body.appendChild(a)
+      a.click()
+      
+      // Cleanup
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+      }, 100)
+      
+      console.log('✅ Paper download initiated:', filename)
+    } catch (err) {
+      console.error('❌ Error downloading paper:', err)
+      console.error('❌ Error details:', {
+        message: err.message,
+        stack: err.stack
+      })
+      alert('Failed to download paper: ' + err.message)
+    }
+  }
+
+  const handleDelete = async (paperId) => {
+    if (!window.confirm('Are you sure you want to delete this paper?')) {
+      return
+    }
+
+    try {
+      await paperApi.deletePaper(paperId)
+      alert('Paper deleted successfully')
+      fetchMyPapers() // Refresh list
+    } catch (err) {
+      console.error('❌ Error deleting paper:', err)
+      alert('Failed to delete paper: ' + err.message)
+    }
+  }
 
   const [activeFilter, setActiveFilter] = useState('all')
 
@@ -90,7 +152,8 @@ export default function MyPapers() {
   }
 
   const statusCounts = myPapers.reduce((acc, paper) => {
-    acc[paper.status] = (acc[paper.status] || 0) + 1
+    const status = paper.status || 'pending_assignment'
+    acc[status] = (acc[status] || 0) + 1
     return acc
   }, {})
 
@@ -106,10 +169,11 @@ export default function MyPapers() {
     : null
 
   const latestSubmissionDate = myPapers.reduce((latest, paper) => {
-    if (!paper.submittedDate) return latest
-    if (!latest) return paper.submittedDate
-    return new Date(paper.submittedDate) > new Date(latest)
-      ? paper.submittedDate
+    const submittedDate = paper.submittedAt || paper.submittedDate
+    if (!submittedDate) return latest
+    if (!latest) return submittedDate
+    return new Date(submittedDate) > new Date(latest)
+      ? submittedDate
       : latest
   }, null)
 
@@ -121,7 +185,7 @@ export default function MyPapers() {
 
   const filteredPapers = activeFilter === 'all'
     ? myPapers
-    : myPapers.filter(paper => paper.status === activeFilter)
+    : myPapers.filter(paper => (paper.status || 'pending_assignment') === activeFilter)
 
   const hasFilteredResults = filteredPapers.length > 0
 
@@ -199,9 +263,18 @@ export default function MyPapers() {
             </Link>
           </header>
 
+          {error && <div className="error-message">{error}</div>}
+
           {/* Papers List */}
           <section className="my-papers-section">
-            {myPapers.length === 0 ? (
+            {isLoading ? (
+              <div className="loading-screen">
+                <div className="loading-spinner">
+                  <div className="spinner"></div>
+                  <p>Loading your papers...</p>
+                </div>
+              </div>
+            ) : myPapers.length === 0 ? (
               <div className="no-papers">
                 <h3>No Papers Submitted Yet</h3>
                 <p>You haven't submitted any papers yet. Click the button above to submit your first paper!</p>
@@ -234,7 +307,7 @@ export default function MyPapers() {
                 ) : (
                   <div className="papers-list">
                     {filteredPapers.map(paper => {
-                      const statusInfo = getStatusBadge(paper.status)
+                      const statusInfo = getStatusBadge(paper.status || 'pending_assignment')
                       return (
                         <div
                           key={paper.id}
@@ -242,10 +315,10 @@ export default function MyPapers() {
                         >
                           <div className="paper-card-header" onClick={() => toggleExpandPaper(paper.id)}>
                             <div className="paper-header-left">
-                              <h3>{paper.title}</h3>
+                              <h3>{paper.paperTitle || paper.title}</h3>
                               <div className="paper-header-meta">
                                 <span>#{paper.id.toString().padStart(3, '0')}</span>
-                                <span>Submitted {formatDate(paper.submittedDate)}</span>
+                                <span>Submitted {formatDate(paper.submittedAt || paper.submittedDate)}</span>
                               </div>
                             </div>
                             <div className="header-right">
@@ -253,11 +326,11 @@ export default function MyPapers() {
                                 className="btn-view-paper"
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  alert('Opening paper PDF...')
+                                  handleDownload(paper.id, paper.paperFileName, paper)
                                 }}
-                                title="View Paper"
+                                title="Download Paper"
                               >
-                                View
+                                Download
                               </button>
                               <span className={`status-badge ${statusInfo.class}`}>
                                 {statusInfo.text}
@@ -277,7 +350,7 @@ export default function MyPapers() {
                                 </div>
                                 <div className="meta-block">
                                   <span className="meta-label">Submitted</span>
-                                  <span className="meta-value">{formatDate(paper.submittedDate)}</span>
+                                  <span className="meta-value">{formatDate(paper.submittedAt || paper.submittedDate)}</span>
                                 </div>
                                 <div className="meta-block">
                                   <span className="meta-label">Current Status</span>
@@ -285,14 +358,14 @@ export default function MyPapers() {
                                 </div>
                                 <div className="meta-block">
                                   <span className="meta-label">Phone Number</span>
-                                  <span className="meta-value">{paper.phoneNumber}</span>
+                                  <span className="meta-value">{paper.contactNo || paper.phoneNumber}</span>
                                 </div>
                               </div>
 
                               <div className="paper-info-grid">
                                 <div className="info-item">
                                   <span className="info-label">Author</span>
-                                  <span className="info-value">{paper.author}</span>
+                                  <span className="info-value">{paper.name || paper.author}</span>
                                 </div>
                                 <div className="info-item">
                                   <span className="info-label">Department</span>
@@ -300,13 +373,18 @@ export default function MyPapers() {
                                 </div>
                                 <div className="info-item">
                                   <span className="info-label">College</span>
-                                  <span className="info-value">{paper.college}</span>
+                                  <span className="info-value">{paper.collegeName || paper.college}</span>
                                 </div>
                               </div>
 
                               <div className="paper-abstract">
                                 <span className="info-label">Abstract</span>
-                                <p>{paper.abstract}</p>
+                                <p>{paper.paperAbstract || paper.abstract}</p>
+                              </div>
+
+                              <div className="paper-file-info">
+                                <span className="info-label">File:</span>
+                                <span className="info-value">{paper.paperFileName}</span>
                               </div>
 
                               {paper.status === 'completed' && (
