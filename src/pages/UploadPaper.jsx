@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import * as paperApi from '../api/papers'
 
 export default function UploadPaper() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -9,7 +10,7 @@ export default function UploadPaper() {
 
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
+    email: user?.email || '',
     contactNo: '',
     department: '',
     collegeName: '',
@@ -18,6 +19,10 @@ export default function UploadPaper() {
     keywords: '',
     paperFile: null
   })
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -33,34 +38,84 @@ export default function UploadPaper() {
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0]
-    if (file && file.type === 'application/pdf') {
+    setError('')
+    
+    if (file) {
+      // Validate file type
+      if (file.type !== 'application/pdf') {
+        setError('Please select a PDF file only')
+        event.target.value = ''
+        return
+      }
+      
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setError('File size must be less than 10MB')
+        event.target.value = ''
+        return
+      }
+      
       setFormData(prev => ({
         ...prev,
         paperFile: file
       }))
-    } else {
-      alert('Please select a PDF file only')
     }
   }
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault()
-    console.log('Form submitted:', formData)
-    alert('Paper submission successful!')
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      contactNo: '',
-      department: '',
-      collegeName: '',
-      paperTitle: '',
-      paperAbstract: '',
-      keywords: '',
-      paperFile: null
-    })
-    // Redirect to dashboard
-    navigate('/dashboard')
+    setError('')
+    setSuccess('')
+    
+    // Validation
+    if (!formData.paperFile) {
+      setError('Please upload your paper (PDF format)')
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      // Create FormData object for multipart/form-data
+      const submitFormData = new FormData()
+      submitFormData.append('name', formData.name.trim())
+      submitFormData.append('email', formData.email.trim().toLowerCase())
+      submitFormData.append('contactNo', formData.contactNo.trim())
+      submitFormData.append('department', formData.department.trim())
+      submitFormData.append('collegeName', formData.collegeName.trim())
+      submitFormData.append('paperTitle', formData.paperTitle.trim())
+      submitFormData.append('paperAbstract', formData.paperAbstract.trim())
+      submitFormData.append('paperFile', formData.paperFile)
+
+      const response = await paperApi.submitPaper(submitFormData)
+      
+      setSuccess(`Paper submitted successfully! Submission ID: ${response.id}`)
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: user?.email || '',
+        contactNo: '',
+        department: '',
+        collegeName: '',
+        paperTitle: '',
+        paperAbstract: '',
+        keywords: '',
+        paperFile: null
+      })
+      document.getElementById('paperFile').value = ''
+      
+      // Redirect to My Papers after 2 seconds
+      setTimeout(() => {
+        navigate('/my-papers')
+      }, 2000)
+      
+    } catch (err) {
+      console.error('Paper submission error:', err)
+      setError(err.message || 'Failed to submit paper. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -127,6 +182,9 @@ export default function UploadPaper() {
               <p>Fill in the details below to submit your research paper for review.</p>
             </div>
           </header>
+
+          {error && <div className="error-message">{error}</div>}
+          {success && <div className="success-message">{success}</div>}
 
           <section className="upload-form-section">
             <form onSubmit={handleFormSubmit} className="paper-upload-form">
@@ -269,8 +327,8 @@ export default function UploadPaper() {
                 <Link to="/dashboard" className="btn btn-secondary">
                   Cancel
                 </Link>
-                <button type="submit" className="btn btn-primary">
-                  Submit Paper
+                <button type="submit" className="btn btn-primary" disabled={isLoading}>
+                  {isLoading ? 'Submitting...' : 'Submit Paper'}
                 </button>
               </div>
             </form>
