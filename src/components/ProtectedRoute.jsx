@@ -39,7 +39,7 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
   }
 
   // If a specific role is required and user doesn't have it
-  if (requiredRole && user.role?.toLowerCase() !== requiredRole?.toLowerCase()) {
+  if (requiredRole && user.role !== requiredRole) {
     return (
       <div className="access-denied">
         <div className="access-denied-content">

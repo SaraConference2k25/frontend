@@ -20,11 +20,11 @@ async function postJson(path, body) {
 
 /**
  * Register a new user
- * Backend expects: AuthRequest { fullName, email, password, role }
+ * Backend expects: AuthRequest { username, email, password, role }
  * Returns: AuthResponse { message, success, ... }
  */
-export async function register({ fullName, email, password, role }) {
-  const payload = { fullName, email, password, role }
+export async function register({ username, email, password, role }) {
+  const payload = { username, email, password, role }
   console.log('🌐 API: Sending register request with payload:', { ...payload, password: '***' })
   return postJson('/api/auth/register', payload)
 }

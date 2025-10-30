@@ -8,7 +8,8 @@ export default function Register() {
     fullName: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    name: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -53,7 +54,7 @@ export default function Register() {
         fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
-        role: 'PARTICIPANT' // Default role for all registrations
+        name: formData.name
       })
       
       console.log('Registration result:', result)
@@ -77,10 +78,17 @@ export default function Register() {
     }
   }
 
+  function backButton(){
+    navigate("/login");
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-panel">
         <div className="auth-form-wrapper">
+          <div classname="testing">
+          <button class="back-btn" onClick={backButton}>←</button>
+          </div>
           <div className="form-header">
             <h2>Join Our Community</h2>
             <p>Create your account and become part of our academic excellence journey.</p>

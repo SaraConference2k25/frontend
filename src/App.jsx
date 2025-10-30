@@ -6,10 +6,13 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import UploadPaper from './pages/UploadPaper'
+import MyPapers from './pages/MyPapers'
 import EvaluatorDashboard from './pages/EvaluatorDashboard'
 import EvaluatePapers from './pages/EvaluatePapers'
 import AdminDashboard from './pages/AdminDashboard'
 import AdminPapers from './pages/AdminPapers'
+import AdminEvaluators from './pages/AdminEvaluators'
 
 export default function App() {
   return (
@@ -23,6 +26,22 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/upload-paper" 
+          element={
+            <ProtectedRoute>
+              <UploadPaper />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/my-papers" 
+          element={
+            <ProtectedRoute>
+              <MyPapers />
             </ProtectedRoute>
           } 
         />
@@ -55,6 +74,14 @@ export default function App() {
           element={
             <ProtectedRoute requiredRole="admin">
               <AdminPapers />
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin-evaluators" 
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <AdminEvaluators />
             </ProtectedRoute>
           } 
         />
