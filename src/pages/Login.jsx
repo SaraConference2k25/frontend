@@ -68,7 +68,7 @@ export default function Login() {
       <div className="auth-panel">
         <div className="auth-form-wrapper">
           <div classname="testing">
-          <button class="back-btn" onClick={backButton}>←</button>
+          <button class="back-btn" data-tooltip="Back" onClick={backButton}>←</button>
           </div>
           <div className="form-header">
             <h2>Welcome Back!</h2>
