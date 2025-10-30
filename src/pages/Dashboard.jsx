@@ -69,38 +69,10 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="dashboard-main">
-        <div className="dashboard-content">
-          <header>
-            <h1>Welcome to Your Dashboard</h1>
-            <p>Your personalized hub for academic excellence, campus activities, and institutional resources.</p>
-          </header>
-          
-          <div className="dashboard-stats">
-            <div className="stat-card">
-              <h3>📄</h3>
-              <p>Submitted Papers</p>
-              <h2>3</h2>
-            </div>
-            <div className="stat-card">
-              <h3>⏳</h3>
-              <p>Under Review</p>
-              <h2>1</h2>
-            </div>
-            <div className="stat-card">
-              <h3>✅</h3>
-              <p>Completed</p>
-              <h2>1</h2>
-            </div>
-            <div className="stat-card">
-              <h3>⌛</h3>
-              <p>Pending</p>
-              <h2>1</h2>
-            </div>
-          </div>
-
-          <div className="dashboard-actions">
-            <Link to="/upload-paper" className="btn btn-primary">Submit New Paper</Link>
-            <Link to="/my-papers" className="btn btn-secondary">View My Papers</Link>
+        <div className="dashboard-content-simple">
+          <div className="dashboard-welcome">
+            <h1>Dashboard</h1>
+            <p>Manage your paper submissions and track your progress.</p>
           </div>
         </div>
       </main>

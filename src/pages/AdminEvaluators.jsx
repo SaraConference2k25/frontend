@@ -3,18 +3,19 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { sampleEvaluators } from '../data/sampleData'
 
+const createEmptyEvaluatorForm = () => ({
+  email: '',
+  username: '',
+  password: '',
+  confirmPassword: '',
+  department: ''
+})
+
 export default function AdminEvaluators() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [evaluators, setEvaluators] = useState(sampleEvaluators)
-  const [newEvaluator, setNewEvaluator] = useState({
-    name: '',
-    email: '',
-    username: '',
-    password: '',
-    expertise: '',
-    department: ''
-  })
+  const [newEvaluator, setNewEvaluator] = useState(createEmptyEvaluatorForm())
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
@@ -29,14 +30,7 @@ export default function AdminEvaluators() {
 
   const openCreateModal = () => {
     setShowCreateModal(true)
-    setNewEvaluator({
-      name: '',
-      email: '',
-      username: '',
-      password: '',
-      expertise: '',
-      department: ''
-    })
+    setNewEvaluator(createEmptyEvaluatorForm())
   }
 
   const closeCreateModal = () => {
@@ -55,32 +49,38 @@ export default function AdminEvaluators() {
     e.preventDefault()
     
     // Validate form
-    if (!newEvaluator.name || !newEvaluator.email || !newEvaluator.username || !newEvaluator.password) {
+    if (!newEvaluator.email || !newEvaluator.username || !newEvaluator.password || !newEvaluator.confirmPassword) {
       alert('Please fill in all required fields')
       return
     }
 
-    // Create expertise array from comma-separated string
-    const expertiseArray = newEvaluator.expertise
-      .split(',')
-      .map(skill => skill.trim())
-      .filter(skill => skill.length > 0)
+    if (newEvaluator.password !== newEvaluator.confirmPassword) {
+      alert('Passwords do not match')
+      return
+    }
+
+    const { email, username, password, department } = newEvaluator
+
+    const baseName = (username || '').trim()
+      || (email ? email.split('@')[0] : '').trim()
+    const displayName = baseName || `Evaluator ${evaluators.length + 1}`
 
     // Create new evaluator object
     const evaluator = {
       id: evaluators.length + 1,
-      name: newEvaluator.name,
-      email: newEvaluator.email,
-      username: newEvaluator.username,
-      password: newEvaluator.password,
-      expertise: expertiseArray,
-      department: newEvaluator.department,
+      name: displayName,
+      email,
+      username,
+      password,
+      expertise: [],
+      department,
       workload: 0,
       role: 'evaluator'
     }
 
     // Add to evaluators list
     setEvaluators(prev => [...prev, evaluator])
+    setNewEvaluator(createEmptyEvaluatorForm())
     
     alert(`Evaluator ${evaluator.name} created successfully!`)
     closeCreateModal()
@@ -154,18 +154,6 @@ export default function AdminEvaluators() {
               <form className="evaluator-form" onSubmit={handleCreateEvaluator}>
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="name">Full Name *</label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={newEvaluator.name}
-                      onChange={handleInputChange}
-                      placeholder="Enter full name"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
                     <label htmlFor="email">Email *</label>
                     <input
                       type="email"
@@ -177,9 +165,6 @@ export default function AdminEvaluators() {
                       required
                     />
                   </div>
-                </div>
-
-                <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="username">Username *</label>
                     <input
@@ -192,6 +177,9 @@ export default function AdminEvaluators() {
                       required
                     />
                   </div>
+                </div>
+
+                <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="password">Password *</label>
                     <input
@@ -204,30 +192,32 @@ export default function AdminEvaluators() {
                       required
                     />
                   </div>
+                  <div className="form-group">
+                    <label htmlFor="confirmPassword">Confirm Password *</label>
+                    <input
+                      type="text"
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      value={newEvaluator.confirmPassword}
+                      onChange={handleInputChange}
+                      placeholder="Re-enter password"
+                      required
+                    />
+                  </div>
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="department">Department</label>
-                  <input
-                    type="text"
-                    id="department"
-                    name="department"
-                    value={newEvaluator.department}
-                    onChange={handleInputChange}
-                    placeholder="Enter department"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="expertise">Expertise Areas (comma-separated)</label>
-                  <input
-                    type="text"
-                    id="expertise"
-                    name="expertise"
-                    value={newEvaluator.expertise}
-                    onChange={handleInputChange}
-                    placeholder="e.g., Machine Learning, AI, Data Science"
-                  />
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="department">Department</label>
+                    <input
+                      type="text"
+                      id="department"
+                      name="department"
+                      value={newEvaluator.department}
+                      onChange={handleInputChange}
+                      placeholder="Enter department"
+                    />
+                  </div>
                 </div>
 
                 <div className="form-actions">
@@ -265,7 +255,7 @@ export default function AdminEvaluators() {
                 <div key={evaluator.id} className="evaluator-card-large">
                   <div className="evaluator-card-header">
                     <div className="evaluator-avatar">
-                      {evaluator.name.charAt(0).toUpperCase()}
+                      {(evaluator.name || evaluator.username || evaluator.email || '?').charAt(0).toUpperCase()}
                     </div>
                     <div className="evaluator-card-info">
                       <h3>{evaluator.name}</h3>
@@ -279,21 +269,16 @@ export default function AdminEvaluators() {
                       <span className="info-value">{evaluator.username || 'N/A'}</span>
                     </div>
                     <div className="info-row">
+                      <span className="info-label">Password:</span>
+                      <span className="info-value">{evaluator.password || 'N/A'}</span>
+                    </div>
+                    <div className="info-row">
                       <span className="info-label">Department:</span>
                       <span className="info-value">{evaluator.department || 'N/A'}</span>
                     </div>
                     <div className="info-row">
                       <span className="info-label">Current Workload:</span>
                       <span className="info-value">{evaluator.workload} papers</span>
-                    </div>
-                    
-                    <div className="expertise-section">
-                      <span className="info-label">Expertise:</span>
-                      <div className="expertise-tags">
-                        {evaluator.expertise.map((skill, index) => (
-                          <span key={index} className="expertise-tag">{skill}</span>
-                        ))}
-                      </div>
                     </div>
                   </div>
 

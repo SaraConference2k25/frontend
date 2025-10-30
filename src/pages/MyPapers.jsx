@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 
 export default function MyPapers() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [expandedPapers, setExpandedPapers] = useState({})
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
@@ -46,8 +47,17 @@ export default function MyPapers() {
     }
   ])
 
+  const [activeFilter, setActiveFilter] = useState('all')
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
+  }
+
+  const toggleExpandPaper = (paperId) => {
+    setExpandedPapers(prev => ({
+      ...prev,
+      [paperId]: !prev[paperId]
+    }))
   }
 
   const getStatusBadge = (status) => {
@@ -60,6 +70,82 @@ export default function MyPapers() {
     }
     return badges[status] || { class: 'status-pending', text: 'Unknown' }
   }
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '—'
+    return new Date(dateString).toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    })
+  }
+
+  const statusCounts = myPapers.reduce((acc, paper) => {
+    acc[paper.status] = (acc[paper.status] || 0) + 1
+    return acc
+  }, {})
+
+  const completedPapers = myPapers.filter(
+    paper => paper.status === 'completed' && typeof paper.evaluationScore === 'number'
+  )
+
+  const averageScore = completedPapers.length
+    ? Math.round(
+        completedPapers.reduce((total, paper) => total + paper.evaluationScore, 0) /
+          completedPapers.length
+      )
+    : null
+
+  const latestSubmissionDate = myPapers.reduce((latest, paper) => {
+    if (!paper.submittedDate) return latest
+    if (!latest) return paper.submittedDate
+    return new Date(paper.submittedDate) > new Date(latest)
+      ? paper.submittedDate
+      : latest
+  }, null)
+
+  const overviewCards = [
+    {
+      label: 'Total Submitted',
+      value: myPapers.length,
+      helper: latestSubmissionDate
+        ? `Last submitted on ${formatDate(latestSubmissionDate)}`
+        : 'No submissions yet'
+    },
+    {
+      label: 'Under Evaluation',
+      value: statusCounts['under_evaluation'] || 0,
+      helper: 'Awaiting evaluator decision'
+    },
+    {
+      label: 'Pending Assignment',
+      value: statusCounts['pending_assignment'] || 0,
+      helper: 'Needs evaluator assignment'
+    },
+    {
+      label: 'Average Score',
+      value: averageScore !== null ? `${averageScore}/100` : '—',
+      helper:
+        averageScore !== null
+          ? `Based on ${completedPapers.length} evaluation${completedPapers.length === 1 ? '' : 's'}`
+          : 'No evaluations yet'
+    }
+  ]
+
+  const statusFilters = [
+    { value: 'all', label: 'All Papers', count: myPapers.length },
+    { value: 'under_evaluation', label: 'Under Evaluation', count: statusCounts['under_evaluation'] || 0 },
+    { value: 'pending_assignment', label: 'Pending Assignment', count: statusCounts['pending_assignment'] || 0 },
+    { value: 'completed', label: 'Completed', count: statusCounts['completed'] || 0 },
+    { value: 'published', label: 'Published', count: statusCounts['published'] || 0 },
+    { value: 'rejected', label: 'Rejected', count: statusCounts['rejected'] || 0 }
+  ]
+
+  const filteredPapers = activeFilter === 'all'
+    ? myPapers
+    : myPapers.filter(paper => paper.status === activeFilter)
+
+  const hasFilteredResults = filteredPapers.length > 0
 
   return (
     <div id="dashboard">
@@ -120,11 +206,11 @@ export default function MyPapers() {
       <main className="dashboard-main">
         <div className="dashboard-content my-papers-content">
           <header className="page-header">
-            <div>
+            <div className="page-header-text">
               <h1>My Submitted Papers</h1>
               <p>View and track the status of your submitted research papers.</p>
             </div>
-            <Link to="/upload-paper" className="btn btn-primary btn-sm">
+            <Link to="/upload-paper" className="btn btn-primary btn-compact">
               + Submit New Paper
             </Link>
           </header>
@@ -140,92 +226,153 @@ export default function MyPapers() {
                 </Link>
               </div>
             ) : (
-              <div className="papers-list">
-                {myPapers.map(paper => {
-                  const statusInfo = getStatusBadge(paper.status)
-                  return (
-                    <div key={paper.id} className="my-paper-card">
-                      <div className="paper-card-header">
-                        <div className="paper-header-left">
-                          <h3>{paper.title}</h3>
-                          <div className="paper-meta-info">
-                            <span className="paper-id">Paper #{paper.id}</span>
-                            <span className="paper-date">Submitted: {paper.submittedDate}</span>
-                          </div>
-                        </div>
-                        <span className={`status-badge ${statusInfo.class}`}>
-                          {statusInfo.text}
-                        </span>
-                      </div>
-
-                      <div className="paper-card-body">
-                        <div className="paper-info-grid">
-                          <div className="info-item">
-                            <span className="info-label">Author:</span>
-                            <span className="info-value">{paper.author}</span>
-                          </div>
-                          <div className="info-item">
-                            <span className="info-label">Department:</span>
-                            <span className="info-value">{paper.department}</span>
-                          </div>
-                          <div className="info-item">
-                            <span className="info-label">College:</span>
-                            <span className="info-value">{paper.college}</span>
-                          </div>
-                        </div>
-
-                        <div className="paper-keywords-section">
-                          <span className="info-label">Keywords:</span>
-                          <div className="keywords-list">
-                            {paper.keywords.map((keyword, index) => (
-                              <span key={index} className="keyword-tag">{keyword}</span>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="paper-abstract">
-                          <span className="info-label">Abstract:</span>
-                          <p>{paper.abstract}</p>
-                        </div>
-
-                        {paper.status === 'completed' && (
-                          <div className="evaluation-results">
-                            <h4>Evaluation Results</h4>
-                            <div className="evaluation-score">
-                              <span className="score-label">Score:</span>
-                              <span className="score-value">{paper.evaluationScore}/100</span>
-                            </div>
-                            {paper.evaluatorFeedback && (
-                              <div className="evaluator-feedback">
-                                <span className="feedback-label">Evaluator Feedback:</span>
-                                <p>{paper.evaluatorFeedback}</p>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="paper-card-actions">
-                        <button className="btn-icon" title="View Details">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                          </svg>
-                          View
-                        </button>
-                        <button className="btn-icon" title="Download PDF">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                          </svg>
-                          Download
-                        </button>
-                      </div>
+              <>
+                <div className="my-papers-overview">
+                  {overviewCards.map(card => (
+                    <div key={card.label} className="overview-card">
+                      <p className="overview-label">{card.label}</p>
+                      <h3 className="overview-value">{card.value}</h3>
+                      <span className="overview-helper">{card.helper}</span>
                     </div>
-                  )
-                })}
-              </div>
+                  ))}
+                </div>
+
+                <div className="status-filter-bar">
+                  {statusFilters.map(filter => (
+                    <button
+                      key={filter.value}
+                      type="button"
+                      className={`filter-pill ${activeFilter === filter.value ? 'active' : ''}`}
+                      onClick={() => setActiveFilter(filter.value)}
+                    >
+                      <span>{filter.label}</span>
+                      <strong>{filter.count}</strong>
+                    </button>
+                  ))}
+                </div>
+
+                {!hasFilteredResults ? (
+                  <div className="no-papers filtered-state">
+                    <h3>No papers in this view</h3>
+                    <p>Try selecting a different status to see additional submissions.</p>
+                  </div>
+                ) : (
+                  <div className="papers-list">
+                    {filteredPapers.map(paper => {
+                      const statusInfo = getStatusBadge(paper.status)
+                      return (
+                        <div
+                          key={paper.id}
+                          className={`my-paper-card ${expandedPapers[paper.id] ? 'expanded' : ''}`}
+                        >
+                          <div className="paper-card-header" onClick={() => toggleExpandPaper(paper.id)}>
+                            <div className="paper-header-left">
+                              <h3>{paper.title}</h3>
+                              <div className="paper-header-meta">
+                                <span>#{paper.id.toString().padStart(3, '0')}</span>
+                                <span>Submitted {formatDate(paper.submittedDate)}</span>
+                              </div>
+                            </div>
+                            <div className="header-right">
+                              <button
+                                className="btn-view-paper"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  alert('Opening paper PDF...')
+                                }}
+                                title="View Paper"
+                              >
+                                View
+                              </button>
+                              <span className={`status-badge ${statusInfo.class}`}>
+                                {statusInfo.text}
+                              </span>
+                              <span className="expand-icon">
+                                {expandedPapers[paper.id] ? '▼' : '▶'}
+                              </span>
+                            </div>
+                          </div>
+
+                          {expandedPapers[paper.id] && (
+                            <div className="paper-card-body-expanded">
+                              <div className="paper-meta-info-expanded">
+                                <div className="meta-block">
+                                  <span className="meta-label">Paper ID</span>
+                                  <span className="meta-value">#{paper.id.toString().padStart(3, '0')}</span>
+                                </div>
+                                <div className="meta-block">
+                                  <span className="meta-label">Submitted</span>
+                                  <span className="meta-value">{formatDate(paper.submittedDate)}</span>
+                                </div>
+                                <div className="meta-block">
+                                  <span className="meta-label">Current Status</span>
+                                  <span className="meta-value status-text">{statusInfo.text}</span>
+                                </div>
+                              </div>
+
+                              <div className="paper-info-grid">
+                                <div className="info-item">
+                                  <span className="info-label">Author</span>
+                                  <span className="info-value">{paper.author}</span>
+                                </div>
+                                <div className="info-item">
+                                  <span className="info-label">Department</span>
+                                  <span className="info-value">{paper.department}</span>
+                                </div>
+                                <div className="info-item">
+                                  <span className="info-label">College</span>
+                                  <span className="info-value">{paper.college}</span>
+                                </div>
+                              </div>
+
+                              <div className="paper-keywords-section">
+                                <span className="info-label">Keywords</span>
+                                <div className="keywords-list">
+                                  {paper.keywords.map((keyword, index) => (
+                                    <span key={index} className="keyword-tag">{keyword}</span>
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div className="paper-abstract">
+                                <span className="info-label">Abstract</span>
+                                <p>{paper.abstract}</p>
+                              </div>
+
+                              {paper.status === 'completed' && (
+                                <div className="evaluation-results">
+                                  <h4>Evaluation Results</h4>
+                                  <div className="evaluation-score">
+                                    <span className="score-label">Score</span>
+                                    <span className="score-value">{paper.evaluationScore}/100</span>
+                                  </div>
+                                  {paper.evaluatorFeedback && (
+                                    <div className="evaluator-feedback">
+                                      <span className="feedback-label">Evaluator Feedback</span>
+                                      <p>{paper.evaluatorFeedback}</p>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              <div className="paper-card-actions">
+                                <button className="btn-icon" title="Download PDF">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                  </svg>
+                                  Download
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </>
             )}
           </section>
         </div>
