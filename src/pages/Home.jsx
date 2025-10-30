@@ -94,11 +94,90 @@ export default function Home() {
       default:
         return (
           <div className="instruction-content">
-            <h1>Welcome to the National Conference Portal</h1>
-            <p>Your comprehensive gateway to academic excellence, resources, and campus life. Join our community of learners and innovators.</p>
+            <h1>SARA 2025 National Conference</h1>
+            <p className="hero-subtitle">Advancing Research and Academic Excellence</p>
+            
+            {/* About Section */}
+            <section className="home-section">
+              <h2>About the Conference</h2>
+              <p>
+                SARA 2025 brings together leading researchers, academicians, and industry professionals 
+                to share groundbreaking research and innovative ideas. This conference serves as a platform 
+                for intellectual exchange and collaboration across various disciplines of engineering, 
+                technology, and applied sciences.
+              </p>
+            </section>
+
+            {/* Important Dates */}
+            <section className="home-section">
+              <h2>Important Dates</h2>
+              <table className="info-table">
+                <tbody>
+                  <tr>
+                    <td><strong>Registration Opens</strong></td>
+                    <td>January 1, 2026</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Paper Submission Deadline</strong></td>
+                    <td>December 1, 2025</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Acceptance Notification</strong></td>
+                    <td>January 15, 2026</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Camera-Ready Submission</strong></td>
+                    <td>February 1, 2026</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Conference Dates</strong></td>
+                    <td>March 15-17, 2026</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            {/* Conference Tracks */}
+            <section className="home-section">
+              <h2>Conference Tracks</h2>
+              <ul className="tracks-list">
+                <li><strong>Computer Science & Artificial Intelligence:</strong> Machine Learning, Deep Learning, Computer Vision, Natural Language Processing</li>
+                <li><strong>Electronics & Communication Engineering:</strong> IoT, Wireless Networks, Signal Processing, VLSI Design</li>
+                <li><strong>Mechanical Engineering:</strong> Robotics, Manufacturing, Thermal Engineering, Design Engineering</li>
+                <li><strong>Civil Engineering:</strong> Structural Engineering, Smart Cities, Sustainable Construction</li>
+                <li><strong>Electrical Engineering:</strong> Power Systems, Renewable Energy, Control Systems</li>
+              </ul>
+            </section>
+
+            {/* Venue */}
+            <section className="home-section">
+              <h2>Venue</h2>
+              <p>
+                <strong>Saranathan College of Engineering</strong><br/>
+                Trichy - 620012, Tamil Nadu, India
+              </p>
+              <p>
+                The conference will be held at our state-of-the-art campus facilities, 
+                providing an ideal environment for academic discourse and professional networking.
+              </p>
+            </section>
+
+            {/* Registration Info */}
+            <section className="home-section">
+              <h2>Registration</h2>
+              <p>
+                Registration categories include Students, Faculty, Research Scholars, and Industry Professionals. 
+                Early bird discounts are available. Group registrations from the same institution receive special rates.
+              </p>
+              <p>
+                <strong>Note:</strong> At least one author of each accepted paper must register for the conference.
+              </p>
+            </section>
+
+            {/* Call to Action */}
             <div className="buttons">
-              <Link to="/login" className="btn">Sign In</Link>
-              <Link to="/register" className="btn btn-secondary">Signup</Link>
+              <Link to="/login" className="btn btn-primary">Sign In</Link>
+              <Link to="/register" className="btn btn-secondary">Sign Up</Link>
             </div>
           </div>
         )
@@ -153,6 +232,13 @@ export default function Home() {
           </div>
         </div>
       </nav>
+      
+      {/* Marquee Announcement */}
+      <div className="announcement-marquee">
+        <marquee behavior="scroll" direction="left" scrollamount="8">
+          🎉 The Registration for Conference will start from January 1 🎉
+        </marquee>
+      </div>
       
       <div id="index-page">
         <main id="content-section">
