@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import '../index.css'
+
 
 export default function MyPapers() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -104,41 +106,10 @@ export default function MyPapers() {
       : latest
   }, null)
 
-  const overviewCards = [
-    {
-      label: 'Total Submitted',
-      value: myPapers.length,
-      helper: latestSubmissionDate
-        ? `Last submitted on ${formatDate(latestSubmissionDate)}`
-        : 'No submissions yet'
-    },
-    {
-      label: 'Under Evaluation',
-      value: statusCounts['under_evaluation'] || 0,
-      helper: 'Awaiting evaluator decision'
-    },
-    {
-      label: 'Pending Assignment',
-      value: statusCounts['pending_assignment'] || 0,
-      helper: 'Needs evaluator assignment'
-    },
-    {
-      label: 'Average Score',
-      value: averageScore !== null ? `${averageScore}/100` : '—',
-      helper:
-        averageScore !== null
-          ? `Based on ${completedPapers.length} evaluation${completedPapers.length === 1 ? '' : 's'}`
-          : 'No evaluations yet'
-    }
-  ]
-
   const statusFilters = [
     { value: 'all', label: 'All Papers', count: myPapers.length },
-    { value: 'under_evaluation', label: 'Under Evaluation', count: statusCounts['under_evaluation'] || 0 },
     { value: 'pending_assignment', label: 'Pending Assignment', count: statusCounts['pending_assignment'] || 0 },
     { value: 'completed', label: 'Completed', count: statusCounts['completed'] || 0 },
-    { value: 'published', label: 'Published', count: statusCounts['published'] || 0 },
-    { value: 'rejected', label: 'Rejected', count: statusCounts['rejected'] || 0 }
   ]
 
   const filteredPapers = activeFilter === 'all'
@@ -203,11 +174,16 @@ export default function MyPapers() {
       {isMenuOpen && <div className="sidebar-overlay" onClick={toggleMenu}></div>}
 
       {/* Main Content */}
-      <main className="dashboard-main">
         <div className="dashboard-content my-papers-content">
           <header className="page-header">
             <div className="page-header-text">
-              <h1>My Submitted Papers</h1>
+              <h2 style={{
+                color: "#5a67d8",
+                fontSize: "1.5rem",
+                fontWeight: 700,
+                margin: "0 0 0.5rem 0",
+                fontFamily: "'Inter', sans-serif"}}>
+                My Submitted Papers</h2>
               <p>View and track the status of your submitted research papers.</p>
             </div>
             <Link to="/upload-paper" className="btn btn-primary btn-compact">
@@ -227,15 +203,6 @@ export default function MyPapers() {
               </div>
             ) : (
               <>
-                <div className="my-papers-overview">
-                  {overviewCards.map(card => (
-                    <div key={card.label} className="overview-card">
-                      <p className="overview-label">{card.label}</p>
-                      <h3 className="overview-value">{card.value}</h3>
-                      <span className="overview-helper">{card.helper}</span>
-                    </div>
-                  ))}
-                </div>
 
                 <div className="status-filter-bar">
                   {statusFilters.map(filter => (
@@ -376,7 +343,6 @@ export default function MyPapers() {
             )}
           </section>
         </div>
-      </main>
     </div>
   )
 }
