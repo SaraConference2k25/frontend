@@ -246,20 +246,17 @@ export default function MyPapers() {
 
       {/* Main Content */}
         <div className="dashboard-content my-papers-content">
-          <header className="page-header">
+          <header className="page-header-compact">
             <div className="page-header-text">
-              <h1 style={{
-                color: "#5a67d8",
-                fontSize: "2.0rem",
-                fontWeight: 900,
-                textAlign: "center",
-                margin: "0 0 2rem 0",
-                fontFamily: "'Inter', sans-serif"}}>
-                My Submitted Papers</h1>
-              <p>View and track the status of your submitted research papers.</p>
+              <h1 className="page-title-professional">My Submitted Papers</h1>
+              <p className="page-subtitle-compact">View and track the status of your submitted research papers</p>
             </div>
-            <Link to="/upload-paper" className="btn btn-primary">
-              + Submit New Paper
+            <Link to="/upload-paper" className="btn-submit-compact">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Submit New Paper
             </Link>
           </header>
 
@@ -335,8 +332,8 @@ export default function MyPapers() {
                               <span className={`status-badge ${statusInfo.class}`}>
                                 {statusInfo.text}
                               </span>
-                              <span className="expand-icon">
-                                {expandedPapers[paper.id] ? '▼' : '▶'}
+                              <span className={`expand-icon ${expandedPapers[paper.id] ? 'expanded' : ''}`}>
+                                ▶
                               </span>
                             </div>
                           </div>
@@ -354,7 +351,7 @@ export default function MyPapers() {
                                 </div>
                                 <div className="meta-block">
                                   <span className="meta-label">Current Status</span>
-                                  <span className="meta-value status-text">{statusInfo.text}</span>
+                                  <span className="meta-value">{statusInfo.text}</span>
                                 </div>
                                 <div className="meta-block">
                                   <span className="meta-label">Phone Number</span>
@@ -404,7 +401,11 @@ export default function MyPapers() {
                               )}
 
                               <div className="paper-card-actions">
-                                <button className="btn-icon" title="Download PDF">
+                                <button 
+                                  className="btn-icon" 
+                                  title="Download PDF"
+                                  onClick={() => handleDownload(paper.id, paper.paperFileName, paper)}
+                                >
                                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                     <polyline points="7 10 12 15 17 10"></polyline>
