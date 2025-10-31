@@ -167,23 +167,23 @@ export default function Home() {
                 <tbody>
                   <tr>
                     <td><strong>Registration Opens</strong></td>
-                    <td>January 1, 2026</td>
+                    <td>January 20, 2026</td>
                   </tr>
                   <tr>
                     <td><strong>Paper Submission Deadline</strong></td>
-                    <td>December 1, 2025</td>
+                    <td>February 20, 2025</td>
                   </tr>
                   <tr>
                     <td><strong>Acceptance Notification</strong></td>
-                    <td>January 15, 2026</td>
+                    <td>March 1, 2026</td>
                   </tr>
                   <tr>
                     <td><strong>Camera-Ready Submission</strong></td>
-                    <td>February 1, 2026</td>
+                    <td>March 30, 2026</td>
                   </tr>
                   <tr>
                     <td><strong>Conference Dates</strong></td>
-                    <td>March 15-17, 2026</td>
+                    <td>April 3 & 4, 2026</td>
                   </tr>
                 </tbody>
               </table>
@@ -193,11 +193,8 @@ export default function Home() {
             <section className="home-section">
               <h2>Conference Tracks</h2>
               <ul className="tracks-list">
-                <li><strong>Computer Science & Artificial Intelligence:</strong> Machine Learning, Deep Learning, Computer Vision, Natural Language Processing</li>
-                <li><strong>Electronics & Communication Engineering:</strong> IoT, Wireless Networks, Signal Processing, VLSI Design</li>
-                <li><strong>Mechanical Engineering:</strong> Robotics, Manufacturing, Thermal Engineering, Design Engineering</li>
-                <li><strong>Civil Engineering:</strong> Structural Engineering, Smart Cities, Sustainable Construction</li>
-                <li><strong>Electrical Engineering:</strong> Power Systems, Renewable Energy, Control Systems</li>
+                <li><strong>Computing:</strong> Machine Learning, Deep Learning, Computer Vision, Natural Language Processing</li>
+                <li><strong>Electronics & Communications:</strong> IoT, Wireless Networks, Signal Processing, VLSI Design</li>
               </ul>
             </section>
 
