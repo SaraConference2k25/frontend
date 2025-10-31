@@ -91,6 +91,58 @@ export default function Home() {
             </div>
           </div>
         )
+      case 'contacts':
+        return (
+          <div className="instruction-content">
+            <h1>Contact Information</h1>
+            <p className="hero-subtitle">Get in Touch with Us</p>
+            
+            {/* Contact Details */}
+            <section className="home-section">
+              <h2>Conference Secretariat</h2>
+              <p>
+                <strong>Saranathan College of Engineering</strong><br/>
+                Panjappur, Trichy - 620012<br/>
+                Tamil Nadu, India
+              </p>
+              <p>
+                <strong>Email:</strong> conference@saranathan.ac.in<br/>
+                <strong>Phone:</strong> +91-431-2760801, 2760802<br/>
+                <strong>Website:</strong> www.saranathan.ac.in
+              </p>
+            </section>
+
+            {/* Contact Person */}
+            <section className="home-section">
+              <h2>For General Inquiries</h2>
+              <p>
+                <strong>Dr. Conference Chair</strong><br/>
+                Email: chair@saraconference.ac.in<br/>
+                Phone: +91-XXXXX-XXXXX
+              </p>
+            </section>
+
+            {/* Paper Submission Queries */}
+            <section className="home-section">
+              <h2>For Paper Submission Queries</h2>
+              <p>
+                <strong>Technical Program Committee</strong><br/>
+                Email: papers@saraconference.ac.in<br/>
+                Phone: +91-XXXXX-XXXXX
+              </p>
+            </section>
+
+            {/* Registration Queries */}
+            <section className="home-section">
+              <h2>For Registration Queries</h2>
+              <p>
+                <strong>Registration Desk</strong><br/>
+                Email: registration@saraconference.ac.in<br/>
+                Phone: +91-XXXXX-XXXXX
+              </p>
+            </section>
+          </div>
+        )
       default:
         return (
           <div className="instruction-content">
@@ -224,6 +276,14 @@ export default function Home() {
                 className={`nav-link ${activeSection === 'publication' ? 'active' : ''}`}
               >
                 Publication
+              </button>
+            </li>
+            <li className="nav-item">
+              <button 
+                onClick={() => handleNavClick('contacts')} 
+                className={`nav-link ${activeSection === 'contacts' ? 'active' : ''}`}
+              >
+                Contacts
               </button>
             </li>
           </ul>

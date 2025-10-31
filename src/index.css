@@ -367,9 +367,12 @@ html {
     align-items: center; 
     min-height: 100vh; 
     text-align: center;
-    padding: 2rem;
+    padding: 2rem 4rem;
     position: relative;
     overflow: hidden;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 #index-page::before {
@@ -718,7 +721,7 @@ html {
 /* Main Navigation Bar */
 .main-navbar {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -807,8 +810,8 @@ html {
 
 /* Announcement Marquee */
 .announcement-marquee {
-    background: transparent;
-    padding: 18px 0;
+    background: #DFE5EF;
+    padding: 12px 0;
     color: #2c3e50;
     font-weight: 600;
     font-size: 20px;
@@ -871,14 +874,15 @@ html {
 
 /* Instruction Content Styles */
 .instruction-content {
-    max-width: 900px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 3rem;
     background: var(--panel-background-color);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     margin-top: 2rem;
     margin-bottom: 2rem;
+    width: 95%;
 }
 
 .instruction-content h1 {
