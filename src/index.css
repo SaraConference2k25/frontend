@@ -248,6 +248,18 @@ html {
     position: relative;
 }
 
+.form-control select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    padding-right: 3rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 20px;
+    cursor: pointer;
+}
+
 .form-control input:focus, .form-control select:focus { 
     outline: none; 
     border-color: var(--primary-color); 
@@ -367,9 +379,12 @@ html {
     align-items: center; 
     min-height: 100vh; 
     text-align: center;
-    padding: 2rem;
+    padding: 2rem 4rem;
     position: relative;
     overflow: hidden;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
 }
 
 #index-page::before {
@@ -718,7 +733,7 @@ html {
 /* Main Navigation Bar */
 .main-navbar {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
     position: sticky;
     top: 0;
     z-index: 100;
@@ -807,8 +822,8 @@ html {
 
 /* Announcement Marquee */
 .announcement-marquee {
-    background: transparent;
-    padding: 18px 0;
+    background: #DFE5EF;
+    padding: 12px 0;
     color: #2c3e50;
     font-weight: 600;
     font-size: 20px;
@@ -871,14 +886,15 @@ html {
 
 /* Instruction Content Styles */
 .instruction-content {
-    max-width: 900px;
+    max-width: 1300px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 3rem;
     background: var(--panel-background-color);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     margin-top: 2rem;
     margin-bottom: 2rem;
+    width: 95%;
 }
 
 .instruction-content h1 {
@@ -2708,18 +2724,77 @@ html {
     border-bottom: 1px solid var(--border-color);
 }
 
-.page-header-text h1 {
-    color: var(--text-color);
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0 0 0.5rem 0;
-    font-family: 'Inter', sans-serif;
+.page-header-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+    gap: 1.5rem;
+}
+
+.page-header-text {
+  color: var(--text-color);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 1rem 0.5rem 0;
+  font-family: 'Inter', sans-serif;
 }
 
 .page-header-text p {
     color: var(--text-light);
     font-size: 0.9rem;
     margin: 0;
+}
+
+.page-title-professional {
+    color: var(--primary-color);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.025em;
+}
+
+.page-subtitle-compact {
+    color: var(--text-light);
+    font-size: 0.875rem;
+    margin: 0;
+    font-weight: 400;
+}
+
+.btn-submit-compact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.btn-submit-compact:hover {
+    background: var(--primary-color-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-submit-compact:active {
+    transform: translateY(0);
+}
+
+.btn-submit-compact svg {
+    width: 16px;
+    height: 16px;
 }
 
 .btn-compact {
@@ -3007,21 +3082,6 @@ html {
 
 /* ==================== MY PAPERS PAGE ==================== */
 
-.my-papers-content {
-    padding: 2.5rem 2.75rem;
-    max-width: 1100px;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.78);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.45);
-    box-shadow: 0 20px 45px rgba(79, 114, 205, 0.12);
-    backdrop-filter: blur(10px);
-}
-
-.my-papers-section {
-    margin-top: 2rem;
-}
-
 .my-papers-overview {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -3195,6 +3255,7 @@ html {
     cursor: pointer;
 }
 
+.expand-icon.expanded,
 .my-paper-card.expanded .expand-icon {
     transform: rotate(90deg);
 }
@@ -3284,24 +3345,6 @@ html {
     font-weight: 500;
 }
 
-.paper-keywords-section {
-    margin-bottom: 1.25rem;
-    padding: 1rem;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(229, 231, 235, 0.9);
-    box-shadow: 0 6px 18px rgba(79, 114, 205, 0.08);
-}
-
-.paper-keywords-section .info-label {
-    display: block;
-    margin-bottom: 0.4rem;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--text-light);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
 
 .paper-abstract {
     margin-bottom: 1.25rem;
@@ -4474,6 +4517,28 @@ html {
     .my-papers-content {
         padding: 1rem;
     }
+
+    .page-header-compact {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .page-title-professional {
+        font-size: 1.5rem;
+    }
+
+    .page-subtitle-compact {
+        font-size: 0.8125rem;
+    }
+
+    .btn-submit-compact {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.875rem;
+    }
     
     .upload-paper-content {
         padding: 1rem;
@@ -4528,4 +4593,53 @@ html {
 
 .back-btn:hover::after {
   opacity: 1;
+}
+
+.dashboard-info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.dashboard-info-card {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.info-title {
+  color: #4c51bf;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.scroll-box {
+  height: 120px;
+  overflow: hidden;
+  position: relative;
+}
+
+.scroll-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  animation: scroll-up 10s linear infinite;
+}
+
+@keyframes scroll-up {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.scroll-box p {
+  margin: 0;
+  font-size: 1rem;
+  color: #2d3748;
 }

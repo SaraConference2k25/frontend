@@ -7,7 +7,7 @@ import baImage from '../assets/ba.jpg'
 export default function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState('')
+  const [role, setRole] = useState('participant')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -124,10 +124,9 @@ export default function Login() {
             <div className="form-control">
               <label>Role</label>
               <select value={role} onChange={(e) => setRole(e.target.value)} required>
-                <option value="" disabled>Select your role</option>
-                <option value="admin">Administrator</option>
-                <option value="evaluator">Evaluator</option>
                 <option value="participant">Participant</option>
+                <option value="evaluator">Evaluator</option>
+                <option value="admin">Administrator</option>
               </select>
             </div>
             <button className="btn" type="submit" disabled={isLoading}>

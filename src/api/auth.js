@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_BASE || ''
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://98.70.26.80:8069'
+
+console.log('🔐 Auth API Base URL:', API_BASE)
 
 async function postJson(path, body) {
   const res = await fetch(`${API_BASE}${path}`, {
