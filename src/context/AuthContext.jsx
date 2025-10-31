@@ -127,11 +127,11 @@ export const AuthProvider = ({ children }) => {
     const { username, password, role } = credentials
     
     try {
-      // Always send PARTICIPANT as the role for now
+      // Send the selected role to backend (uppercase to match backend expectation)
       const requestData = {
         email: username.trim().toLowerCase(), // Backend uses email field, trim and lowercase
         password,
-        role: 'PARTICIPANT' // Always PARTICIPANT
+        role: role.toUpperCase() // Convert to uppercase (PARTICIPANT, ADMIN, EVALUATOR)
       }
       
       console.log('📤 Sending login request:', { 

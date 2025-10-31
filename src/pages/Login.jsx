@@ -26,7 +26,7 @@ export default function Login() {
       case 'evaluator':
         return '/evaluator-dashboard'
       case 'admin':
-        return '/admin-dashboard'
+        return '/admin-evaluators'  // Navigate to AdminEvaluators for admin
       default:
         return '/'
     }
