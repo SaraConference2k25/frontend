@@ -7,11 +7,26 @@ export default function Home() {
 
   const handleNavClick = (section) => {
     setActiveSection(section)
-    // Only scroll if not already at the top or if content is not visible
-    const navbar = document.querySelector('.main-navbar')
-    if (navbar && window.scrollY > navbar.offsetTop) {
-      // Scroll to show navbar but keep logo visible
-      navbar.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    
+    // If "dates" is clicked, scroll to important dates section
+    if (section === 'dates') {
+      // First set to home to show the content
+      setActiveSection('home')
+      // Wait for content to render, then scroll to dates
+      setTimeout(() => {
+        const datesSection = document.getElementById('important-dates-section')
+        if (datesSection) {
+          const yOffset = -100; // Offset to show title properly
+          const y = datesSection.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 100)
+    } else {
+      // For other sections, scroll to navbar
+      const navbar = document.querySelector('.main-navbar')
+      if (navbar && window.scrollY > navbar.offsetTop) {
+        navbar.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
     }
   }
 
@@ -161,7 +176,7 @@ export default function Home() {
             </section>
 
             {/* Important Dates */}
-            <section className="home-section">
+            <section className="home-section" id="important-dates-section">
               <h2>Important Dates</h2>
               <table className="info-table">
                 <tbody>
@@ -249,6 +264,14 @@ export default function Home() {
                 className={`nav-link ${activeSection === 'home' ? 'active' : ''}`}
               >
                 Home
+              </button>
+            </li>
+            <li className="nav-item">
+              <button 
+                onClick={() => handleNavClick('dates')} 
+                className={`nav-link ${activeSection === 'dates' ? 'active' : ''}`}
+              >
+                Dates
               </button>
             </li>
             <li className="nav-item">
