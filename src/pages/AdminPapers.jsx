@@ -1,19 +1,91 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { sampleEvaluators, samplePapers } from '../data/sampleData'
+import * as papersApi from '../api/papers'
+import * as evaluatorApi from '../api/evaluators'
 
 export default function AdminPapers() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [selectedPaper, setSelectedPaper] = useState(null)
   const [showAssignModal, setShowAssignModal] = useState(false)
   const [filterStatus, setFilterStatus] = useState('all')
+  const [papers, setPapers] = useState([])
+  const [evaluators, setEvaluators] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
-  // Use shared sample data
-  const evaluators = sampleEvaluators
-  const [papers, setPapers] = useState(samplePapers)
+  // Fetch papers and evaluators on component mount
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true)
+      setError('')
+      console.log('📥 Fetching papers and evaluators...')
+      
+      // Fetch papers
+      const papersData = await papersApi.getAllPapers()
+      console.log('📊 Raw papers data:', papersData)
+      
+      // Normalize papers
+      const normalizedPapers = Array.isArray(papersData) ? papersData.map((p, index) => ({
+        id: p.id || index + 1,
+        title: p.paperTitle || 'Untitled',
+        author: p.name || 'Unknown Author',
+        department: p.department || 'Not Specified',
+        submittedDate: p.submittedAt?.split('T')[0] || new Date().toISOString().split('T')[0],
+        keywords: p.keywords || [],
+        status: 'pending_assignment',
+        evaluatorName: null,
+        evaluatorId: null,
+        assignedDate: null,
+        email: p.email,
+        collegeName: p.collegeName,
+        contactNo: p.contactNo,
+        paperAbstract: p.paperAbstract,
+        paperFileName: p.paperFileName,
+        paperFileUrl: p.paperFileUrl,
+        ...p
+      })) : []
+      
+      console.log('✅ Normalized papers:', normalizedPapers)
+      setPapers(normalizedPapers)
+      
+      // Fetch evaluators
+      console.log('👥 Fetching evaluators from backend...')
+      const evaluatorsData = await evaluatorApi.getAllEvaluators()
+      console.log('📊 Raw evaluators data:', evaluatorsData)
+      
+      // Normalize evaluators
+      const normalizedEvaluators = Array.isArray(evaluatorsData) ? evaluatorsData.map(e => ({
+        id: e.id || e.evaluatorId || Math.random(),
+        name: e.name || e.username || 'Unknown',
+        email: e.email,
+        username: e.username,
+        department: e.department || 'Not Assigned',
+        workload: e.workload || e.papersAssigned || 0,
+        expertise: e.expertise || e.specialization || [],
+        status: e.status || 'active',
+        ...e
+      })) : []
+      
+      console.log('✅ Normalized evaluators:', normalizedEvaluators)
+      setEvaluators(normalizedEvaluators)
+    } catch (err) {
+      console.error('❌ Error loading data:', err)
+      setError(`Failed to load data: ${err.message}`)
+      // Fallback to sample data
+      setPapers(samplePapers)
+      setEvaluators(sampleEvaluators)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -34,25 +106,42 @@ export default function AdminPapers() {
     setSelectedPaper(null)
   }
 
-  const assignEvaluator = (evaluatorId) => {
+  const assignEvaluator = async (evaluatorId) => {
     const evaluator = evaluators.find(e => e.id === evaluatorId)
     
-    setPapers(prev => 
-      prev.map(paper => 
-        paper.id === selectedPaper.id 
-          ? { 
-              ...paper, 
-              status: 'under_evaluation',
-              evaluatorId: evaluatorId,
-              evaluatorName: evaluator.name,
-              assignedDate: new Date().toISOString().split('T')[0]
-            }
-          : paper
+    if (!evaluator) {
+      alert('Evaluator not found!')
+      return
+    }
+    
+    try {
+      console.log(`📤 Assigning paper ${selectedPaper.id} to evaluator ${evaluatorId}...`)
+      
+      // Call backend API to persist the assignment
+      await papersApi.assignEvaluatorToPaper(selectedPaper.id, evaluatorId)
+      
+      // Update local state
+      setPapers(prev => 
+        prev.map(paper => 
+          paper.id === selectedPaper.id 
+            ? { 
+                ...paper, 
+                status: 'under_evaluation',
+                evaluatorId: evaluatorId,
+                evaluatorName: evaluator.name || evaluator.username,
+                assignedDate: new Date().toISOString().split('T')[0]
+              }
+            : paper
+        )
       )
-    )
 
-    alert(`Paper assigned to ${evaluator.name} successfully!`)
-    closeAssignModal()
+      console.log(`✅ Paper "${selectedPaper.title}" assigned to ${evaluator.name || evaluator.username}`)
+      alert(`Paper assigned to ${evaluator.name || evaluator.username} successfully!`)
+      closeAssignModal()
+    } catch (err) {
+      console.error('❌ Error assigning evaluator:', err)
+      alert(`Failed to assign evaluator: ${err.message}`)
+    }
   }
 
   const getStatusBadge = (status) => {
@@ -236,7 +325,34 @@ export default function AdminPapers() {
 
           {/* Papers Table */}
           <section className="table-section-professional">
-            {filteredPapers.length > 0 ? (
+            {isLoading && (
+              <div className="loading-state">
+                <div className="spinner"></div>
+                <p>Loading papers...</p>
+              </div>
+            )}
+            
+            {error && (
+              <div className="error-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>{error}</p>
+                <button onClick={fetchPapers} className="btn btn-secondary btn-small">
+                  Retry
+                </button>
+              </div>
+            )}
+            
+            {!isLoading && !error && filteredPapers.length === 0 && (
+              <div className="empty-state">
+                <p>No papers found matching the selected status.</p>
+              </div>
+            )}
+            
+            {!isLoading && !error && filteredPapers.length > 0 && (
               <div className="table-wrapper-professional" style={{ overflowX: 'auto' }}>
                 <table className="evaluator-table-professional papers-table-professional" style={{ minWidth: '1200px' }}>
                   <thead>
@@ -322,10 +438,6 @@ export default function AdminPapers() {
                     })}
                   </tbody>
                 </table>
-              </div>
-            ) : (
-              <div className="empty-state">
-                <p>No papers found matching the selected status.</p>
               </div>
             )}
           </section>

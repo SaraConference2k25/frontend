@@ -139,6 +139,27 @@ export async function deletePaper(id) {
   return await handleResponse(res)
 }
 
+/**
+ * Assign evaluator to a paper
+ * This persists the assignment in the backend database
+ */
+export async function assignEvaluatorToPaper(paperId, evaluatorId) {
+  try {
+    console.log(`📤 Assigning paper ${paperId} to evaluator ${evaluatorId}...`)
+    const res = await fetch(`${API_BASE}/api/papers/${paperId}/assign-evaluator/${evaluatorId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    
+    const data = await handleResponse(res)
+    console.log('✅ Assignment successful:', data)
+    return data
+  } catch (err) {
+    console.error('❌ Error assigning evaluator:', err)
+    throw err
+  }
+}
+
 export default {
   submitPaper,
   getAllPapers,
@@ -147,5 +168,6 @@ export default {
   searchPapers,
   getPapersByDepartment,
   getPapersByEmail,
-  deletePaper
+  deletePaper,
+  assignEvaluatorToPaper
 }

@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { sampleEvaluators } from '../data/sampleData'
+import * as evaluatorApi from '../api/evaluators'
 
 const createEmptyEvaluatorForm = () => ({
   email: '',
@@ -16,14 +17,53 @@ export default function AdminEvaluators() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [showCredentialsModal, setShowCredentialsModal] = useState(false)
   const [selectedEvaluator, setSelectedEvaluator] = useState(null)
-  const [evaluators, setEvaluators] = useState(sampleEvaluators)
+  const [evaluators, setEvaluators] = useState([])
   const [newEvaluator, setNewEvaluator] = useState(createEmptyEvaluatorForm())
   const [passwordVisibility, setPasswordVisibility] = useState({
     password: false,
     confirmPassword: false
   })
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+
+  // Fetch evaluators on component mount
+  useEffect(() => {
+    fetchEvaluators()
+  }, [])
+
+  const fetchEvaluators = async () => {
+    try {
+      setIsLoading(true)
+      setError('')
+      console.log('📥 Fetching evaluators from backend...')
+      const data = await evaluatorApi.getAllEvaluators()
+      console.log('📊 Raw evaluator data:', data)
+      
+      // Normalize the data - add default values for missing fields
+      const normalizedEvaluators = Array.isArray(data) ? data.map(e => ({
+        id: e.id || e.evaluatorId || Math.random(),
+        name: e.name || e.username || 'Unknown',
+        email: e.email,
+        username: e.username,
+        department: e.department || 'Not Assigned',
+        workload: e.workload || e.papersAssigned || 0,
+        status: e.status || 'active',
+        ...e // Keep all original fields
+      })) : []
+      
+      console.log('✅ Normalized evaluators:', normalizedEvaluators)
+      setEvaluators(normalizedEvaluators)
+    } catch (err) {
+      console.error('❌ Error loading evaluators:', err)
+      setError(`Failed to load evaluators: ${err.message}`)
+      // Fallback to sample data for UI testing
+      setEvaluators(sampleEvaluators)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -52,7 +92,7 @@ export default function AdminEvaluators() {
     }))
   }
 
-  const handleCreateEvaluator = (e) => {
+  const handleCreateEvaluator = async (e) => {
     e.preventDefault()
     
     // Validate form
@@ -61,8 +101,17 @@ export default function AdminEvaluators() {
       return
     }
 
-    if (newEvaluator.password !== newEvaluator.confirmPassword) {
-      alert('Passwords do not match')
+    // Validate password match (trim whitespace)
+    const password = newEvaluator.password.trim()
+    const confirmPassword = newEvaluator.confirmPassword.trim()
+    
+    console.log('🔐 Password Match Debug:')
+    console.log('Password length:', password.length)
+    console.log('Confirm Password length:', confirmPassword.length)
+    console.log('Passwords match:', password === confirmPassword)
+    
+    if (password !== confirmPassword) {
+      alert('Passwords do not match. Please try again.')
       return
     }
 
@@ -79,34 +128,40 @@ export default function AdminEvaluators() {
       return
     }
 
-    const { email, username, password, department } = newEvaluator
-
-    const baseName = (username || '').trim() || (email ? email.split('@')[0] : '').trim()
-    const displayName = baseName || `Evaluator ${evaluators.length + 1}`
-
-    // Create new evaluator object
-    const evaluator = {
-      id: evaluators.length + 1,
-      name: displayName,
-      email,
-      username,
-      password,
-      expertise: [],
-      department,
-      workload: 0,
-      role: 'evaluator'
+    try {
+      setIsLoading(true)
+      const { email, username, department } = newEvaluator
+      
+      // Call backend API to create evaluator
+      const createdEvaluator = await evaluatorApi.createEvaluator({
+        email,
+        username,
+        password: password,
+        confirmPassword: password,
+        department
+      })
+      
+      console.log('✅ Evaluator created:', createdEvaluator)
+      
+      // Update local state with created evaluator
+      setEvaluators(prev => [...prev, createdEvaluator])
+      setNewEvaluator(createEmptyEvaluatorForm())
+      setPasswordVisibility({ password: false, confirmPassword: false })
+      
+      alert(`Evaluator ${createdEvaluator.name || username} created successfully!`)
+      closeCreateModal()
+      
+      // Refresh evaluators list
+      await fetchEvaluators()
+    } catch (err) {
+      console.error('❌ Error creating evaluator:', err)
+      alert(`Failed to create evaluator: ${err.message}`)
+    } finally {
+      setIsLoading(false)
     }
-
-    // Add to evaluators list
-    setEvaluators(prev => [...prev, evaluator])
-    setNewEvaluator(createEmptyEvaluatorForm())
-    setPasswordVisibility({ password: false, confirmPassword: false })
-    
-    alert(`Evaluator ${evaluator.name} created successfully!`)
-    closeCreateModal()
   }
 
-  const handleDeleteEvaluator = (id) => {
+  const handleDeleteEvaluator = async (id) => {
     const evaluatorToDelete = evaluators.find(e => e.id === id)
     
     if (!evaluatorToDelete) return
@@ -123,8 +178,23 @@ export default function AdminEvaluators() {
     )
 
     if (confirmDelete) {
-      setEvaluators(prev => prev.filter(evaluator => evaluator.id !== id))
-      alert(`Evaluator "${evaluatorToDelete.name}" has been deleted successfully.`)
+      try {
+        setIsLoading(true)
+        console.log(`🗑️ Deleting evaluator ${id}...`)
+        await evaluatorApi.deleteEvaluator(id)
+        console.log('✅ Evaluator deleted successfully')
+        
+        setEvaluators(prev => prev.filter(evaluator => evaluator.id !== id))
+        alert(`Evaluator "${evaluatorToDelete.name}" has been deleted successfully.`)
+        
+        // Refresh evaluators list
+        await fetchEvaluators()
+      } catch (err) {
+        console.error('❌ Error deleting evaluator:', err)
+        alert(`Failed to delete evaluator: ${err.message}`)
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -372,7 +442,7 @@ export default function AdminEvaluators() {
                             confirmPassword: !prev.confirmPassword
                           }))
                         }
-                        aria-label={passwordVisibility.confirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                        aria-label={passwordVisibility.confirmPassword ? 'Hide password' : 'Show password'}
                       >
                         {passwordVisibility.confirmPassword ? (
                           <svg
@@ -405,18 +475,6 @@ export default function AdminEvaluators() {
                       </button>
                       </div>
                     </div>
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="confirmPassword">Confirm Password *</label>
-                    <input
-                      type="text"
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={newEvaluator.confirmPassword}
-                      onChange={handleInputChange}
-                      placeholder="Re-enter password"
-                      required
-                    />
                   </div>
                 </div>
 
@@ -498,6 +556,43 @@ export default function AdminEvaluators() {
 
           {/* Evaluators Table */}
           <section className="evaluators-table-section">
+            {isLoading && (
+              <div className="loading-state">
+                <div className="spinner"></div>
+                <p>Loading evaluators...</p>
+              </div>
+            )}
+            
+            {error && (
+              <div className="error-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>{error}</p>
+                <button onClick={fetchEvaluators} className="btn btn-secondary btn-small">
+                  Retry
+                </button>
+              </div>
+            )}
+            
+            {!isLoading && !error && evaluators.length === 0 && (
+              <div className="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <h3>No evaluators yet</h3>
+                <p>Create your first evaluator to get started</p>
+                <button onClick={openCreateModal} className="btn btn-primary">
+                  Create Evaluator
+                </button>
+              </div>
+            )}
+            
+            {!isLoading && !error && evaluators.length > 0 && (
             <div className="table-container">
               <table className="evaluators-table">
                 <thead>
@@ -585,6 +680,7 @@ export default function AdminEvaluators() {
                 </tbody>
               </table>
             </div>
+            )}
           </section>
         </div>
       </main>
