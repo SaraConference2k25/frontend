@@ -4,9 +4,19 @@ import bgImage from '../assets/bg.jpg'
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState('home')
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false)
+  }
 
   const handleNavClick = (section) => {
     setActiveSection(section)
+    closeMobileMenu()
     
     // If "dates" is clicked, scroll to important dates section
     if (section === 'dates') {
@@ -257,6 +267,17 @@ export default function Home() {
       {/* Navigation Bar */}
       <nav className="main-navbar">
         <div className="navbar-container">
+          {/* Hamburger Menu Button */}
+          <button 
+            className={`hamburger-menu ${isMobileMenuOpen ? 'open' : ''}`}
+            onClick={toggleMobileMenu}
+            aria-label="Toggle menu"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+
           <ul className="navbar-menu">
             <li className="nav-item">
               <button 
@@ -311,7 +332,70 @@ export default function Home() {
             <Link to="/login" className="btn btn-login">Login</Link>
           </div>
         </div>
+
+        {/* Mobile Navigation Drawer */}
+        <div className={`mobile-nav-drawer ${isMobileMenuOpen ? 'open' : ''}`}>
+          <div className="mobile-nav-close">
+            <button onClick={closeMobileMenu}>✕</button>
+          </div>
+          <ul className="mobile-nav-menu">
+            <li className="mobile-nav-item">
+              <button 
+                onClick={() => handleNavClick('home')} 
+                className={`mobile-nav-link ${activeSection === 'home' ? 'active' : ''}`}
+              >
+                Home
+              </button>
+            </li>
+            <li className="mobile-nav-item">
+              <button 
+                onClick={() => handleNavClick('dates')} 
+                className={`mobile-nav-link ${activeSection === 'dates' ? 'active' : ''}`}
+              >
+                Dates
+              </button>
+            </li>
+            <li className="mobile-nav-item">
+              <button 
+                onClick={() => handleNavClick('registration')} 
+                className={`mobile-nav-link ${activeSection === 'registration' ? 'active' : ''}`}
+              >
+                Registration
+              </button>
+            </li>
+            <li className="mobile-nav-item">
+              <button 
+                onClick={() => handleNavClick('submission')} 
+                className={`mobile-nav-link ${activeSection === 'submission' ? 'active' : ''}`}
+              >
+                Submission
+              </button>
+            </li>
+            <li className="mobile-nav-item">
+              <button 
+                onClick={() => handleNavClick('publication')} 
+                className={`mobile-nav-link ${activeSection === 'publication' ? 'active' : ''}`}
+              >
+                Publication
+              </button>
+            </li>
+            <li className="mobile-nav-item">
+              <button 
+                onClick={() => handleNavClick('contacts')} 
+                className={`mobile-nav-link ${activeSection === 'contacts' ? 'active' : ''}`}
+              >
+                Contacts
+              </button>
+            </li>
+            <li className="mobile-nav-item">
+              <Link to="/login" className="mobile-nav-link" onClick={closeMobileMenu}>Login</Link>
+            </li>
+          </ul>
+        </div>
       </nav>
+
+      {/* Mobile Navigation Overlay */}
+      {isMobileMenuOpen && <div className="mobile-nav-overlay open" onClick={closeMobileMenu}></div>}
       
       {/* Marquee Announcement */}
       <div className="announcement-marquee">

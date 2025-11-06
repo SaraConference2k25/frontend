@@ -78,11 +78,12 @@ export default function Dashboard() {
               <h1
                 style={{
                   color: '#5a67d8',
-                  fontSize: '2rem',
+                  fontSize: 'max(1.5rem, min(2rem, 5vw))',
                   fontWeight: 900,
                   textAlign: 'center',
-                  margin: '0 0 2rem 0',
-                  fontFamily: "'Inter', sans-serif"
+                  margin: '0 0 1.5rem 0',
+                  fontFamily: "'Inter', sans-serif",
+                  wordBreak: 'break-word'
                 }}
               >
                 Dashboard Overview
