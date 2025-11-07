@@ -280,12 +280,12 @@ html {
 }
 
 .password-input-wrapper input {
-    padding-right: 3rem;
+    padding-right: 2.5rem;
 }
 
 .password-toggle-btn {
     position: absolute;
-    right: 1rem;
+    right: 0.5rem;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -295,7 +295,7 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.25rem;
+    padding: 0.25rem 0.5rem;
     border-radius: 4px;
     transition: var(--transition);
     z-index: 2;
@@ -313,8 +313,8 @@ html {
 }
 
 .password-toggle-btn svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
 .form .btn { 

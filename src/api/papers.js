@@ -139,6 +139,19 @@ export async function deletePaper(id) {
   return await handleResponse(res)
 }
 
+/**
+ * Assign an evaluator to a paper
+ */
+export async function assignEvaluatorToPaper(paperId, evaluatorId) {
+  console.log(`🔗 Assigning evaluator ${evaluatorId} to paper ${paperId}...`)
+
+  const res = await fetch(`${API_BASE}/api/papers/${paperId}/assign-evaluator/${evaluatorId}`, {
+    method: 'POST'
+  })
+
+  return await handleResponse(res)
+}
+
 export default {
   submitPaper,
   getAllPapers,
@@ -148,4 +161,5 @@ export default {
   getPapersByDepartment,
   getPapersByEmail,
   deletePaper
+  ,assignEvaluatorToPaper
 }

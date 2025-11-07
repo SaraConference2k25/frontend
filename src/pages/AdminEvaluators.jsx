@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { sampleEvaluators } from '../data/sampleData'
+import { createEvaluator, getEvaluators } from '../api/evaluators'
 
 const createEmptyEvaluatorForm = () => ({
   email: '',
@@ -24,6 +25,11 @@ export default function AdminEvaluators() {
   })
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+
+  // Load evaluators from backend on component mount
+  useEffect(() => {
+    loadEvaluators()
+  }, [])
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -52,23 +58,27 @@ export default function AdminEvaluators() {
     }))
   }
 
-  const handleCreateEvaluator = (e) => {
+    const handleCreateEvaluator = async (e) => {
     e.preventDefault()
     
     // Validate form
-    if (!newEvaluator.email || !newEvaluator.username || !newEvaluator.password || !newEvaluator.confirmPassword) {
-      alert('Please fill in all required fields')
+    if (!newEvaluator.email || !newEvaluator.email.trim()) {
+      alert('Email is required')
       return
     }
 
-    if (newEvaluator.password !== newEvaluator.confirmPassword) {
-      alert('Passwords do not match')
+    if (!newEvaluator.username || !newEvaluator.username.trim()) {
+      alert('Username is required')
       return
     }
 
-    // Confirmation before creating
+    if (!newEvaluator.password || !newEvaluator.password.trim()) {
+      alert('Password is required')
+      return
+    }
+
     const confirmCreate = window.confirm(
-      `Are you sure you want to create a new evaluator account?\n\n` +
+      `Create new evaluator?\n\n` +
       `Email: ${newEvaluator.email}\n` +
       `Username: ${newEvaluator.username}\n` +
       `Department: ${newEvaluator.department || 'Not specified'}\n\n` +
@@ -79,31 +89,80 @@ export default function AdminEvaluators() {
       return
     }
 
-    const { email, username, password, department } = newEvaluator
+    try {
+      // Call backend API to create evaluator
+      console.log('📤 Sending to backend:', {
+        email: newEvaluator.email,
+        username: newEvaluator.username,
+        password: '***',
+        department: newEvaluator.department
+      })
 
-    const baseName = (username || '').trim() || (email ? email.split('@')[0] : '').trim()
-    const displayName = baseName || `Evaluator ${evaluators.length + 1}`
+      const response = await createEvaluator({
+        email: newEvaluator.email,
+        username: newEvaluator.username,
+        password: newEvaluator.password,
+        department: newEvaluator.department
+      })
 
-    // Create new evaluator object
-    const evaluator = {
-      id: evaluators.length + 1,
-      name: displayName,
-      email,
-      username,
-      password,
-      expertise: [],
-      department,
-      workload: 0,
-      role: 'evaluator'
+      console.log('✅ Evaluator created successfully:', response)
+
+      // Add new evaluator to local list
+      const baseName = (newEvaluator.username || '').trim() || (newEvaluator.email ? newEvaluator.email.split('@')[0] : '').trim()
+      const displayName = baseName || `Evaluator ${evaluators.length + 1}`
+
+      const evaluator = {
+        id: response.id || evaluators.length + 1,
+        name: response.name || displayName,
+        email: response.email || newEvaluator.email,
+        username: response.username || newEvaluator.username,
+        password: '••••••••', // Don't store actual password
+        expertise: response.expertise || [],
+        department: response.department || newEvaluator.department,
+        workload: response.workload || 0,
+        role: 'evaluator',
+        ...response
+      }
+
+      setEvaluators(prev => [...prev, evaluator])
+      setNewEvaluator(createEmptyEvaluatorForm())
+      setPasswordVisibility({ password: false, confirmPassword: false })
+      
+      alert(`Evaluator ${evaluator.name} created successfully!`)
+      closeCreateModal()
+      
+      // Reload evaluators from backend to get latest list
+      loadEvaluators()
+    } catch (err) {
+      console.error('❌ Error creating evaluator:', err)
+      alert(`Error creating evaluator: ${err.message}`)
     }
+  }
 
-    // Add to evaluators list
-    setEvaluators(prev => [...prev, evaluator])
-    setNewEvaluator(createEmptyEvaluatorForm())
-    setPasswordVisibility({ password: false, confirmPassword: false })
-    
-    alert(`Evaluator ${evaluator.name} created successfully!`)
-    closeCreateModal()
+  const loadEvaluators = async () => {
+    try {
+      const response = await getEvaluators()
+      const evaluatorsList = Array.isArray(response) ? response : response.data || []
+      
+      const formattedEvaluators = evaluatorsList.map(evaluator => ({
+        id: evaluator.id,
+        name: evaluator.name || evaluator.username || 'Unknown',
+        email: evaluator.email,
+        username: evaluator.username || '',
+        password: '••••••••',
+        expertise: evaluator.expertise || [],
+        department: evaluator.department || '',
+        workload: evaluator.workload || 0,
+        role: 'evaluator',
+        ...evaluator
+      }))
+      
+      setEvaluators(formattedEvaluators)
+      console.log('✅ Evaluators loaded successfully')
+    } catch (err) {
+      console.error('❌ Error loading evaluators:', err)
+      setEvaluators(sampleEvaluators)
+    }
   }
 
   const handleDeleteEvaluator = (id) => {
@@ -405,18 +464,6 @@ export default function AdminEvaluators() {
                       </button>
                       </div>
                     </div>
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="confirmPassword">Confirm Password *</label>
-                    <input
-                      type="text"
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={newEvaluator.confirmPassword}
-                      onChange={handleInputChange}
-                      placeholder="Re-enter password"
-                      required
-                    />
                   </div>
                 </div>
 
