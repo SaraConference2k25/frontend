@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://saraconference-production.up.railway.app:8069'
+const API_BASE = import.meta.env.VITE_API_URL || 'http://saraconference-production.up.railway.app:8069'
 
 console.log('🔐 Auth API Base URL:', API_BASE)
 
