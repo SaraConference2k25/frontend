@@ -23,6 +23,7 @@ export default function AdminEvaluators() {
     password: false,
     confirmPassword: false
   })
+  const [isLoading, setIsLoading] = useState(true)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
@@ -140,6 +141,7 @@ export default function AdminEvaluators() {
   }
 
   const loadEvaluators = async () => {
+    setIsLoading(true)
     try {
       const response = await getEvaluators()
       const evaluatorsList = Array.isArray(response) ? response : response.data || []
@@ -162,6 +164,8 @@ export default function AdminEvaluators() {
     } catch (err) {
       console.error('❌ Error loading evaluators:', err)
       setEvaluators(sampleEvaluators)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -251,6 +255,29 @@ export default function AdminEvaluators() {
 
       {/* Overlay for mobile */}
       {isMenuOpen && <div className="sidebar-overlay" onClick={toggleMenu}></div>}
+
+      {/* Loading Screen */}
+      {isLoading && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(4px)', zIndex: 9999 }}>
+          <div style={{ textAlign: 'center' }}>
+            {/* Spinner */}
+            <div style={{ position: 'relative', width: '80px', height: '80px', margin: '0 auto 2rem' }}>
+              <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', animation: 'spin 1s linear infinite', transformOrigin: 'center' }}>
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#667eea" strokeWidth="8" strokeDasharray="70 220" strokeDashoffset="0" />
+              </svg>
+              <style>
+                {`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}
+              </style>
+            </div>
+            <h2 style={{ color: '#333', fontSize: '1.3rem', fontWeight: '700', margin: '0 0 0.5rem 0', letterSpacing: '-0.5px' }}>
+              Loading Evaluators
+            </h2>
+            <p style={{ color: '#999', fontSize: '0.95rem', margin: 0 }}>
+              Please wait while we fetch the evaluator list...
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* View Credentials Modal */}
       {showCredentialsModal && selectedEvaluator && (

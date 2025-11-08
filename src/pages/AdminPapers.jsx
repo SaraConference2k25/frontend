@@ -819,13 +819,13 @@ export default function AdminPapers() {
                   <div style={{ background: '#f9fafb', padding: '1rem', borderRadius: '10px', border: '1px solid #e5e7eb' }}>
                     <div style={{ marginBottom: '0.8rem' }}>
                       <label style={{ fontSize: '0.65rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: '0.4rem', opacity: 0.8 }}>Current Status</label>
-                      <span style={{ display: 'inline-block', padding: '0.35rem 0.75rem', borderRadius: '16px', fontSize: '0.75rem', fontWeight: '700', background: selectedPaperForView.status === 'pending_assignment' ? '#fef3c7' : selectedPaperForView.status === 'under_evaluation' ? '#dbeafe' : '#d1fae5', color: selectedPaperForView.status === 'pending_assignment' ? '#b45309' : selectedPaperForView.status === 'under_evaluation' ? '#1e40af' : '#065f46', textTransform: 'capitalize' }}>
-                        {selectedPaperForView.status === 'pending_assignment' ? 'Pending' : selectedPaperForView.status === 'under_evaluation' ? 'Evaluating' : 'Completed'}
+                      <span style={{ display: 'inline-block', padding: '0.35rem 0.75rem', borderRadius: '16px', fontSize: '0.75rem', fontWeight: '700', background: selectedPaperForView.status === 'PENDING_ASSIGNMENT' ? '#fef3c7' : selectedPaperForView.status === 'ASSIGNED_TO_EVALUATOR' ? '#dbeafe' : '#d1fae5', color: selectedPaperForView.status === 'PENDING_ASSIGNMENT' ? '#b45309' : selectedPaperForView.status === 'ASSIGNED_TO_EVALUATOR' ? '#1e40af' : '#065f46', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        {selectedPaperForView.status === 'PENDING_ASSIGNMENT' ? '⏳ Pending' : selectedPaperForView.status === 'ASSIGNED_TO_EVALUATOR' ? '🔄 Assigned' : '✅ Completed'}
                       </span>
                     </div>
                     <div>
                       <label style={{ fontSize: '0.65rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: '0.3rem', opacity: 0.8 }}>Evaluator</label>
-                      <p style={{ margin: 0, fontSize: '0.9rem', color: selectedPaperForView.evaluatorName ? '#1f2937' : '#f5576c', fontWeight: '600' }}>{selectedPaperForView.evaluatorName || 'Not assigned'}</p>
+                      <p style={{ margin: 0, fontSize: '0.9rem', color: selectedPaperForView.assignedEvaluator ? '#1f2937' : '#f5576c', fontWeight: '600' }}>{selectedPaperForView.assignedEvaluator || 'Not assigned'}</p>
                     </div>
                   </div>
                 </div>
@@ -924,7 +924,32 @@ export default function AdminPapers() {
             </div>
           </header>
 
-          {/* Stats Overview - Compact */}
+          {/* Loading Screen */}
+          {loading && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '2rem' }}>
+              {/* Animated Spinner */}
+              <div style={{
+                width: '60px',
+                height: '60px',
+                border: '4px solid #f0f0f0',
+                borderTop: '4px solid #667eea',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite',
+              }} />
+              <div style={{ textAlign: 'center' }}>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#2d3748', fontWeight: '600', marginBottom: '0.5rem' }}>Loading Papers</h3>
+                <p style={{ margin: 0, color: '#718096', fontSize: '0.95rem' }}>Fetching paper data from the server...</p>
+              </div>
+              <style>{`
+                @keyframes spin {
+                  to { transform: rotate(360deg); }
+                }
+              `}</style>
+            </div>
+          )}
+
+          {/* Stats Overview - Compact - Show only when not loading */}
+          {!loading && (
           <div className="evaluators-stats-bar" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.75rem', marginBottom: '2rem' }}>
             <div className="stat-item" style={{ padding: '1rem', background: 'white', borderRadius: '8px', textAlign: 'center', color: '#667eea', boxShadow: '0 2px 8px rgba(102, 126, 234, 0.15)', borderLeft: '4px solid #667eea' }}>
               <span className="stat-value" style={{ fontSize: '1.8rem', fontWeight: 'bold', display: 'block', color: '#667eea' }}>{stats.total}</span>
@@ -943,8 +968,10 @@ export default function AdminPapers() {
               <span className="stat-label" style={{ fontSize: '0.8rem', opacity: 0.8, marginTop: '0.25rem', display: 'block', color: '#666' }}>Completed</span>
             </div>
           </div>
+          )}
 
-          {/* Papers Table with Infinite Scroll */}
+          {/* Papers Table with Infinite Scroll - Show only when not loading */}
+          {!loading && (
           <section className="table-section-professional" ref={tableRef}>
             {/* Scroll Info */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '0.9rem', color: '#666' }}>
@@ -980,17 +1007,19 @@ export default function AdminPapers() {
                           </td>
                           <td data-label="Author" style={{ padding: '0.65rem 0.75rem', fontSize: '0.9rem', color: '#2d3748', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={paper.email || 'N/A'}>{paper.email || 'N/A'}</td>
                           <td data-label="Dept" style={{ padding: '0.65rem 0.75rem', fontSize: '0.9rem', color: '#2d3748', maxWidth: '130px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={paper.department || 'N/A'}>{paper.department || 'N/A'}</td>
-                          <td data-label="Submitted" style={{ padding: '0.65rem 0.75rem', fontSize: '0.9rem', color: '#2d3748' }}>{paper.submittedDate || 'N/A'}</td>
+                          <td data-label="Submitted" style={{ padding: '0.65rem 0.75rem', fontSize: '0.9rem', color: '#2d3748' }}>
+                            {paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}
+                          </td>
                           <td data-label="Evaluator" style={{ padding: '0.65rem 0.75rem', fontSize: '0.9rem', color: '#2d3748' }}>
-                            {paper.evaluatorName ? (
-                              <span style={{ fontWeight: '500', color: '#667eea' }}>{paper.evaluatorName}</span>
+                            {paper.assignedEvaluator ? (
+                              <span style={{ fontWeight: '500', color: '#667eea' }}>{paper.assignedEvaluator}</span>
                             ) : (
                               <span style={{ color: '#ef5350', fontWeight: '500' }}>Not assigned</span>
                             )}
                           </td>
                           <td data-label="Status" style={{ padding: '0.65rem 0.75rem', fontSize: '0.9rem' }}>
-                            <span className={`status-badge-modern status-${paper.status || 'pending'}`}>
-                              {statusInfo.text}
+                            <span style={{ display: 'inline-block', padding: '0.35rem 0.75rem', borderRadius: '16px', fontSize: '0.75rem', fontWeight: '700', background: paper.status === 'ASSIGNED_TO_EVALUATOR' ? '#dbeafe' : paper.status === 'PENDING_ASSIGNMENT' ? '#fef3c7' : '#d1fae5', color: paper.status === 'ASSIGNED_TO_EVALUATOR' ? '#1e40af' : paper.status === 'PENDING_ASSIGNMENT' ? '#b45309' : '#065f46', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                              {paper.status === 'ASSIGNED_TO_EVALUATOR' ? '🔄 Assigned' : paper.status === 'PENDING_ASSIGNMENT' ? '⏳ Pending' : '✅ Completed'}
                             </span>
                           </td>
                           <td data-label="Action" style={{ padding: '0.65rem 0.75rem', textAlign: 'center' }}>
@@ -1080,6 +1109,7 @@ export default function AdminPapers() {
               </div>
             )}
           </section>
+          )}
         </div>
       </main>
     </div>
