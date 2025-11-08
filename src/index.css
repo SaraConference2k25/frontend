@@ -2810,6 +2810,12 @@ html {
     border: 1px solid rgba(159, 122, 234, 0.3);
 }
 
+.status-custom {
+    background: rgba(100, 100, 100, 0.1);
+    color: #666666;
+    border: 1px solid rgba(100, 100, 100, 0.3);
+}
+
 .paper-info {
     margin-bottom: 0.5rem;
 }

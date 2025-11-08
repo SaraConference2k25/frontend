@@ -92,12 +92,26 @@ export default function EvaluatePapers() {
   }
 
   const getStatusBadge = (status) => {
+    const statusLower = status?.toLowerCase() || 'pending'
     const badges = {
       pending: 'status-pending',
       approved: 'status-approved', 
-      rejected: 'status-rejected'
+      rejected: 'status-rejected',
+      assigned: 'status-info',
+      under_evaluation: 'status-info',
+      completed: 'status-success',
+      published: 'status-published',
+      in_progress: 'status-info',
+      submitted: 'status-warning',
+      returned: 'status-warning'
     }
-    return badges[status] || 'status-pending'
+    
+    if (badges[statusLower]) {
+      return badges[statusLower]
+    }
+    
+    // Default to a neutral styling for unknown statuses
+    return 'status-custom'
   }
 
   const pendingPapers = submittedPapers.filter(paper => paper.status === 'pending')

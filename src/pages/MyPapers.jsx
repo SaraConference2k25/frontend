@@ -132,14 +132,32 @@ export default function MyPapers() {
   }
 
   const getStatusBadge = (status) => {
+    const statusLower = status?.toLowerCase() || 'pending_assignment'
     const badges = {
       pending_assignment: { class: 'status-warning', text: 'Pending Assignment' },
       under_evaluation: { class: 'status-info', text: 'Under Evaluation' },
       completed: { class: 'status-success', text: 'Completed' },
       published: { class: 'status-published', text: 'Published' },
-      rejected: { class: 'status-rejected', text: 'Rejected' }
+      rejected: { class: 'status-rejected', text: 'Rejected' },
+      assigned: { class: 'status-info', text: 'Assigned' },
+      in_progress: { class: 'status-info', text: 'In Progress' },
+      submitted: { class: 'status-warning', text: 'Submitted' },
+      approved: { class: 'status-success', text: 'Approved' },
+      returned: { class: 'status-warning', text: 'Returned' }
     }
-    return badges[status] || { class: 'status-pending', text: 'Unknown' }
+    
+    // If status exists in badges, return the mapped value
+    if (badges[statusLower]) {
+      return badges[statusLower]
+    }
+    
+    // Otherwise, format the status text dynamically from the received status
+    const formattedText = status
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ')
+    
+    return { class: 'status-custom', text: formattedText }
   }
 
   const formatDate = (dateString) => {
