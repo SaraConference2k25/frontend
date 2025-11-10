@@ -11,6 +11,8 @@ export default function AdminPapers() {
   const [showAssignModal, setShowAssignModal] = useState(false)
   const [showPaperDetailsModal, setShowPaperDetailsModal] = useState(false)
   const [selectedPaperForView, setSelectedPaperForView] = useState(null)
+  const [showStatusUpdateModal, setShowStatusUpdateModal] = useState(false)
+  const [newStatus, setNewStatus] = useState('')
   const [papers, setPapers] = useState(samplePapers)
   const [evaluators, setEvaluators] = useState(sampleEvaluators)
   const [loading, setLoading] = useState(false)
@@ -140,17 +142,14 @@ export default function AdminPapers() {
     if (!selectedPaper) return
     setLoading(true)
     try {
+      // Send request to backend
       await assignEvaluatorToPaper(selectedPaper.id, evaluatorId)
-      // update local state
-      const evaluator = evaluators.find(e => e.id === evaluatorId) || { name: 'Evaluator' }
-      setPapers(prev => prev.map(paper => paper.id === selectedPaper.id ? ({
-        ...paper,
-        status: 'under_evaluation',
-        evaluatorId,
-        evaluatorName: evaluator.name,
-        assignedDate: new Date().toISOString().split('T')[0]
-      }) : paper))
-      alert(`Paper assigned to ${evaluator.name} successfully!`)
+      
+      // Refresh papers list from backend to get actual updated data
+      const updatedPapers = await getAllPapers()
+      setPapers(updatedPapers)
+      
+      alert(`Paper assigned successfully!`)
       closeAssignModal()
     } catch (e) {
       console.error('Assignment failed', e)
@@ -159,6 +158,53 @@ export default function AdminPapers() {
       setLoading(false)
     }
   }
+
+  const openStatusUpdateModal = (paper) => {
+    setSelectedPaperForView(paper)
+    setNewStatus(paper.status || '')
+    setShowStatusUpdateModal(true)
+  }
+
+  const closeStatusUpdateModal = () => {
+    setShowStatusUpdateModal(false)
+    setNewStatus('')
+  }
+
+  const updatePaperStatus = async () => {
+    if (!selectedPaperForView || !newStatus.trim()) {
+      alert('Please select a status')
+      return
+    }
+    
+    setLoading(true)
+    try {
+      const response = await fetch(`http://98.70.26.80:8069/api/papers/status?paperId=${selectedPaperForView.id}&status=${encodeURIComponent(newStatus)}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      if (!response.ok) {
+        throw new Error(`Failed to update status: ${response.statusText}`)
+      }
+      
+      // Refresh papers list from backend to get actual updated data
+      const updatedPapers = await getAllPapers()
+      setPapers(updatedPapers)
+      
+      alert(`Paper status updated to "${newStatus}" successfully!`)
+      closeStatusUpdateModal()
+      setShowPaperDetailsModal(false)
+    } catch (e) {
+      console.error('Status update failed', e)
+      alert('Failed to update paper status: ' + (e.message || e))
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   // Assign using modal for per-paper selection
   const assignUsingSelectedEvaluator = async (paper) => {
@@ -169,31 +215,26 @@ export default function AdminPapers() {
 
 
   const getStatusBadge = (status) => {
-    const statusLower = status?.toLowerCase() || 'pending_assignment'
-    const badges = {
-      pending_assignment: { class: 'status-warning', text: 'Pending Assignment' },
-      under_evaluation: { class: 'status-info', text: 'Under Evaluation' },
-      completed: { class: 'status-success', text: 'Completed' },
-      published: { class: 'status-published', text: 'Published' },
-      rejected: { class: 'status-rejected', text: 'Rejected' },
-      assigned: { class: 'status-info', text: 'Assigned' },
-      in_progress: { class: 'status-info', text: 'In Progress' },
-      submitted: { class: 'status-warning', text: 'Submitted' },
-      approved: { class: 'status-success', text: 'Approved' },
-      returned: { class: 'status-warning', text: 'Returned' }
+    // Show whatever status comes from backend - no mapping
+    // Just return styling based on common status types
+    const statusLower = status ? status.toLowerCase() : 'unknown'
+    
+    let color = '#f3f4f6'
+    let textColor = '#374151'
+    
+    // Color code based on keywords in status
+    if (statusLower.includes('completed') || statusLower.includes('accepted')) {
+      color = '#d1fae5'
+      textColor = '#065f46'
+    } else if (statusLower.includes('assigned') || statusLower.includes('evaluator')) {
+      color = '#dbeafe'
+      textColor = '#1e40af'
+    } else if (statusLower.includes('pending') || statusLower.includes('rejected')) {
+      color = '#fef3c7'
+      textColor = '#b45309'
     }
     
-    if (badges[statusLower]) {
-      return badges[statusLower]
-    }
-    
-    // Otherwise, format the status text dynamically from the received status
-    const formattedText = status
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ')
-    
-    return { class: 'status-custom', text: formattedText }
+    return { text: status || 'Unknown', color, textColor }
   }
 
   const getRecommendedEvaluators = (paperKeywords) => {
@@ -389,7 +430,7 @@ export default function AdminPapers() {
           <span></span>
           <span></span>
         </button>
-        <h2>Manage Papers {loading && '(Loading...)'}</h2>
+        <h2>Manage Papers</h2>
         <div className="header-actions">
           <span>Welcome, {user?.name || user?.username} (Admin)</span>
           <button onClick={handleLogout} className="btn-logout-header">
@@ -759,7 +800,7 @@ export default function AdminPapers() {
               
               {/* Section 1: Author Information - Horizontal Layout */}
               <div style={{ marginBottom: '1.8rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#333', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: '0.85rem', color: '#667eea' }}>
+                <h3 style={{ fontWeight: '700', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px', fontSize: '0.85rem', color: '#667eea' }}>
                   👤 Author Information
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', background: '#f9fafb', padding: '1.2rem', borderRadius: '10px', border: '1px solid #e5e7eb' }}>
@@ -836,13 +877,18 @@ export default function AdminPapers() {
                   <div style={{ background: '#f9fafb', padding: '1rem', borderRadius: '10px', border: '1px solid #e5e7eb' }}>
                     <div style={{ marginBottom: '0.8rem' }}>
                       <label style={{ fontSize: '0.65rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: '0.4rem', opacity: 0.8 }}>Current Status</label>
-                      <span style={{ display: 'inline-block', padding: '0.35rem 0.75rem', borderRadius: '16px', fontSize: '0.75rem', fontWeight: '700', background: selectedPaperForView.status === 'PENDING_ASSIGNMENT' ? '#fef3c7' : selectedPaperForView.status === 'ASSIGNED_TO_EVALUATOR' ? '#dbeafe' : '#d1fae5', color: selectedPaperForView.status === 'PENDING_ASSIGNMENT' ? '#b45309' : selectedPaperForView.status === 'ASSIGNED_TO_EVALUATOR' ? '#1e40af' : '#065f46', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        {selectedPaperForView.status === 'PENDING_ASSIGNMENT' ? '⏳ Pending' : selectedPaperForView.status === 'ASSIGNED_TO_EVALUATOR' ? '🔄 Assigned' : '✅ Completed'}
-                      </span>
+                      {(() => {
+                        const statusInfo = getStatusBadge(selectedPaperForView.status)
+                        return (
+                          <span style={{ display: 'inline-block', padding: '0.35rem 0.75rem', borderRadius: '16px', fontSize: '0.75rem', fontWeight: '700', background: statusInfo.color, color: statusInfo.textColor }}>
+                            {statusInfo.text}
+                          </span>
+                        )
+                      })()}
                     </div>
                     <div>
                       <label style={{ fontSize: '0.65rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: '0.3rem', opacity: 0.8 }}>Evaluator</label>
-                      <p style={{ margin: 0, fontSize: '0.9rem', color: selectedPaperForView.assignedEvaluator ? '#1f2937' : '#f5576c', fontWeight: '600' }}>{selectedPaperForView.assignedEvaluator || 'Not assigned'}</p>
+                      <p style={{ margin: 0, fontSize: '0.9rem', color: selectedPaperForView.evaluatorName ? '#1f2937' : '#f5576c', fontWeight: '600' }}>{selectedPaperForView.evaluatorName || 'Not assigned'}</p>
                     </div>
                   </div>
                 </div>
@@ -884,6 +930,37 @@ export default function AdminPapers() {
                   Download
                 </button>
                 <button
+                  onClick={() => openStatusUpdateModal(selectedPaperForView)}
+                  style={{
+                    padding: '0.7rem 1.5rem',
+                    background: '#f59e0b',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '0.85rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.4rem',
+                    transition: 'all 0.2s',
+                    boxShadow: '0 2px 8px rgba(245, 158, 11, 0.2)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)'
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.3)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)'
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(245, 158, 11, 0.2)'
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 5v14m7-7H5"/>
+                  </svg>
+                  Update Status
+                </button>
+                <button
                   onClick={closePaperDetailsModal}
                   style={{
                     padding: '0.7rem 1.5rem',
@@ -908,6 +985,103 @@ export default function AdminPapers() {
                   }}
                 >
                   Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Status Update Modal */}
+      {showStatusUpdateModal && selectedPaperForView && (
+        <div className="upload-modal-overlay" onClick={closeStatusUpdateModal}>
+          <div className="upload-modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '500px', width: '90%', borderRadius: '16px' }}>
+            <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '16px 16px 0 0' }}>
+              <h2 style={{ margin: 0, fontSize: '1.3rem', fontWeight: '700' }}>Update Paper Status</h2>
+              <button className="close-btn" onClick={closeStatusUpdateModal} style={{ color: 'white', fontSize: '2rem', background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: 0.8 }} onMouseEnter={(e) => e.currentTarget.style.opacity = '1'} onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}>&times;</button>
+            </div>
+            
+            <div style={{ padding: '2rem' }}>
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ fontSize: '0.75rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.8rem' }}>Paper ID: #{selectedPaperForView.id}</label>
+                <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>{selectedPaperForView.name}</p>
+              </div>
+
+              <div style={{ marginBottom: '2rem' }}>
+                <label style={{ fontSize: '0.75rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.8rem' }}>Current Status</label>
+                <div style={{ background: '#f9fafb', padding: '1rem', borderRadius: '10px', border: '1px solid #e5e7eb', marginBottom: '1.5rem' }}>
+                  <p style={{ margin: 0, fontSize: '0.95rem', color: '#1f2937', fontWeight: '600' }}>{selectedPaperForView.status || 'N/A'}</p>
+                </div>
+
+                <label style={{ fontSize: '0.75rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.8rem' }}>New Status</label>
+                <input
+                  type="text"
+                  value={newStatus}
+                  onChange={(e) => setNewStatus(e.target.value)}
+                  placeholder="Enter new status (e.g., PENDING_ASSIGNMENT, ASSIGNED_TO_EVALUATOR, COMPLETED)"
+                  style={{
+                    width: '100%',
+                    padding: '0.8rem',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '10px',
+                    fontSize: '0.9rem',
+                    fontFamily: 'inherit',
+                    boxSizing: 'border-box',
+                    transition: 'all 0.3s'
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = '#667eea'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+                <button
+                  onClick={closeStatusUpdateModal}
+                  style={{
+                    padding: '0.7rem 1.5rem',
+                    background: '#f0f0f0',
+                    color: '#667eea',
+                    border: '2px solid #667eea',
+                    borderRadius: '8px',
+                    fontSize: '0.85rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#667eea'
+                    e.currentTarget.style.color = '#ffffff'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#f0f0f0'
+                    e.currentTarget.style.color = '#667eea'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={updatePaperStatus}
+                  disabled={loading}
+                  style={{
+                    padding: '0.7rem 1.5rem',
+                    background: loading ? '#ccc' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '0.85rem',
+                    fontWeight: '600',
+                    cursor: loading ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s',
+                    opacity: loading ? 0.7 : 1
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!loading) e.currentTarget.style.transform = 'translateY(-2px)'
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!loading) e.currentTarget.style.transform = 'translateY(0)'
+                  }}
+                >
+                  {loading ? 'Updating...' : 'Update Status'}
                 </button>
               </div>
             </div>
@@ -1028,16 +1202,21 @@ export default function AdminPapers() {
                             {paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'N/A'}
                           </td>
                           <td data-label="Evaluator" style={{ padding: '0.65rem 0.75rem', fontSize: '0.9rem', color: '#2d3748' }}>
-                            {paper.assignedEvaluator ? (
-                              <span style={{ fontWeight: '500', color: '#667eea' }}>{paper.assignedEvaluator}</span>
+                            {paper.evaluatorName ? (
+                              <span style={{ fontWeight: '500', color: '#667eea' }}>{paper.evaluatorName}</span>
                             ) : (
                               <span style={{ color: '#ef5350', fontWeight: '500' }}>Not assigned</span>
                             )}
                           </td>
                           <td data-label="Status" style={{ padding: '0.65rem 0.75rem', fontSize: '0.9rem' }}>
-                            <span style={{ display: 'inline-block', padding: '0.35rem 0.75rem', borderRadius: '16px', fontSize: '0.75rem', fontWeight: '700', background: paper.status === 'ASSIGNED_TO_EVALUATOR' ? '#dbeafe' : paper.status === 'PENDING_ASSIGNMENT' ? '#fef3c7' : '#d1fae5', color: paper.status === 'ASSIGNED_TO_EVALUATOR' ? '#1e40af' : paper.status === 'PENDING_ASSIGNMENT' ? '#b45309' : '#065f46', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                              {paper.status === 'ASSIGNED_TO_EVALUATOR' ? '🔄 Assigned' : paper.status === 'PENDING_ASSIGNMENT' ? '⏳ Pending' : '✅ Completed'}
-                            </span>
+                            {(() => {
+                              const statusInfo = getStatusBadge(paper.status)
+                              return (
+                                <span style={{ display: 'inline-block', padding: '0.35rem 0.75rem', borderRadius: '16px', fontSize: '0.75rem', fontWeight: '700', background: statusInfo.color, color: statusInfo.textColor }}>
+                                  {statusInfo.text}
+                                </span>
+                              )
+                            })()}
                           </td>
                           <td data-label="Action" style={{ padding: '0.65rem 0.75rem', textAlign: 'center' }}>
                             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>

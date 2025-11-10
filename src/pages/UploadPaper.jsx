@@ -41,9 +41,18 @@ export default function UploadPaper() {
     setError('')
     
     if (file) {
-      // Validate file type
-      if (file.type !== 'application/pdf') {
-        setError('Please select a PDF file only')
+      // Validate file type - only PDF or DOCX
+      const validTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ]
+      
+      const fileExtension = file.name.split('.').pop().toLowerCase()
+      const isValidType = validTypes.includes(file.type) || ['pdf', 'docx', 'doc'].includes(fileExtension)
+      
+      if (!isValidType) {
+        setError('Only PDF or DOCX files are supported. Please select a valid document.')
         event.target.value = ''
         return
       }
@@ -69,7 +78,7 @@ export default function UploadPaper() {
     
     // Validation
     if (!formData.paperFile) {
-      setError('Please upload your paper (PDF format)')
+      setError('Please upload your paper (PDF or DOCX format only)')
       return
     }
 
@@ -299,11 +308,11 @@ export default function UploadPaper() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="paperFile">Upload Paper (PDF) *</label>
+                  <label htmlFor="paperFile">Upload Paper (PDF or DOCX) *</label>
                   <input
                     type="file"
                     id="paperFile"
-                    accept=".pdf"
+                    accept=".pdf,.docx,.doc"
                     onChange={handleFileUpload}
                     className="file-input"
                     required
@@ -315,11 +324,11 @@ export default function UploadPaper() {
                       </span>
                     ) : (
                       <span>
-                        📁 Choose PDF File
+                        📁 Choose PDF or DOCX File
                       </span>
                     )}
                   </label>
-                  <small className="form-help">Maximum file size: 10MB. Only PDF format is accepted.</small>
+                  <small className="form-help">Supported formats: PDF, DOC, DOCX. Maximum file size: 10MB.</small>
                 </div>
               </div>
 

@@ -152,6 +152,15 @@ export async function assignEvaluatorToPaper(paperId, evaluatorId) {
   return await handleResponse(res)
 }
 
+/**
+ * Get papers assigned to a specific evaluator
+ */
+export async function getPapersByEvaluator(evaluatorId) {
+  console.log('📄 Fetching papers for evaluator ID:', evaluatorId)
+  const res = await fetch(`${API_BASE}/api/papers/evaluator/${evaluatorId}`)
+  return await handleResponse(res)
+}
+
 export default {
   submitPaper,
   getAllPapers,
@@ -160,6 +169,7 @@ export default {
   searchPapers,
   getPapersByDepartment,
   getPapersByEmail,
-  deletePaper
-  ,assignEvaluatorToPaper
+  deletePaper,
+  assignEvaluatorToPaper,
+  getPapersByEvaluator
 }
