@@ -354,33 +354,25 @@ export default function EvaluatePapers() {
 
       {/* Main Content */}
       <main className="dashboard-main">
-        <div className="evaluation-container">
+        <div className="dashboard-content admin-evaluators-content">
           {/* Header */}
-          <div className="evaluation-header">
-            <h1>Paper Evaluation</h1>
-            <p>Review and evaluate submitted papers. Provide constructive feedback to help authors improve their work.</p>
-          </div>
+          <header className="page-header-modern">
+            <div className="page-header-content">
+              <div className="page-title-section">
+                <h1>Paper Evaluation Center</h1>
+                <p className="page-subtitle">Review and evaluate submitted papers with expert feedback</p>
+              </div>
+            </div>
+          </header>
 
           {/* Loading State */}
           {loading && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '2rem' }}>
-              <div style={{
-                width: '60px',
-                height: '60px',
-                border: '4px solid #f0f0f0',
-                borderTop: '4px solid #667eea',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite',
-              }} />
-              <div style={{ textAlign: 'center' }}>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#2d3748', fontWeight: '600', marginBottom: '0.5rem' }}>Loading Papers</h3>
-                <p style={{ margin: 0, color: '#718096', fontSize: '0.95rem' }}>Fetching papers assigned to you...</p>
+            <div className="loading-state-professional">
+              <div className="spinner-professional"></div>
+              <div className="loading-text-professional">
+                <h3>Loading Papers</h3>
+                <p>Fetching papers assigned to you...</p>
               </div>
-              <style>{`
-                @keyframes spin {
-                  to { transform: rotate(360deg); }
-                }
-              `}</style>
             </div>
           )}
 
@@ -388,154 +380,156 @@ export default function EvaluatePapers() {
           {!loading && (
             <>
               {/* Pending Papers Section */}
-              <section className="papers-section">
-                <h2>
-                  Pending Evaluations
-                  <span className="section-badge">{pendingPapers.length}</span>
-                </h2>
+              <section className="papers-section-professional">
+                <div className="section-header-professional">
+                  <h2>Pending Evaluations</h2>
+                  <span className="count-badge-professional">{pendingPapers.length}</span>
+                </div>
                 
                 {pendingPapers.length > 0 ? (
-                  <div className="papers-grid">
+                  <div className="papers-grid-professional">
                     {pendingPapers.map(paper => (
-                      <div key={paper.id} className="paper-card">
-                        <div className="paper-card-header">
-                          <div className="paper-card-title">
+                      <div key={paper.id} className="paper-card-professional">
+                        <div className="paper-card-header-professional">
+                          <div className="paper-title-section-professional">
                             <h3>{paper.paperTitle || paper.title || 'Untitled Paper'}</h3>
-                            <div className="paper-meta">
-                              <span>By {paper.name || paper.author || 'Unknown Author'}</span>
-                            </div>
+                            <p className="paper-author-professional">By {paper.name || paper.author || 'Unknown Author'}</p>
                           </div>
-                          <span className="status-badge-modern pending">Pending Review</span>
+                          <span className="status-badge-professional status-pending">Pending Review</span>
                         </div>
                         
-                        <div className="paper-card-body">
-                          <div className="paper-details-grid">
-                            <div className="paper-details-row">
-                              <div className="paper-details-label">Author</div>
-                              <div className="paper-details-value">{paper.name || paper.author || 'N/A'}</div>
+                        <div className="paper-card-body-professional">
+                          <div className="paper-info-grid-professional">
+                            <div className="info-row-professional">
+                              <span className="info-label-professional">Author</span>
+                              <span className="info-value-professional">{paper.name || paper.author || 'N/A'}</span>
                             </div>
                             
-                            <div className="paper-details-row">
-                              <div className="paper-details-label">Department</div>
-                              <div className="paper-details-value">{paper.department || 'N/A'}</div>
+                            <div className="info-row-professional">
+                              <span className="info-label-professional">Department</span>
+                              <span className="info-value-professional">{paper.department || 'N/A'}</span>
                             </div>
                             
-                            <div className="paper-details-row">
-                              <div className="paper-details-label">College</div>
-                              <div className="paper-details-value">{paper.collegeName || paper.college || 'N/A'}</div>
+                            <div className="info-row-professional">
+                              <span className="info-label-professional">College</span>
+                              <span className="info-value-professional">{paper.collegeName || paper.college || 'N/A'}</span>
                             </div>
                             
-                            <div className="paper-details-row">
-                              <div className="paper-details-label">Email</div>
-                              <div className="paper-details-value">{paper.email || 'N/A'}</div>
+                            <div className="info-row-professional">
+                              <span className="info-label-professional">Email</span>
+                              <span className="info-value-professional">{paper.email || 'N/A'}</span>
                             </div>
                             
-                            <div className="paper-details-row">
-                              <div className="paper-details-label">Submission Date</div>
-                              <div className="paper-details-value">{paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString() : paper.submittedDate || 'N/A'}</div>
+                            <div className="info-row-professional">
+                              <span className="info-label-professional">Submission Date</span>
+                              <span className="info-value-professional">{paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString() : paper.submittedDate || 'N/A'}</span>
                             </div>
                             
-                            <div className="paper-details-row">
-                              <div className="paper-details-label">Contact</div>
-                              <div className="paper-details-value">{paper.contactNo || 'N/A'}</div>
+                            <div className="info-row-professional">
+                              <span className="info-label-professional">Contact</span>
+                              <span className="info-value-professional">{paper.contactNo || 'N/A'}</span>
                             </div>
                           </div>
                           
-                          <div className="paper-abstract-section">
-                            <div className="paper-abstract-section-title">Abstract</div>
-                            <div className="paper-abstract-box">
-                              <p>{paper.paperAbstract || paper.abstract || 'No abstract available'}</p>
-                            </div>
+                          <div className="abstract-section-professional">
+                            <h4 className="abstract-label-professional">Abstract</h4>
+                            <p className="abstract-text-professional">{paper.paperAbstract || paper.abstract || 'No abstract available'}</p>
                           </div>
                         </div>
                         
-                        <div className="paper-actions">
+                        <div className="paper-actions-professional">
                           <button 
                             onClick={() => openEvaluationModal(paper)}
-                            className="btn-evaluate"
+                            className="btn-action-primary-professional"
                           >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                            </svg>
                             Review Paper
                           </button>
-                          <button className="btn-download">
-                            Download PDF
+                          <button className="btn-action-secondary-professional">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                            </svg>
+                            Download
                           </button>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="no-papers">
-                    <p>No pending papers for evaluation at this time</p>
+                  <div className="empty-state-professional">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <h3>No Pending Papers</h3>
+                    <p>There are no papers awaiting your evaluation at this time</p>
                   </div>
                 )}
               </section>
 
               {/* Evaluated Papers Section */}
               {evaluatedPapers.length > 0 && (
-                <section className="papers-section">
-                  <h2>
-                    Evaluation History
-                    <span className="section-badge">{evaluatedPapers.length}</span>
-                  </h2>
+                <section className="papers-section-professional">
+                  <div className="section-header-professional">
+                    <h2>Evaluation History</h2>
+                    <span className="count-badge-professional">{evaluatedPapers.length}</span>
+                  </div>
                   
-                  <div className="papers-grid">
+                  <div className="papers-grid-professional">
                     {evaluatedPapers.map(paper => (
-                      <div key={paper.id} className="paper-card evaluated">
-                        <div className="paper-card-header">
-                          <div className="paper-card-title">
+                      <div key={paper.id} className="paper-card-professional evaluated-card-professional">
+                        <div className="paper-card-header-professional evaluated-header-professional">
+                          <div className="paper-title-section-professional">
                             <h3>{paper.paperTitle || paper.title || 'Untitled Paper'}</h3>
-                            <div className="paper-meta">
-                              <span>By {paper.name || paper.author || 'Unknown Author'}</span>
-                            </div>
+                            <p className="paper-author-professional">By {paper.name || paper.author || 'Unknown Author'}</p>
                           </div>
-                          <span className={`status-badge-modern ${
-                            paper.status === 'accepted' || paper.status === 'ACCEPTED' ? 'accepted' :
-                            paper.status === 'accepted_with_changes' || paper.status === 'ACCEPTED_WITH_CHANGES' ? 'minor' :
-                            'rejected'
+                          <span className={`status-badge-professional ${
+                            paper.status === 'accepted' || paper.status === 'ACCEPTED' ? 'status-accepted' :
+                            paper.status === 'accepted_with_changes' || paper.status === 'ACCEPTED_WITH_CHANGES' ? 'status-minor' :
+                            'status-rejected'
                           }`}>
                             {getStatusLabel(paper.status)}
                           </span>
                         </div>
                         
-                        <div className="paper-card-body">
-                          <div className="paper-details-grid">
-                            <div className="paper-details-row">
-                              <div className="paper-details-label">Author</div>
-                              <div className="paper-details-value">{paper.name || paper.author || 'N/A'}</div>
+                        <div className="paper-card-body-professional">
+                          <div className="paper-info-grid-professional">
+                            <div className="info-row-professional">
+                              <span className="info-label-professional">Author</span>
+                              <span className="info-value-professional">{paper.name || paper.author || 'N/A'}</span>
                             </div>
                             
-                            <div className="paper-details-row">
-                              <div className="paper-details-label">Department</div>
-                              <div className="paper-details-value">{paper.department || 'N/A'}</div>
+                            <div className="info-row-professional">
+                              <span className="info-label-professional">Department</span>
+                              <span className="info-value-professional">{paper.department || 'N/A'}</span>
                             </div>
                             
-                            <div className="paper-details-row full">
-                              <div className="paper-details-label">Your Decision</div>
-                              <div className="paper-details-value" style={{ fontWeight: '700', color: '#059669' }}>
+                            <div className="info-row-professional decision-row-professional">
+                              <span className="info-label-professional">Your Decision</span>
+                              <span className="info-value-professional decision-value">
                                 {getStatusLabel(paper.status)}
-                              </div>
+                              </span>
                             </div>
                             
                             {paper.evaluation?.score && (
-                              <div className="paper-details-row">
-                                <div className="paper-details-label">Score</div>
-                                <div className="paper-details-value">{paper.evaluation.score}/100</div>
+                              <div className="info-row-professional">
+                                <span className="info-label-professional">Score</span>
+                                <span className="info-value-professional">{paper.evaluation.score}/100</span>
                               </div>
                             )}
                             
-                            <div className="paper-details-row">
-                              <div className="paper-details-label">Evaluation Date</div>
-                              <div className="paper-details-value">
+                            <div className="info-row-professional">
+                              <span className="info-label-professional">Evaluation Date</span>
+                              <span className="info-value-professional">
                                 {paper.evaluation?.evaluatedDate || paper.evaluatedDate || 'N/A'}
-                              </div>
+                              </span>
                             </div>
                           </div>
                           
-                          <div className="paper-abstract-section">
-                            <div className="paper-abstract-section-title">Your Feedback</div>
-                            <div className="paper-abstract-box">
-                              <p>{paper.evaluation?.comments || paper.feedback || 'No comments provided'}</p>
-                            </div>
+                          <div className="feedback-section-professional">
+                            <h4 className="feedback-label-professional">Your Feedback</h4>
+                            <p className="feedback-text-professional">{paper.evaluation?.comments || paper.feedback || 'No comments provided'}</p>
                           </div>
                         </div>
                       </div>
@@ -1215,6 +1209,375 @@ export default function EvaluatePapers() {
 
           .evaluation-modal-body {
             padding: 1.5rem;
+          }
+        }
+
+        /* Professional UI Additions */
+        .papers-section-professional {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .section-header-professional {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding-bottom: 1rem;
+          border-bottom: 2px solid #e5e7eb;
+        }
+
+        .section-header-professional h2 {
+          font-size: 1.5rem;
+          color: #1f2937;
+          font-weight: 700;
+          margin: 0;
+        }
+
+        .count-badge-professional {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 0.35rem 0.85rem;
+          border-radius: 20px;
+          font-size: 0.85rem;
+          font-weight: 700;
+          min-width: 35px;
+          text-align: center;
+        }
+
+        .papers-grid-professional {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+          gap: 2rem;
+          width: 100%;
+        }
+
+        .paper-card-professional {
+          background: white;
+          border-radius: 14px;
+          overflow: hidden;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          border: 2px solid transparent;
+        }
+
+        .paper-card-professional:hover {
+          box-shadow: 0 20px 50px rgba(102, 126, 234, 0.25);
+          transform: translateY(-6px);
+          border-color: #667eea;
+        }
+
+        .paper-card-professional.evaluated-card-professional {
+          background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+          border-color: #06b6d4;
+        }
+
+        .paper-card-professional.evaluated-card-professional:hover {
+          border-color: #0891b2;
+          box-shadow: 0 20px 50px rgba(6, 182, 212, 0.25);
+        }
+
+        .paper-card-header-professional {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 1.75rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .paper-card-header-professional.evaluated-header-professional {
+          background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+
+        .paper-title-section-professional {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .paper-title-section-professional h3 {
+          margin: 0;
+          font-size: 1.15rem;
+          font-weight: 700;
+          line-height: 1.4;
+          color: white;
+          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .paper-author-professional {
+          margin: 0;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.9);
+        }
+
+        .status-badge-professional {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.4rem 0.75rem;
+          border-radius: 6px;
+          font-size: 0.7rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          white-space: nowrap;
+          flex-shrink: 0;
+        }
+
+        .status-badge-professional.status-pending {
+          background: rgba(255, 255, 255, 0.3);
+          color: white;
+          border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .status-badge-professional.status-accepted {
+          background: #10b981;
+          color: white;
+        }
+
+        .status-badge-professional.status-minor {
+          background: #f59e0b;
+          color: white;
+        }
+
+        .status-badge-professional.status-rejected {
+          background: #ef4444;
+          color: white;
+        }
+
+        .paper-card-body-professional {
+          padding: 1.75rem;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+          background: white;
+        }
+
+        .paper-info-grid-professional {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.25rem;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          padding: 1.5rem;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+        }
+
+        .info-row-professional {
+          display: flex;
+          flex-direction: column;
+          gap: 0.4rem;
+        }
+
+        .info-row-professional.decision-row-professional {
+          grid-column: 1 / -1;
+        }
+
+        .info-label-professional {
+          font-size: 0.7rem;
+          font-weight: 800;
+          color: #667eea;
+          text-transform: uppercase;
+          letter-spacing: 0.6px;
+        }
+
+        .info-value-professional {
+          font-size: 0.9rem;
+          color: #1f2937;
+          font-weight: 600;
+          line-height: 1.5;
+        }
+
+        .info-value-professional.decision-value {
+          font-weight: 700;
+          color: #059669;
+          font-size: 1rem;
+        }
+
+        .abstract-section-professional {
+          background: linear-gradient(135deg, #fafbfc 0%, #f3f6f9 100%);
+          padding: 1.25rem;
+          border-radius: 10px;
+          border-left: 4px solid #667eea;
+          border: 1px solid #e0e7ff;
+        }
+
+        .abstract-label-professional {
+          font-size: 0.7rem;
+          font-weight: 800;
+          color: #667eea;
+          text-transform: uppercase;
+          letter-spacing: 0.6px;
+          margin: 0 0 0.75rem 0;
+        }
+
+        .abstract-text-professional {
+          margin: 0;
+          font-size: 0.875rem;
+          color: #475569;
+          line-height: 1.7;
+        }
+
+        .feedback-section-professional {
+          background: linear-gradient(135deg, #fafbfc 0%, #f3f6f9 100%);
+          padding: 1.25rem;
+          border-radius: 10px;
+          border-left: 4px solid #06b6d4;
+          border: 1px solid #cffafe;
+        }
+
+        .feedback-label-professional {
+          font-size: 0.7rem;
+          font-weight: 800;
+          color: #06b6d4;
+          text-transform: uppercase;
+          letter-spacing: 0.6px;
+          margin: 0 0 0.75rem 0;
+        }
+
+        .feedback-text-professional {
+          margin: 0;
+          font-size: 0.875rem;
+          color: #475569;
+          line-height: 1.7;
+        }
+
+        .paper-actions-professional {
+          display: flex;
+          gap: 0.75rem;
+          padding: 1.25rem;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          border-top: 1px solid #e2e8f0;
+        }
+
+        .btn-action-primary-professional {
+          flex: 1;
+          padding: 0.75rem 1rem;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 0.875rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .btn-action-primary-professional:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-action-secondary-professional {
+          flex: 1;
+          padding: 0.75rem 1rem;
+          background: white;
+          color: #667eea;
+          border: 2px solid #667eea;
+          border-radius: 8px;
+          font-size: 0.875rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .btn-action-secondary-professional:hover {
+          background: #667eea;
+          color: white;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px rgba(102, 126, 234, 0.25);
+        }
+
+        .empty-state-professional {
+          grid-column: 1 / -1;
+          text-align: center;
+          padding: 4rem 2rem;
+          background: white;
+          border-radius: 14px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-state-professional svg {
+          color: #cbd5e1;
+          margin-bottom: 1.5rem;
+        }
+
+        .empty-state-professional h3 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.25rem;
+          color: #1f2937;
+          font-weight: 700;
+        }
+
+        .empty-state-professional p {
+          margin: 0;
+          font-size: 1rem;
+          color: #6b7280;
+          font-weight: 500;
+        }
+
+        .loading-state-professional {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 60vh;
+          gap: 2rem;
+        }
+
+        .spinner-professional {
+          width: 60px;
+          height: 60px;
+          border: 4px solid #f0f0f0;
+          border-top: 4px solid #667eea;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        .loading-text-professional {
+          text-align: center;
+        }
+
+        .loading-text-professional h3 {
+          margin: 0 0 0.5rem 0;
+          font-size: 1.2rem;
+          color: #2d3748;
+          font-weight: 700;
+        }
+
+        .loading-text-professional p {
+          margin: 0;
+          color: #718096;
+          font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+          .papers-grid-professional {
+            grid-template-columns: 1fr;
+          }
+
+          .paper-info-grid-professional {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>
