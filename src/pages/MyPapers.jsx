@@ -325,14 +325,14 @@ export default function MyPapers() {
                       const statusInfo = getStatusBadge(paper.status || 'pending_assignment')
                       return (
                         <div
-                          key={paper.id}
-                          className={`my-paper-card ${expandedPapers[paper.id] ? 'expanded' : ''}`}
+                          key={paper.paperId}
+                          className={`my-paper-card ${expandedPapers[paper.paperId] ? 'expanded' : ''}`}
                         >
-                          <div className="paper-card-header" onClick={() => toggleExpandPaper(paper.id)}>
+                          <div className="paper-card-header" onClick={() => toggleExpandPaper(paper.paperId)}>
                             <div className="paper-header-left">
                               <h3>{paper.paperTitle || paper.title}</h3>
                               <div className="paper-header-meta">
-                                <span>#{paper.id.toString().padStart(3, '0')}</span>
+                                <span>#{paper.paperId}</span>
                                 <span>Submitted {formatDate(paper.submittedAt || paper.submittedDate)}</span>
                               </div>
                             </div>
@@ -341,7 +341,7 @@ export default function MyPapers() {
                                 className="btn-view-paper"
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  handleDownload(paper.id, paper.paperFileName, paper)
+                                  handleDownload(paper.paperId, paper.paperFileName, paper)
                                 }}
                                 title="Download Paper"
                               >
@@ -350,18 +350,18 @@ export default function MyPapers() {
                               <span className={`status-badge ${statusInfo.class}`}>
                                 {statusInfo.text}
                               </span>
-                              <span className={`expand-icon ${expandedPapers[paper.id] ? 'expanded' : ''}`}>
+                              <span className={`expand-icon ${expandedPapers[paper.paperId] ? 'expanded' : ''}`}>
                                 ▶
                               </span>
                             </div>
                           </div>
 
-                          {expandedPapers[paper.id] && (
+                          {expandedPapers[paper.paperId] && (
                             <div className="paper-card-body-expanded">
                               <div className="paper-meta-info-expanded">
                                 <div className="meta-block">
                                   <span className="meta-label">Paper ID</span>
-                                  <span className="meta-value">#{paper.id.toString().padStart(3, '0')}</span>
+                                  <span className="meta-value">#{paper.paperId}</span>
                                 </div>
                                 <div className="meta-block">
                                   <span className="meta-label">Submitted</span>
@@ -422,7 +422,7 @@ export default function MyPapers() {
                                 <button 
                                   className="btn-icon" 
                                   title="Download PDF"
-                                  onClick={() => handleDownload(paper.id, paper.paperFileName, paper)}
+                                  onClick={() => handleDownload(paper.paperId, paper.paperFileName, paper)}
                                 >
                                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>

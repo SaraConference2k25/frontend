@@ -161,6 +161,27 @@ export async function getPapersByEvaluator(evaluatorId) {
   return await handleResponse(res)
 }
 
+/**
+ * Update paper status
+ * @param {string} paperId - The paper ID
+ * @param {string} status - The new status (PENDING_ASSIGNMENT, UNDER_REVIEW, ACCEPTED, REJECTED)
+ */
+export async function updatePaperStatus(paperId, status) {
+  console.log(`📝 Updating paper ${paperId} status to ${status}...`)
+  console.log(`🔗 API URL: ${API_BASE}/api/papers/update-status?paperId=${encodeURIComponent(paperId)}&status=${encodeURIComponent(status)}`)
+  
+  const res = await fetch(`${API_BASE}/api/papers/update-status?paperId=${encodeURIComponent(paperId)}&status=${encodeURIComponent(status)}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+
+  const data = await handleResponse(res)
+  console.log('✅ Paper status updated successfully:', data)
+  return data
+}
+
 export default {
   submitPaper,
   getAllPapers,
@@ -171,5 +192,6 @@ export default {
   getPapersByEmail,
   deletePaper,
   assignEvaluatorToPaper,
-  getPapersByEvaluator
+  getPapersByEvaluator,
+  updatePaperStatus
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { sampleEvaluators, samplePapers } from '../data/sampleData'
-import { getAllPapers, assignEvaluatorToPaper } from '../api/papers'
+import { getAllPapers, assignEvaluatorToPaper, updatePaperStatus } from '../api/papers'
 import { getEvaluators } from '../api/evaluators'
 
 export default function AdminPapers() {
@@ -129,10 +129,10 @@ export default function AdminPapers() {
     // Create a link to download the paper
     const link = document.createElement('a')
     // Use fileName from paper data, or generate one
-    const fileName = paper.fileName || `paper_${paper.id}.pdf`
+    const fileName = paper.fileName || `paper_${paper.paperId}.pdf`
     // For now, just trigger a download with sample URL
     // In production, this would be the actual paper file URL from backend
-    link.href = `http://98.70.26.80:8069/api/papers/${paper.id}/download` // Adjust URL as needed
+    link.href = `http://98.70.26.80:8069/api/papers/${paper.paperId}/download` // Adjust URL as needed
     link.download = fileName
     link.click()
   }
@@ -143,7 +143,7 @@ export default function AdminPapers() {
     setLoading(true)
     try {
       // Send request to backend
-      await assignEvaluatorToPaper(selectedPaper.id, evaluatorId)
+      await assignEvaluatorToPaper(selectedPaper.paperId, evaluatorId)
       
       // Refresh papers list from backend to get actual updated data
       const updatedPapers = await getAllPapers()
@@ -170,7 +170,7 @@ export default function AdminPapers() {
     setNewStatus('')
   }
 
-  const updatePaperStatus = async () => {
+  const handleUpdatePaperStatus = async () => {
     if (!selectedPaperForView || !newStatus.trim()) {
       alert('Please select a status')
       return
@@ -178,27 +178,19 @@ export default function AdminPapers() {
     
     setLoading(true)
     try {
-      const response = await fetch(`http://98.70.26.80:8069/api/papers/status?paperId=${selectedPaperForView.id}&status=${encodeURIComponent(newStatus)}`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      
-      if (!response.ok) {
-        throw new Error(`Failed to update status: ${response.statusText}`)
-      }
+      console.log(`📝 Updating paper ${selectedPaperForView.paperId} status to ${newStatus}`)
+      const updatedPaper = await updatePaperStatus(selectedPaperForView.paperId, newStatus)
+      console.log('✅ Status updated:', updatedPaper)
       
       // Refresh papers list from backend to get actual updated data
       const updatedPapers = await getAllPapers()
       setPapers(updatedPapers)
       
-      alert(`Paper status updated to "${newStatus}" successfully!`)
+      alert(`✅ Paper status updated to "${newStatus}" successfully!`)
       closeStatusUpdateModal()
       setShowPaperDetailsModal(false)
     } catch (e) {
-      console.error('Status update failed', e)
+      console.error('❌ Status update failed', e)
       alert('Failed to update paper status: ' + (e.message || e))
     } finally {
       setLoading(false)
@@ -499,7 +491,7 @@ export default function AdminPapers() {
                         </svg>
                         Paper ID
                       </p>
-                      <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.1rem', color: '#333', fontWeight: '700' }}>#{selectedPaper.id || 'N/A'}</p>
+                      <p style={{ margin: '0.5rem 0 0 0', fontSize: '1.1rem', color: '#333', fontWeight: '700' }}>#{selectedPaper.paperId || 'N/A'}</p>
                     </div>
                     <div>
                       <p style={{ margin: 0, fontSize: '0.8rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -791,7 +783,7 @@ export default function AdminPapers() {
             {/* Header - Compact */}
             <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', padding: '1.2rem 1.8rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '16px 16px 0 0', flexWrap: 'wrap', gap: '1rem' }}>
               <div>
-                <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '700' }}>Paper #{selectedPaperForView.id}</h2>
+                <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '700' }}>Paper #{selectedPaperForView.paperId}</h2>
               </div>
               <button className="close-btn" onClick={closePaperDetailsModal} style={{ color: 'white', fontSize: '2rem', background: 'none', border: 'none', cursor: 'pointer', padding: 0, opacity: 0.8 }} onMouseEnter={(e) => e.currentTarget.style.opacity = '1'} onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}>&times;</button>
             </div>
@@ -864,7 +856,7 @@ export default function AdminPapers() {
                     </div>
                     <div>
                       <label style={{ fontSize: '0.65rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: '0.3rem', opacity: 0.8 }}>Paper ID</label>
-                      <p style={{ margin: 0, fontSize: '0.9rem', color: '#1f2937', fontWeight: '600' }}>#{selectedPaperForView.id}</p>
+                      <p style={{ margin: 0, fontSize: '0.9rem', color: '#1f2937', fontWeight: '600' }}>#{selectedPaperForView.paperId}</p>
                     </div>
                   </div>
                 </div>
@@ -1003,7 +995,7 @@ export default function AdminPapers() {
             
             <div style={{ padding: '2rem' }}>
               <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{ fontSize: '0.75rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.8rem' }}>Paper ID: #{selectedPaperForView.id}</label>
+                <label style={{ fontSize: '0.75rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.8rem' }}>Paper ID: #{selectedPaperForView.paperId}</label>
                 <p style={{ margin: 0, fontSize: '0.9rem', color: '#666' }}>{selectedPaperForView.name}</p>
               </div>
 
@@ -1014,11 +1006,9 @@ export default function AdminPapers() {
                 </div>
 
                 <label style={{ fontSize: '0.75rem', color: '#667eea', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '0.8rem' }}>New Status</label>
-                <input
-                  type="text"
+                <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value)}
-                  placeholder="Enter new status (e.g., PENDING_ASSIGNMENT, ASSIGNED_TO_EVALUATOR, COMPLETED)"
                   style={{
                     width: '100%',
                     padding: '0.8rem',
@@ -1027,11 +1017,19 @@ export default function AdminPapers() {
                     fontSize: '0.9rem',
                     fontFamily: 'inherit',
                     boxSizing: 'border-box',
-                    transition: 'all 0.3s'
+                    transition: 'all 0.3s',
+                    backgroundColor: 'white',
+                    cursor: 'pointer'
                   }}
                   onFocus={(e) => e.currentTarget.style.borderColor = '#667eea'}
                   onBlur={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
-                />
+                >
+                  <option value="">-- Select a status --</option>
+                  <option value="PENDING_ASSIGNMENT">Pending Assignment</option>
+                  <option value="UNDER_REVIEW">Under Review</option>
+                  <option value="ACCEPTED">Accepted</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
               </div>
 
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
@@ -1060,7 +1058,7 @@ export default function AdminPapers() {
                   Cancel
                 </button>
                 <button
-                  onClick={updatePaperStatus}
+                  onClick={handleUpdatePaperStatus}
                   disabled={loading}
                   style={{
                     padding: '0.7rem 1.5rem',
@@ -1191,8 +1189,8 @@ export default function AdminPapers() {
                       const statusInfo = getStatusBadge(paper.status || 'pending_assignment')
                       const keywords = Array.isArray(paper.keywords) ? paper.keywords : []
                       return (
-                        <tr key={paper.id || Math.random()} style={{ borderBottom: '1px solid #e2e8f0', backgroundColor: '#fff' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}>
-                          <td data-label="ID" style={{ padding: '0.65rem 0.75rem', fontSize: '0.9rem', color: '#2d3748', fontWeight: '600' }}>#{paper.id || 'N/A'}</td>
+                        <tr key={paper.paperId || Math.random()} style={{ borderBottom: '1px solid #e2e8f0', backgroundColor: '#fff' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f9fafb'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fff'}>
+                          <td data-label="ID" style={{ padding: '0.65rem 0.75rem', fontSize: '0.9rem', color: '#2d3748', fontWeight: '600' }}>#{paper.paperId || 'N/A'}</td>
                           <td data-label="Title" style={{ padding: '0.65rem 0.75rem', fontSize: '0.9rem', color: '#2d3748', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={paper.name || 'N/A'}>
                             {paper.name || 'N/A'}
                           </td>

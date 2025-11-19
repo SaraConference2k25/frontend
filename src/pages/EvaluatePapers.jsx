@@ -37,6 +37,8 @@ export default function EvaluatePapers() {
         console.log('📄 Fetching papers for evaluator:', evaluatorId)
         const papers = await getPapersByEvaluator(evaluatorId)
         console.log('✅ Papers loaded successfully:', papers)
+        console.log('📊 Papers count:', Array.isArray(papers) ? papers.length : 'Not an array')
+        console.log('📋 First paper structure:', papers?.[0])
         setSubmittedPapers(Array.isArray(papers) ? papers : [])
       } catch (error) {
         console.error('❌ Failed to load papers:', error)
@@ -112,7 +114,7 @@ export default function EvaluatePapers() {
 
       setSubmittedPapers(prev => 
         prev.map(paper => 
-          paper.id === selectedPaper.id 
+          paper.paperId === selectedPaper.paperId 
             ? { 
                 ...paper, 
                 status: decisionMap[evaluationData.decision],
@@ -176,16 +178,20 @@ export default function EvaluatePapers() {
     return labels[status] || status?.charAt(0).toUpperCase() + status?.slice(1)
   }
 
-  // Papers are pending if they haven't been evaluated yet (status: pending, ASSIGNED, PENDING, under_evaluation, UNDER_EVALUATION)
+  // Papers are pending if they haven't been evaluated yet
   const pendingPapers = submittedPapers.filter(paper => {
-    const status = paper.status?.toUpperCase() || ''
-    return status === 'PENDING' || status === 'ASSIGNED' || status === 'UNDER_EVALUATION' || paper.status === 'pending' || paper.status === 'under_evaluation'
+    const status = paper.status?.toLowerCase() || ''
+    // Match any status that indicates pending evaluation
+    const isPending = !status.includes('accept') && !status.includes('reject')
+    console.log('📋 Paper:', paper.paperId, '| Status:', paper.status, '| Pending:', isPending)
+    return isPending
   })
+  console.log('✅ Total papers:', submittedPapers.length, '| Pending papers:', pendingPapers.length, '| Pending Papers:', pendingPapers)
   
   const evaluatedPapers = submittedPapers.filter(paper => {
-    const status = paper.status?.toUpperCase() || ''
-    return status === 'ACCEPTED' || status === 'REJECTED' || status === 'ACCEPTED_WITH_CHANGES' || 
-           paper.status === 'accepted' || paper.status === 'rejected' || paper.status === 'accepted_with_changes'
+    const status = paper.status?.toLowerCase() || ''
+    // Match any status that indicates it's been evaluated
+    return status.includes('accept') || status.includes('reject')
   })
 
   return (
@@ -250,19 +256,19 @@ export default function EvaluatePapers() {
                   <div className="paper-summary-box">
                     <div className="summary-item">
                       <div className="summary-label">Paper Title</div>
-                      <div className="summary-value">{selectedPaper.title}</div>
+                      <div className="summary-value">{selectedPaper.paperTitle || selectedPaper.title || 'N/A'}</div>
                     </div>
                     <div className="summary-item">
                       <div className="summary-label">Author</div>
-                      <div className="summary-value">{selectedPaper.author}</div>
+                      <div className="summary-value">{selectedPaper.name || selectedPaper.author || 'N/A'}</div>
                     </div>
                     <div className="summary-item">
                       <div className="summary-label">Department</div>
-                      <div className="summary-value">{selectedPaper.department}</div>
+                      <div className="summary-value">{selectedPaper.department || 'N/A'}</div>
                     </div>
                     <div className="summary-item">
                       <div className="summary-label">Abstract</div>
-                      <div className="summary-value">{selectedPaper.abstract?.substring(0, 200)}...</div>
+                      <div className="summary-value">{(selectedPaper.paperAbstract || selectedPaper.abstract || 'N/A').substring(0, 200)}...</div>
                     </div>
                   </div>
 
@@ -397,7 +403,7 @@ export default function EvaluatePapers() {
                 {pendingPapers.length > 0 ? (
                   <div className="papers-grid">
                     {pendingPapers.map(paper => (
-                      <div key={paper.id} className="paper-card">
+                      <div key={paper.paperId} className="paper-card">
                         <div className="paper-card-header">
                           <div className="paper-card-title">
                             <h3>{paper.paperTitle || paper.title || 'Untitled Paper'}</h3>
@@ -480,7 +486,7 @@ export default function EvaluatePapers() {
                   
                   <div className="papers-grid">
                     {evaluatedPapers.map(paper => (
-                      <div key={paper.id} className="paper-card evaluated">
+                      <div key={paper.paperId} className="paper-card evaluated">
                         <div className="paper-card-header">
                           <div className="paper-card-title">
                             <h3>{paper.paperTitle || paper.title || 'Untitled Paper'}</h3>
@@ -544,6 +550,32 @@ export default function EvaluatePapers() {
                 </section>
               )}
             </>
+          )}
+
+          {/* DEBUG: Show all papers if none shown */}
+          {!loading && submittedPapers.length > 0 && pendingPapers.length === 0 && evaluatedPapers.length === 0 && (
+            <section className="papers-section">
+              <h2>🔍 Debug: All Papers (No filters matched)</h2>
+              <div className="papers-grid">
+                {submittedPapers.map(paper => (
+                  <div key={paper.paperId} className="paper-card">
+                    <div className="paper-card-header">
+                      <div className="paper-card-title">
+                        <h3>{paper.paperTitle || paper.title || 'Paper ID: ' + paper.paperId}</h3>
+                        <div className="paper-meta">
+                          <span>Status: {paper.status} | Type: {typeof paper.status}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="paper-card-body">
+                      <pre style={{ fontSize: '12px', overflow: 'auto', maxHeight: '300px' }}>
+                        {JSON.stringify(paper, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
           )}
         </div>
       </main>
