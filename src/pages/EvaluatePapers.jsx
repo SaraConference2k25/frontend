@@ -40,7 +40,6 @@ export default function EvaluatePapers() {
         setSubmittedPapers(Array.isArray(papers) ? papers : [])
       } catch (error) {
         console.error('❌ Failed to load papers:', error)
-        alert('Failed to load papers: ' + (error.message || error))
         setSubmittedPapers([])
       } finally {
         setLoading(false)
@@ -235,113 +234,199 @@ export default function EvaluatePapers() {
       {/* Evaluation Modal */}
       {showEvaluationModal && (
         <div className="evaluation-modal-overlay" onClick={closeEvaluationModal}>
-          <div className="evaluation-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="evaluation-modal-header">
-              <div>
-                <h3>Evaluate Paper</h3>
-                <p>Provide your expert review and recommendation</p>
+          <div className="evaluation-modal-modern" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header-modern">
+              <div className="modal-header-content">
+                <div className="modal-badge">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                  </svg>
+                  Review Paper
+                </div>
+                <h3 className="modal-title">{selectedPaper?.paperTitle || selectedPaper?.title || 'Paper Evaluation'}</h3>
+                <p className="modal-subtitle">Provide your expert assessment and feedback</p>
               </div>
-              <button className="evaluation-modal-close" onClick={closeEvaluationModal}>&times;</button>
+              <button className="modal-close-btn" onClick={closeEvaluationModal}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
             </div>
             
-            <div className="evaluation-modal-body">
+            <div className="modal-body-modern">
               {selectedPaper && (
                 <>
-                  <div className="paper-summary-box">
-                    <div className="summary-item">
-                      <div className="summary-label">Paper Title</div>
-                      <div className="summary-value">{selectedPaper.title}</div>
+                  {/* Paper Details Grid */}
+                  <div className="paper-details-grid">
+                    <div className="detail-card">
+                      <div className="detail-label">AUTHOR</div>
+                      <div className="detail-value">{selectedPaper.name || selectedPaper.author || 'N/A'}</div>
                     </div>
-                    <div className="summary-item">
-                      <div className="summary-label">Author</div>
-                      <div className="summary-value">{selectedPaper.author}</div>
+                    <div className="detail-card">
+                      <div className="detail-label">DEPARTMENT</div>
+                      <div className="detail-value">{selectedPaper.department || 'N/A'}</div>
                     </div>
-                    <div className="summary-item">
-                      <div className="summary-label">Department</div>
-                      <div className="summary-value">{selectedPaper.department}</div>
+                    <div className="detail-card">
+                      <div className="detail-label">COLLEGE</div>
+                      <div className="detail-value">{selectedPaper.collegeName || selectedPaper.college || 'N/A'}</div>
                     </div>
-                    <div className="summary-item">
-                      <div className="summary-label">Abstract</div>
-                      <div className="summary-value">{selectedPaper.abstract?.substring(0, 200)}...</div>
+                    <div className="detail-card">
+                      <div className="detail-label">EMAIL</div>
+                      <div className="detail-value">{selectedPaper.email || 'N/A'}</div>
+                    </div>
+                    <div className="detail-card">
+                      <div className="detail-label">SUBMISSION DATE</div>
+                      <div className="detail-value">
+                        {selectedPaper.submittedAt ? new Date(selectedPaper.submittedAt).toLocaleDateString() : selectedPaper.submittedDate || 'N/A'}
+                      </div>
+                    </div>
+                    <div className="detail-card">
+                      <div className="detail-label">CONTACT</div>
+                      <div className="detail-value">{selectedPaper.contactNo || 'N/A'}</div>
                     </div>
                   </div>
 
-                  <form onSubmit={handleEvaluationSubmit} className="evaluation-form">
+                  {/* Abstract Section */}
+                  {(selectedPaper.paperAbstract || selectedPaper.abstract) && (
+                    <div className="abstract-section-modal">
+                      <div className="abstract-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                        </svg>
+                        <span>ABSTRACT</span>
+                      </div>
+                      <p className="abstract-content">{selectedPaper.paperAbstract || selectedPaper.abstract}</p>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="modal-action-buttons">
+                    <button 
+                      type="button"
+                      className="modal-btn-primary"
+                      onClick={() => {}}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                      </svg>
+                      <span>Review Paper</span>
+                    </button>
+                    {selectedPaper.fileUrl && (
+                      <a 
+                        href={selectedPaper.fileUrl} 
+                        download
+                        className="modal-btn-secondary"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
+                        <span>Download</span>
+                      </a>
+                    )}
+                  </div>
+
+                  <div className="modal-divider"></div>
+
+                  <form onSubmit={handleEvaluationSubmit} className="evaluation-form-modern">
                     {/* Decision Section */}
-                    <div className="decision-section">
-                      <div className="decision-label">Your Decision *</div>
-                      <div className="decision-options">
+                    <div className="form-section">
+                      <label className="form-label">Your Decision *</label>
+                      <div className="decision-buttons">
                         <button
                           type="button"
-                          className={`decision-button accept ${evaluationData.decision === 'accept' ? 'selected' : ''}`}
+                          className={`decision-btn decision-accept ${evaluationData.decision === 'accept' ? 'active' : ''}`}
                           onClick={() => handleDecisionChange('accept')}
                         >
-                          <span className="decision-icon">✓</span>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                          </svg>
                           <span>Accept</span>
                         </button>
                         <button
                           type="button"
-                          className={`decision-button minor ${evaluationData.decision === 'minor' ? 'selected' : ''}`}
+                          className={`decision-btn decision-minor ${evaluationData.decision === 'minor' ? 'active' : ''}`}
                           onClick={() => handleDecisionChange('minor')}
                         >
-                          <span className="decision-icon">◐</span>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/>
+                          </svg>
                           <span>Minor Changes</span>
                         </button>
                         <button
                           type="button"
-                          className={`decision-button reject ${evaluationData.decision === 'reject' ? 'selected' : ''}`}
+                          className={`decision-btn decision-reject ${evaluationData.decision === 'reject' ? 'active' : ''}`}
                           onClick={() => handleDecisionChange('reject')}
                         >
-                          <span className="decision-icon">✕</span>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                          </svg>
                           <span>Reject</span>
                         </button>
                       </div>
                     </div>
 
                     {/* Comments Section */}
-                    <div className="comments-section">
-                      <div className="comments-label">Comments & Feedback *</div>
+                    <div className="form-section">
+                      <label className="form-label" htmlFor="comments">Comments & Feedback *</label>
                       <textarea
+                        id="comments"
                         name="comments"
                         value={evaluationData.comments}
                         onChange={handleInputChange}
-                        className="comments-textarea"
-                        placeholder="Please provide detailed feedback for the author. Include specific suggestions for improvement, strengths of the paper, and areas that need revision..."
+                        className="form-textarea"
+                        placeholder="Provide detailed feedback including strengths, weaknesses, and specific suggestions for improvement..."
+                        rows="6"
                         required
                       />
                     </div>
 
                     {/* Score Section */}
-                    <div className="score-section">
-                      <div className="score-label">Score (Optional)</div>
+                    <div className="form-section">
+                      <label className="form-label" htmlFor="score">Score (0-100)</label>
                       <input
+                        id="score"
                         type="number"
                         name="score"
                         value={evaluationData.score}
                         onChange={handleInputChange}
-                        className="score-input"
+                        className="form-input"
                         min="0"
                         max="100"
-                        placeholder="Enter score from 0 to 100"
+                        placeholder="Optional: Enter a score from 0 to 100"
                       />
                     </div>
 
-                    {/* Actions */}
-                    <div className="modal-actions">
+                    {/* Submit Actions */}
+                    <div className="form-actions">
                       <button
                         type="button"
                         onClick={closeEvaluationModal}
-                        className="btn-cancel"
+                        className="form-btn-cancel"
                         disabled={submittingEvaluation}
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
-                        className="btn-submit"
+                        className="form-btn-submit"
                         disabled={submittingEvaluation || !evaluationData.comments.trim()}
                       >
-                        {submittingEvaluation ? 'Submitting...' : 'Submit Evaluation'}
+                        {submittingEvaluation ? (
+                          <>
+                            <svg className="spinner" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <circle cx="12" cy="12" r="10"/>
+                            </svg>
+                            <span>Submitting...</span>
+                          </>
+                        ) : (
+                          <>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            </svg>
+                            <span>Submit Evaluation</span>
+                          </>
+                        )}
                       </button>
                     </div>
                   </form>
@@ -354,183 +439,245 @@ export default function EvaluatePapers() {
 
       {/* Main Content */}
       <main className="dashboard-main">
-        <div className="dashboard-content admin-evaluators-content">
-          {/* Header */}
-          <header className="page-header-modern">
-            <div className="page-header-content">
-              <div className="page-title-section">
-                <h1>Paper Evaluation Center</h1>
-                <p className="page-subtitle">Review and evaluate submitted papers with expert feedback</p>
+        <div className="eval-modern-container">
+          {/* Stunning Header with Glassmorphism */}
+          <header className="eval-hero-header">
+            <div className="eval-hero-background"></div>
+            <div className="eval-hero-content">
+              <div className="eval-hero-badge">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                </svg>
+                <span>Excellence in Review</span>
+              </div>
+              <h1 className="eval-hero-title">Paper Evaluation Center</h1>
+              <p className="eval-hero-subtitle">Empowering academic excellence through expert peer review</p>
+              <div className="eval-hero-stats">
+                <div className="eval-stat-item">
+                  <span className="eval-stat-number">{pendingPapers.length}</span>
+                  <span className="eval-stat-label">Pending</span>
+                </div>
+                <div className="eval-stat-divider"></div>
+                <div className="eval-stat-item">
+                  <span className="eval-stat-number">{evaluatedPapers.length}</span>
+                  <span className="eval-stat-label">Evaluated</span>
+                </div>
+                <div className="eval-stat-divider"></div>
+                <div className="eval-stat-item">
+                  <span className="eval-stat-number">{submittedPapers.length}</span>
+                  <span className="eval-stat-label">Total</span>
+                </div>
               </div>
             </div>
           </header>
 
-          {/* Loading State */}
+          {/* Loading State - Modern Design */}
           {loading && (
-            <div className="loading-state-professional">
-              <div className="spinner-professional"></div>
-              <div className="loading-text-professional">
-                <h3>Loading Papers</h3>
-                <p>Fetching papers assigned to you...</p>
+            <div className="eval-loading-modern">
+              <div className="eval-loading-animation">
+                <div className="eval-loading-circle"></div>
+                <div className="eval-loading-circle"></div>
+                <div className="eval-loading-circle"></div>
               </div>
+              <h3 className="eval-loading-title">Fetching Your Papers</h3>
+              <p className="eval-loading-text">Please wait while we load your evaluation queue...</p>
             </div>
           )}
 
           {/* Papers Sections - Show only when not loading */}
           {!loading && (
             <>
-              {/* Pending Papers Section */}
-              <section className="papers-section-professional">
-                <div className="section-header-professional">
-                  <h2>Pending Evaluations</h2>
-                  <span className="count-badge-professional">{pendingPapers.length}</span>
+              {/* Pending Papers Section - Modern Design */}
+              <section className="eval-section-modern">
+                <div className="eval-section-header">
+                  <div className="eval-section-icon-wrapper">
+                    <div className="eval-section-icon eval-icon-pending">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="eval-section-title-wrapper">
+                    <h2 className="eval-section-title">Awaiting Your Expert Review</h2>
+                    <p className="eval-section-description">Papers requiring your professional evaluation</p>
+                  </div>
+                  <div className="eval-count-badge eval-badge-pending">
+                    <span className="eval-count-number">{pendingPapers.length}</span>
+                    <span className="eval-count-text">pending</span>
+                  </div>
                 </div>
                 
                 {pendingPapers.length > 0 ? (
-                  <div className="papers-grid-professional">
-                    {pendingPapers.map(paper => (
-                      <div key={paper.id} className="paper-card-professional">
-                        <div className="paper-card-header-professional">
-                          <div className="paper-title-section-professional">
-                            <h3>{paper.paperTitle || paper.title || 'Untitled Paper'}</h3>
-                            <p className="paper-author-professional">By {paper.name || paper.author || 'Unknown Author'}</p>
+                  <div className="eval-cards-grid">
+                    {pendingPapers.map((paper, index) => (
+                      <div key={paper.id} className="eval-card-modern" style={{ animationDelay: `${index * 0.1}s` }}>
+                        <div className="eval-card-glow"></div>
+                        <div className="eval-card-header">
+                          <div className="eval-card-number">#{index + 1}</div>
+                          <div className="eval-status-badge eval-status-pending">
+                            <span className="eval-status-pulse"></span>
+                            <span>Pending Review</span>
                           </div>
-                          <span className="status-badge-professional status-pending">Pending Review</span>
                         </div>
                         
                         <div className="paper-card-body-professional">
                           <div className="paper-info-grid-professional">
-                            <div className="info-row-professional">
-                              <span className="info-label-professional">Author</span>
-                              <span className="info-value-professional">{paper.name || paper.author || 'N/A'}</span>
+                            <div className="eval-pill">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+                              </svg>
+                              <span>{paper.collegeName || paper.college || 'N/A'}</span>
                             </div>
-                            
-                            <div className="info-row-professional">
-                              <span className="info-label-professional">Department</span>
-                              <span className="info-value-professional">{paper.department || 'N/A'}</span>
+                            <div className="eval-pill">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                              </svg>
+                              <span>{paper.email || 'N/A'}</span>
                             </div>
-                            
-                            <div className="info-row-professional">
-                              <span className="info-label-professional">College</span>
-                              <span className="info-value-professional">{paper.collegeName || paper.college || 'N/A'}</span>
-                            </div>
-                            
-                            <div className="info-row-professional">
-                              <span className="info-label-professional">Email</span>
-                              <span className="info-value-professional">{paper.email || 'N/A'}</span>
-                            </div>
-                            
-                            <div className="info-row-professional">
-                              <span className="info-label-professional">Submission Date</span>
-                              <span className="info-value-professional">{paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString() : paper.submittedDate || 'N/A'}</span>
-                            </div>
-                            
-                            <div className="info-row-professional">
-                              <span className="info-label-professional">Contact</span>
-                              <span className="info-value-professional">{paper.contactNo || 'N/A'}</span>
+                            <div className="eval-pill">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
+                              </svg>
+                              <span>{paper.submittedAt ? new Date(paper.submittedAt).toLocaleDateString() : paper.submittedDate || 'N/A'}</span>
                             </div>
                           </div>
                           
-                          <div className="abstract-section-professional">
-                            <h4 className="abstract-label-professional">Abstract</h4>
-                            <p className="abstract-text-professional">{paper.paperAbstract || paper.abstract || 'No abstract available'}</p>
-                          </div>
+                          {(paper.paperAbstract || paper.abstract) && (
+                            <div className="eval-abstract-preview">
+                              <div className="eval-abstract-label">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                                </svg>
+                                Abstract
+                              </div>
+                              <p className="eval-abstract-text">{(paper.paperAbstract || paper.abstract).slice(0, 150)}...</p>
+                            </div>
+                          )}
                         </div>
                         
-                        <div className="paper-actions-professional">
+                        <div className="eval-card-actions">
                           <button 
                             onClick={() => openEvaluationModal(paper)}
-                            className="btn-action-primary-professional"
+                            className="eval-btn-primary"
                           >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
                             </svg>
-                            Review Paper
+                            <span>Start Review</span>
                           </button>
-                          <button className="btn-action-secondary-professional">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-                            </svg>
-                            Download
-                          </button>
+                          {paper.fileUrl && (
+                            <a 
+                              href={paper.fileUrl} 
+                              download 
+                              className="eval-btn-secondary"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                              </svg>
+                              <span>Download</span>
+                            </a>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="empty-state-professional">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    <h3>No Pending Papers</h3>
-                    <p>There are no papers awaiting your evaluation at this time</p>
+                  <div className="eval-empty-state">
+                    <div className="eval-empty-icon">
+                      <svg width="80" height="80" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                      </svg>
+                    </div>
+                    <h3 className="eval-empty-title">All Caught Up!</h3>
+                    <p className="eval-empty-text">You have no pending papers to evaluate at the moment</p>
                   </div>
                 )}
               </section>
 
-              {/* Evaluated Papers Section */}
+              {/* Evaluated Papers Section - Modern Design */}
               {evaluatedPapers.length > 0 && (
-                <section className="papers-section-professional">
-                  <div className="section-header-professional">
-                    <h2>Evaluation History</h2>
-                    <span className="count-badge-professional">{evaluatedPapers.length}</span>
+                <section className="eval-section-modern eval-section-history">
+                  <div className="eval-section-header">
+                    <div className="eval-section-icon-wrapper">
+                      <div className="eval-section-icon eval-icon-evaluated">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="eval-section-title-wrapper">
+                      <h2 className="eval-section-title">Evaluation History</h2>
+                      <p className="eval-section-description">Your completed reviews and decisions</p>
+                    </div>
+                    <div className="eval-count-badge eval-badge-evaluated">
+                      <span className="eval-count-number">{evaluatedPapers.length}</span>
+                      <span className="eval-count-text">evaluated</span>
+                    </div>
                   </div>
                   
-                  <div className="papers-grid-professional">
-                    {evaluatedPapers.map(paper => (
-                      <div key={paper.id} className="paper-card-professional evaluated-card-professional">
-                        <div className="paper-card-header-professional evaluated-header-professional">
-                          <div className="paper-title-section-professional">
-                            <h3>{paper.paperTitle || paper.title || 'Untitled Paper'}</h3>
-                            <p className="paper-author-professional">By {paper.name || paper.author || 'Unknown Author'}</p>
-                          </div>
-                          <span className={`status-badge-professional ${
-                            paper.status === 'accepted' || paper.status === 'ACCEPTED' ? 'status-accepted' :
-                            paper.status === 'accepted_with_changes' || paper.status === 'ACCEPTED_WITH_CHANGES' ? 'status-minor' :
-                            'status-rejected'
+                  <div className="eval-cards-grid">
+                    {evaluatedPapers.map((paper, index) => (
+                      <div key={paper.id} className="eval-card-modern eval-card-evaluated" style={{ animationDelay: `${index * 0.1}s` }}>
+                        <div className="eval-card-glow"></div>
+                        
+                        <div className="eval-card-header">
+                          <div className="eval-card-number">#{index + 1}</div>
+                          <div className={`eval-status-badge ${
+                            paper.status === 'accepted' || paper.status === 'ACCEPTED' ? 'eval-status-accepted' :
+                            paper.status === 'accepted_with_changes' || paper.status === 'ACCEPTED_WITH_CHANGES' ? 'eval-status-minor' :
+                            'eval-status-rejected'
                           }`}>
-                            {getStatusLabel(paper.status)}
-                          </span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            </svg>
+                            <span>{getStatusLabel(paper.status)}</span>
+                          </div>
                         </div>
                         
-                        <div className="paper-card-body-professional">
-                          <div className="paper-info-grid-professional">
-                            <div className="info-row-professional">
-                              <span className="info-label-professional">Author</span>
-                              <span className="info-value-professional">{paper.name || paper.author || 'N/A'}</span>
+                        <div className="eval-card-body">
+                          <h3 className="eval-paper-title">{paper.paperTitle || paper.title || 'Untitled Paper'}</h3>
+                          
+                          <div className="eval-author-section">
+                            <div className="eval-author-avatar eval-author-avatar-success">
+                              {(paper.name || paper.author || 'U')[0].toUpperCase()}
                             </div>
-                            
-                            <div className="info-row-professional">
-                              <span className="info-label-professional">Department</span>
-                              <span className="info-value-professional">{paper.department || 'N/A'}</span>
+                            <div className="eval-author-info">
+                              <p className="eval-author-name">{paper.name || paper.author || 'Unknown Author'}</p>
+                              <p className="eval-author-dept">{paper.department || 'Department Not Specified'}</p>
                             </div>
-                            
-                            <div className="info-row-professional decision-row-professional">
-                              <span className="info-label-professional">Your Decision</span>
-                              <span className="info-value-professional decision-value">
-                                {getStatusLabel(paper.status)}
-                              </span>
+                          </div>
+                          
+                          <div className="eval-decision-summary">
+                            <div className="eval-decision-item">
+                              <span className="eval-decision-label">Your Decision</span>
+                              <span className="eval-decision-value">{getStatusLabel(paper.status)}</span>
                             </div>
-                            
                             {paper.evaluation?.score && (
-                              <div className="info-row-professional">
-                                <span className="info-label-professional">Score</span>
-                                <span className="info-value-professional">{paper.evaluation.score}/100</span>
+                              <div className="eval-decision-item">
+                                <span className="eval-decision-label">Score</span>
+                                <span className="eval-decision-score">{paper.evaluation.score}/100</span>
                               </div>
                             )}
-                            
-                            <div className="info-row-professional">
-                              <span className="info-label-professional">Evaluation Date</span>
-                              <span className="info-value-professional">
+                            <div className="eval-decision-item">
+                              <span className="eval-decision-label">Evaluated On</span>
+                              <span className="eval-decision-date">
                                 {paper.evaluation?.evaluatedDate || paper.evaluatedDate || 'N/A'}
                               </span>
                             </div>
                           </div>
                           
-                          <div className="feedback-section-professional">
-                            <h4 className="feedback-label-professional">Your Feedback</h4>
-                            <p className="feedback-text-professional">{paper.evaluation?.comments || paper.feedback || 'No comments provided'}</p>
-                          </div>
+                          {(paper.evaluation?.comments || paper.feedback) && (
+                            <div className="eval-feedback-preview">
+                              <div className="eval-feedback-label">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+                                </svg>
+                                Your Feedback
+                              </div>
+                              <p className="eval-feedback-text">{(paper.evaluation?.comments || paper.feedback).slice(0, 120)}...</p>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -543,1010 +690,1242 @@ export default function EvaluatePapers() {
       </main>
       
       <style>{`
-        /* Modern Evaluate Papers Styles */
-        .evaluation-container {
-          display: flex;
-          flex-direction: column;
-          gap: 2.5rem;
-          padding: 2.5rem;
-          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-          min-height: calc(100vh - 80px);
+        /* ========================================
+           STUNNING MODERN EVALUATE PAPERS DESIGN
+           ======================================== */
+        
+        /* Container */
+        .eval-modern-container {
+          padding: 0;
+          min-height: 100vh;
+          background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 50%, #fef3c7 100%);
+          position: relative;
+          overflow: hidden;
         }
 
-        .evaluation-header {
-          background: linear-gradient(135deg, #4c3aa3 0%, #5a2d82 100%);
-          color: white;
-          padding: 3rem 2.5rem;
-          border-radius: 16px;
-          box-shadow: 0 10px 30px rgba(76, 58, 163, 0.4);
-          margin-bottom: 2rem;
+        .eval-modern-container::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%236366f1" fill-opacity="0.03"><path d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/></g></g></svg>');
+          animation: backgroundScroll 30s linear infinite;
+          pointer-events: none;
         }
 
-        .evaluation-header h1 {
-          font-size: 2.5rem;
-          margin: 0 0 0.5rem 0;
-          font-weight: 700;
-          letter-spacing: -0.5px;
-          color: #ffffff;
-          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        @keyframes backgroundScroll {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(60px, 60px); }
         }
 
-        .evaluation-header p {
-          font-size: 1.1rem;
-          margin: 0;
-          opacity: 1;
-          font-weight: 500;
-          color: #ffffff;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        /* Hero Header with Glassmorphism */
+        .eval-hero-header {
+          position: relative;
+          padding: 4rem 3rem;
+          margin-bottom: 3rem;
+          overflow: hidden;
         }
 
-        .papers-section {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
+        .eval-hero-background {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border-bottom: 2px solid rgba(99, 102, 241, 0.1);
+          box-shadow: 0 4px 24px rgba(99, 102, 241, 0.08);
         }
 
-        .papers-section h2 {
-          font-size: 1.6rem;
-          color: #1f2937;
-          font-weight: 600;
-          margin: 0;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .section-badge {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 0.25rem 0.75rem;
-          border-radius: 20px;
-          font-size: 0.85rem;
-          font-weight: 600;
-          min-width: 40px;
+        .eval-hero-content {
+          position: relative;
+          z-index: 1;
+          max-width: 1400px;
+          margin: 0 auto;
           text-align: center;
         }
 
-        .papers-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-          gap: 2.5rem;
-          width: 100%;
-        }
-
-        .paper-card {
-          background: white;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          border: 2px solid transparent;
-          position: relative;
-        }
-
-        .paper-card:hover {
-          box-shadow: 0 16px 40px rgba(102, 126, 234, 0.2);
-          transform: translateY(-8px);
-          border-color: #667eea;
-        }
-
-        .paper-card.evaluated {
-          background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-          border-color: #06b6d4;
-        }
-
-        .paper-card-header {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .eval-hero-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+          border-radius: 50px;
           color: white;
-          padding: 2rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-start;
-          align-items: stretch;
-          gap: 1.2rem;
-          min-height: auto;
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-bottom: 1.5rem;
+          animation: badgePulse 2s ease-in-out infinite;
         }
 
-        .paper-card-title {
-          flex: 1;
-          width: 100%;
+        @keyframes badgePulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+          50% { transform: scale(1.05); box-shadow: 0 0 20px 10px rgba(99, 102, 241, 0); }
+        }
+
+        .eval-hero-title {
+          font-size: 3.5rem;
+          font-weight: 800;
+          background: linear-gradient(135deg, #1e293b 0%, #4f46e5 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin-bottom: 1rem;
+          letter-spacing: -0.02em;
+          animation: titleSlideUp 0.8s ease-out;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        @keyframes titleSlideUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .eval-hero-subtitle {
+          font-size: 1.25rem;
+          color: #64748b;
+          margin-bottom: 2rem;
+          animation: subtitleSlideUp 0.8s ease-out 0.2s both;
+          font-weight: 500;
+        }
+
+        @keyframes subtitleSlideUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .eval-hero-stats {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 2rem;
+          animation: statsSlideUp 0.8s ease-out 0.4s both;
+        }
+
+        @keyframes statsSlideUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .eval-stat-item {
           display: flex;
           flex-direction: column;
+          align-items: center;
           gap: 0.5rem;
         }
 
-        .paper-card-title h3 {
-          margin: 0;
-          font-size: 1.25rem;
-          font-weight: 800;
-          line-height: 1.4;
-          word-break: break-word;
-          color: #f5f7ff;
-          text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-          letter-spacing: -0.3px;
-    R    }
-
-        .paper-meta {
-          font-size: 0.9rem;
-          font-weight: 500;
-          opacity: 1;
-          margin: 0;
-          display: flex;
-          align-items: center;
-          gap: 0.6rem;
-          color: #e8ecff;
+        .eval-stat-number {
+          font-size: 2.5rem;
+          font-weight: 700;
+          background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
 
-        .paper-meta-icon {
-          display: inline-block;
-          font-size: 1rem;
-        }
-
-        .status-badge-modern {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0.4rem 0.85rem;
-          border-radius: 8px;
-          font-size: 0.7rem;
-          font-weight: 800;
+        .eval-stat-label {
+          font-size: 0.875rem;
+          color: #64748b;
           text-transform: uppercase;
-          letter-spacing: 0.6px;
-          white-space: nowrap;
-          flex-shrink: 0;
-          align-self: flex-start;
-        }
-
-        .status-badge-modern.pending {
-          background: rgba(255, 255, 255, 0.25);
-          color: white;
-          border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-
-        .status-badge-modern.accepted {
-          background: #10b981;
-          color: white;
-        }
-
-        .status-badge-modern.minor {
-          background: #f59e0b;
-          color: white;
-        }
-
-        .status-badge-modern.rejected {
-          background: #ef4444;
-          color: white;
-        }
-
-        .paper-card-body {
-          padding: 1.75rem;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 1.25rem;
-          background: white;
-        }
-
-        .paper-details-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1.5rem;
-          background: linear-gradient(135deg, #f0f4ff 0%, #f8fafc 100%);
-          padding: 1.75rem;
-          border-radius: 12px;
-          border: 2px solid #e0e7ff;
-        }
-
-        .paper-details-row {
-          display: flex;
-          flex-direction: column;
-          gap: 0.6rem;
-        }
-
-        .paper-details-row.full {
-          grid-column: 1 / -1;
-        }
-
-        .paper-details-label {
-          font-size: 0.7rem;
-          font-weight: 900;
-          color: #667eea;
-          text-transform: uppercase;
-          letter-spacing: 0.8px;
-        }
-
-        .paper-details-value {
-          font-size: 0.95rem;
-          color: #1f2937;
-          line-height: 1.6;
+          letter-spacing: 0.1em;
           font-weight: 600;
         }
 
-        .paper-abstract-section {
-          background: linear-gradient(135deg, #fafbfc 0%, #f3f6f9 100%);
-          padding: 1.5rem;
-          border-radius: 12px;
-          border-left: 4px solid #667eea;
-          margin-top: auto;
-          border: 2px solid #e0e7ff;
+        .eval-stat-divider {
+          width: 2px;
+          height: 60px;
+          background: linear-gradient(to bottom, transparent, rgba(99, 102, 241, 0.2), transparent);
         }
 
-        .paper-abstract-section-title {
+        /* Loading State */
+        .eval-loading-modern {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 6rem 2rem;
+        }
+
+        .eval-loading-animation {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+
+        .eval-loading-circle {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+          animation: loadingBounce 1.4s ease-in-out infinite;
+        }
+
+        .eval-loading-circle:nth-child(1) { animation-delay: 0s; }
+        .eval-loading-circle:nth-child(2) { animation-delay: 0.2s; }
+        .eval-loading-circle:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes loadingBounce {
+          0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+          40% { transform: scale(1); opacity: 1; }
+        }
+
+        .eval-loading-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #1e293b;
+          margin-bottom: 0.5rem;
+        }
+
+        .eval-loading-text {
+          font-size: 1rem;
+          color: #64748b;
+        }
+
+        /* Section Design */
+        .eval-section-modern {
+          max-width: 1400px;
+          margin: 0 auto 3rem;
+          padding: 0 3rem;
+        }
+
+        .eval-section-header {
+          display: flex;
+          align-items: center;
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+          padding: 2rem;
+          background: white;
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border-radius: 20px;
+          border: 2px solid #e2e8f0;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+          transition: all 0.3s ease;
+        }
+
+        .eval-section-header:hover {
+          border-color: #6366f1;
+          box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.15), 0 10px 10px -5px rgba(99, 102, 241, 0.08);
+          transform: translateY(-2px);
+        }
+
+        .eval-section-icon-wrapper {
+          flex-shrink: 0;
+        }
+
+        .eval-section-icon {
+          width: 60px;
+          height: 60px;
+          border-radius: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .eval-icon-pending {
+          background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+          animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        .eval-icon-evaluated {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        @keyframes iconPulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+          50% { box-shadow: 0 0 0 20px rgba(245, 158, 11, 0); }
+        }
+
+        .eval-section-icon svg {
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .eval-section-title-wrapper {
+          flex: 1;
+        }
+
+        .eval-section-title {
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin-bottom: 0.25rem;
+        }
+
+        .eval-section-description {
+          font-size: 0.95rem;
+          color: #64748b;
+        }
+
+        .eval-count-badge {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 1rem 1.5rem;
+          border-radius: 12px;
+          min-width: 80px;
+        }
+
+        .eval-badge-pending {
+          background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        }
+
+        .eval-badge-evaluated {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .eval-count-number {
+          font-size: 2rem;
+          font-weight: 700;
+          color: white;
+          line-height: 1;
+          margin-bottom: 0.25rem;
+        }
+
+        .eval-count-text {
           font-size: 0.75rem;
-          font-weight: 800;
-          color: #667eea;
+          color: rgba(255, 255, 255, 0.9);
           text-transform: uppercase;
-          letter-spacing: 0.8px;
+          letter-spacing: 0.05em;
+          font-weight: 600;
+        }
+
+        /* Cards Grid */
+        .eval-cards-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+          gap: 2rem;
+        }
+
+        /* Modern Card Design */
+        .eval-card-modern {
+          position: relative;
+          background: white;
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          border-radius: 24px;
+          border: 2px solid #e2e8f0;
+          overflow: hidden;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          animation: cardFadeIn 0.6s ease-out both;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        @keyframes cardFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .eval-card-modern:hover {
+          transform: translateY(-10px) scale(1.02);
+          border-color: #6366f1;
+          box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.2), 0 10px 10px -5px rgba(99, 102, 241, 0.15);
+        }
+
+        .eval-card-modern:hover .eval-card-glow {
+          opacity: 1;
+        }
+
+        .eval-card-glow {
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
+          opacity: 0;
+          transition: opacity 0.4s ease;
+          pointer-events: none;
+        }
+
+        /* Card Header */
+        .eval-card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1.5rem;
+          background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+          border-bottom: 2px solid #e2e8f0;
+        }
+
+        .eval-card-number {
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: #6366f1;
+          padding: 0.375rem 0.75rem;
+          background: rgba(99, 102, 241, 0.1);
+          border-radius: 8px;
+          border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        /* Status Badges */
+        .eval-status-badge {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: 50px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: white;
+        }
+
+        .eval-status-pending {
+          background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+        }
+
+        .eval-status-accepted {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .eval-status-minor {
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .eval-status-rejected {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .eval-status-pulse {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: white;
+          animation: pulseDot 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        /* Card Body */
+        .eval-card-body {
+          padding: 2rem;
+        }
+
+        .eval-paper-title {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin-bottom: 1.5rem;
+          line-height: 1.4;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        /* Author Section */
+        .eval-author-section {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+          padding: 1rem;
+          background: #f8fafc;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+          transition: all 0.3s ease;
+        }
+
+        .eval-author-section:hover {
+          background: #f0f4ff;
+          border-color: #c7d2fe;
+          transform: translateX(5px);
+        }
+
+        .eval-author-avatar {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: white;
+          flex-shrink: 0;
+        }
+
+        .eval-author-avatar-success {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .eval-author-info {
+          flex: 1;
+        }
+
+        .eval-author-name {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #1e293b;
+          margin-bottom: 0.25rem;
+        }
+
+        .eval-author-dept {
+          font-size: 0.875rem;
+          color: #64748b;
+        }
+
+        /* Info Pills */
+        .eval-info-pills {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.75rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .eval-pill {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          background: #f8fafc;
+          border: 1px solid #e2e8f0;
+          border-radius: 50px;
+          font-size: 0.875rem;
+          color: #475569;
+          transition: all 0.3s ease;
+        }
+
+        .eval-pill:hover {
+          background: #f0f4ff;
+          border-color: #6366f1;
+          transform: translateY(-2px);
+          color: #4f46e5;
+        }
+
+        .eval-pill svg {
+          flex-shrink: 0;
+          color: #a855f7;
+        }
+
+        /* Abstract Preview */
+        .eval-abstract-preview {
+          padding: 1.25rem;
+          background: #f0f4ff;
+          border-left: 4px solid #6366f1;
+          border-radius: 12px;
+          margin-bottom: 1.5rem;
+          transition: all 0.3s ease;
+          border: 1px solid #c7d2fe;
+          border-left-width: 4px;
+        }
+
+        .eval-abstract-preview:hover {
+          background: #e0e7ff;
+          border-left-width: 6px;
+          box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1);
+        }
+
+        .eval-abstract-label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #a855f7;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
           margin-bottom: 0.75rem;
         }
 
-        .paper-abstract-box {
-          background: white;
-          padding: 1rem;
-          border-radius: 8px;
-          border: 1px solid #e2e8f0;
-        }
-
-        .paper-abstract-box p {
-          margin: 0;
-          font-size: 0.9rem;
+        .eval-abstract-text {
+          font-size: 0.95rem;
           color: #475569;
           line-height: 1.6;
         }
 
-        .paper-actions {
+        /* Decision Summary */
+        .eval-decision-summary {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+          gap: 1rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .eval-decision-item {
+          padding: 1rem;
+          background: #f8fafc;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+          transition: all 0.3s ease;
+        }
+
+        .eval-decision-item:hover {
+          background: #f0f4ff;
+          border-color: #6366f1;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1);
+        }
+
+        .eval-decision-label {
+          display: block;
+          font-size: 0.75rem;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 0.5rem;
+          font-weight: 600;
+        }
+
+        .eval-decision-value {
+          display: block;
+          font-size: 1rem;
+          font-weight: 600;
+          color: #1e293b;
+        }
+
+        .eval-decision-score {
+          display: block;
+          font-size: 1.5rem;
+          font-weight: 700;
+          background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+
+        .eval-decision-date {
+          display: block;
+          font-size: 0.875rem;
+          color: #64748b;
+        }
+
+        /* Feedback Preview */
+        .eval-feedback-preview {
+          padding: 1.25rem;
+          background: #f0fdf4;
+          border-left: 4px solid #10b981;
+          border-radius: 12px;
+          transition: all 0.3s ease;
+          border: 1px solid #bbf7d0;
+          border-left-width: 4px;
+        }
+
+        .eval-feedback-preview:hover {
+          background: #dcfce7;
+          border-left-width: 6px;
+          box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.1);
+        }
+
+        .eval-feedback-label {
           display: flex;
-          gap: 0.8rem;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: #10b981;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 0.75rem;
+        }
+
+        .eval-feedback-text {
+          font-size: 0.95rem;
+          color: #475569;
+          line-height: 1.6;
+        }
+
+        /* Card Actions */
+        .eval-card-actions {
+          display: flex;
+          gap: 1rem;
           padding: 1.5rem;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          background: #f8fafc;
           border-top: 2px solid #e2e8f0;
         }
 
-        .btn-evaluate {
+        .eval-btn-primary,
+        .eval-btn-secondary {
           flex: 1;
-          padding: 0.85rem 1.2rem;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 0.9rem;
-          font-weight: 700;
-          cursor: pointer;
-          transition: all 0.3s ease;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 0.5rem;
-        }
-
-        .btn-evaluate:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-evaluate:active {
-          transform: translateY(0);
-        }
-
-        .btn-download {
-          flex: 1;
-          padding: 0.85rem 1.2rem;
-          background: white;
-          color: #667eea;
-          border: 2px solid #667eea;
-          border-radius: 8px;
-          font-size: 0.9rem;
-          font-weight: 700;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-
-        .btn-download:hover {
-          background: #667eea;
-          color: white;
-          transform: translateY(-2px);
-        }
-
-        .no-papers {
-          grid-column: 1 / -1;
-          text-align: center;
-          padding: 3rem 2rem;
-          background: white;
+          padding: 0.875rem 1.5rem;
           border-radius: 12px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+          font-size: 0.95rem;
+          font-weight: 600;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          text-decoration: none;
+          position: relative;
+          overflow: hidden;
         }
 
-        .no-papers p {
-          margin: 0;
-          font-size: 1.1rem;
-          color: #6b7280;
-          font-weight: 500;
+        .eval-btn-primary::before,
+        .eval-btn-secondary::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.3);
+          transform: translate(-50%, -50%);
+          transition: width 0.6s, height 0.6s;
         }
 
-        /* Modern Modal Styles */
+        .eval-btn-primary:hover::before,
+        .eval-btn-secondary:hover::before {
+          width: 300px;
+          height: 300px;
+        }
+
+        .eval-btn-primary {
+          background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+          color: white;
+        }
+
+        .eval-btn-primary:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .eval-btn-secondary {
+          background: white;
+          color: #4f46e5;
+          border: 2px solid #e2e8f0;
+        }
+
+        .eval-btn-secondary:hover {
+          background: #f0f4ff;
+          transform: translateY(-3px);
+          border-color: #6366f1;
+          box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+        }
+
+        .eval-btn-primary span,
+        .eval-btn-secondary span {
+          position: relative;
+          z-index: 1;
+        }
+
+        .eval-btn-primary svg,
+        .eval-btn-secondary svg {
+          position: relative;
+          z-index: 1;
+        }
+
+        /* Empty State */
+        .eval-empty-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 6rem 2rem;
+          text-align: center;
+        }
+
+        .eval-empty-icon {
+          width: 120px;
+          height: 120px;
+          border-radius: 50%;
+          background: #f0f4ff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 2rem;
+          animation: emptyFloat 3s ease-in-out infinite;
+          border: 2px solid #e2e8f0;
+        }
+
+        @keyframes emptyFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-20px); }
+        }
+
+        .eval-empty-icon svg {
+          color: #c7d2fe;
+        }
+
+        .eval-empty-title {
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin-bottom: 0.75rem;
+        }
+
+        .eval-empty-text {
+          font-size: 1rem;
+          color: #64748b;
+          max-width: 400px;
+        }
+
+        /* Evaluated Card Variations */
+        .eval-card-evaluated {
+          border-color: #bbf7d0;
+        }
+
+        .eval-card-evaluated:hover {
+          border-color: #10b981;
+          box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.2), 0 10px 10px -5px rgba(16, 185, 129, 0.15);
+        }
+
+        .eval-card-evaluated .eval-card-header {
+          background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+          .eval-cards-grid {
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+          }
+        }
+
+        @media (max-width: 768px) {
+          .eval-hero-title {
+            font-size: 2.5rem;
+          }
+
+          .eval-hero-stats {
+            flex-direction: column;
+            gap: 1.5rem;
+          }
+
+          .eval-stat-divider {
+            width: 60px;
+            height: 1px;
+          }
+
+          .eval-section-modern {
+            padding: 0 1.5rem;
+          }
+
+          .eval-cards-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .eval-section-header {
+            flex-direction: column;
+            text-align: center;
+          }
+
+          .eval-card-actions {
+            flex-direction: column;
+          }
+
+          .eval-decision-summary {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        /* ========================================
+           MODERN EVALUATION MODAL STYLES
+           ======================================== */
+        
         .evaluation-modal-overlay {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          backdrop-filter: blur(4px);
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 1000;
+          z-index: 10000;
           padding: 2rem;
+          animation: fadeIn 0.3s ease-out;
         }
 
-        .evaluation-modal {
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .evaluation-modal-modern {
           background: white;
-          border-radius: 16px;
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-          max-width: 600px;
+          border-radius: 24px;
+          max-width: 900px;
           width: 100%;
           max-height: 90vh;
           overflow-y: auto;
-          animation: slideUp 0.3s ease;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          animation: modalSlideUp 0.4s ease-out;
         }
 
-        @keyframes slideUp {
+        @keyframes modalSlideUp {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px) scale(0.95);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
           }
         }
 
-        .evaluation-modal-header {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 2rem;
-          border-radius: 16px 16px 0 0;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 1rem;
+        .modal-header-modern {
+          position: relative;
+          padding: 2.5rem;
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          border-radius: 24px 24px 0 0;
         }
 
-        .evaluation-modal-header h3 {
-          margin: 0 0 0.5rem 0;
-          font-size: 1.5rem;
-          font-weight: 700;
+        .modal-header-content {
+          position: relative;
+          z-index: 1;
         }
 
-        .evaluation-modal-header p {
-          margin: 0;
-          opacity: 0.9;
-          font-size: 0.95rem;
-        }
-
-        .evaluation-modal-close {
+        .modal-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
           background: rgba(255, 255, 255, 0.2);
-          border: none;
+          backdrop-filter: blur(10px);
+          border-radius: 50px;
           color: white;
-          width: 36px;
-          height: 36px;
-          border-radius: 8px;
-          font-size: 1.5rem;
+          font-size: 0.875rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-title {
+          font-size: 2rem;
+          font-weight: 800;
+          color: white;
+          margin: 0 0 0.5rem 0;
+          line-height: 1.3;
+        }
+
+        .modal-subtitle {
+          font-size: 1rem;
+          color: rgba(255, 255, 255, 0.9);
+          margin: 0;
+        }
+
+        .modal-close-btn {
+          position: absolute;
+          top: 2rem;
+          right: 2rem;
+          width: 40px;
+          height: 40px;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          color: white;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
           transition: all 0.3s ease;
-          padding: 0;
-          flex-shrink: 0;
         }
 
-        .evaluation-modal-close:hover {
+        .modal-close-btn:hover {
           background: rgba(255, 255, 255, 0.3);
+          transform: rotate(90deg);
         }
 
-        .evaluation-modal-body {
-          padding: 2rem;
+        .modal-body-modern {
+          padding: 2.5rem;
+        }
+
+        .paper-details-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+        }
+
+        .detail-card {
+          padding: 1.25rem;
+          background: #f8fafc;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+          transition: all 0.3s ease;
+        }
+
+        .detail-card:hover {
+          background: #f0f4ff;
+          border-color: #c7d2fe;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1);
+        }
+
+        .detail-label {
+          font-size: 0.75rem;
+          font-weight: 700;
+          color: #6366f1;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 0.5rem;
+        }
+
+        .detail-value {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #1e293b;
+          word-break: break-word;
+        }
+
+        .abstract-section-modal {
+          padding: 1.5rem;
+          background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+          border-radius: 16px;
+          border: 2px solid #e0e7ff;
+          margin-bottom: 2rem;
+        }
+
+        .abstract-header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          margin-bottom: 1rem;
+          color: #6366f1;
+        }
+
+        .abstract-header span {
+          font-size: 0.875rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        .abstract-content {
+          font-size: 1rem;
+          line-height: 1.7;
+          color: #475569;
+          margin: 0;
+        }
+
+        .modal-action-buttons {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+
+        .modal-btn-primary,
+        .modal-btn-secondary {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+          padding: 1rem 1.5rem;
+          border-radius: 12px;
+          font-size: 1rem;
+          font-weight: 600;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          text-decoration: none;
+        }
+
+        .modal-btn-primary {
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          color: white;
+          box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+        }
+
+        .modal-btn-primary:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
+        }
+
+        .modal-btn-secondary {
+          background: white;
+          color: #6366f1;
+          border: 2px solid #e2e8f0;
+        }
+
+        .modal-btn-secondary:hover {
+          background: #f0f4ff;
+          border-color: #6366f1;
+          transform: translateY(-3px);
+          box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.2);
+        }
+
+        .modal-divider {
+          height: 2px;
+          background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+          margin: 2rem 0;
+        }
+
+        .evaluation-form-modern {
           display: flex;
           flex-direction: column;
           gap: 2rem;
         }
 
-        .paper-summary-box {
-          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-          padding: 1.5rem;
-          border-radius: 12px;
-          border: 1px solid rgba(102, 126, 234, 0.2);
-        }
-
-        .summary-item {
+        .form-section {
           display: flex;
           flex-direction: column;
-          gap: 0.3rem;
-          margin-bottom: 1rem;
+          gap: 0.75rem;
         }
 
-        .summary-item:last-child {
-          margin-bottom: 0;
-        }
-
-        .summary-label {
-          font-size: 0.75rem;
-          font-weight: 700;
-          color: #667eea;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .summary-value {
+        .form-label {
           font-size: 0.95rem;
-          color: #1f2937;
-          font-weight: 500;
+          font-weight: 600;
+          color: #1e293b;
         }
 
-        .decision-section {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .decision-label {
-          font-size: 0.85rem;
-          font-weight: 700;
-          color: #1f2937;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .decision-options {
+        .decision-buttons {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 1rem;
         }
 
-        .decision-button {
-          padding: 1rem;
-          border: 2px solid #e5e7eb;
-          background: white;
-          border-radius: 10px;
-          cursor: pointer;
-          transition: all 0.3s ease;
+        .decision-btn {
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 0.5rem;
+          padding: 1.25rem 1rem;
+          border-radius: 12px;
+          border: 2px solid #e2e8f0;
+          background: white;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-size: 0.95rem;
           font-weight: 600;
-          font-size: 0.9rem;
-          text-align: center;
         }
 
-        .decision-button.accept {
-          border-color: #10b981;
+        .decision-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .decision-btn.active {
+          border-width: 2px;
+        }
+
+        .decision-accept {
+          color: #16a34a;
+        }
+
+        .decision-accept.active {
           background: #f0fdf4;
-          color: #059669;
+          border-color: #16a34a;
         }
 
-        .decision-button.accept.selected {
-          background: #10b981;
-          color: white;
-          border-color: #10b981;
-          box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+        .decision-minor {
+          color: #2563eb;
         }
 
-        .decision-button.minor {
-          border-color: #f59e0b;
-          background: #fffbeb;
-          color: #d97706;
+        .decision-minor.active {
+          background: #eff6ff;
+          border-color: #2563eb;
         }
 
-        .decision-button.minor.selected {
-          background: #f59e0b;
-          color: white;
-          border-color: #f59e0b;
-          box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);
-        }
-
-        .decision-button.reject {
-          border-color: #ef4444;
-          background: #fef2f2;
+        .decision-reject {
           color: #dc2626;
         }
 
-        .decision-button.reject.selected {
-          background: #ef4444;
-          color: white;
-          border-color: #ef4444;
-          box-shadow: 0 8px 16px rgba(239, 68, 68, 0.3);
+        .decision-reject.active {
+          background: #fef2f2;
+          border-color: #dc2626;
         }
 
-        .decision-button:hover {
-          transform: translateY(-2px);
-        }
-
-        .decision-icon {
-          font-size: 1.5rem;
-        }
-
-        .comments-section {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .comments-label {
-          font-size: 0.85rem;
-          font-weight: 700;
-          color: #1f2937;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .comments-textarea {
+        .form-textarea {
+          width: 100%;
           padding: 1rem;
-          border: 2px solid #e5e7eb;
-          border-radius: 10px;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-          font-size: 0.95rem;
+          border: 2px solid #e2e8f0;
+          border-radius: 12px;
+          font-size: 1rem;
+          font-family: inherit;
           resize: vertical;
-          min-height: 120px;
           transition: all 0.3s ease;
+          background: #f8fafc;
         }
 
-        .comments-textarea:focus {
+        .form-textarea:focus {
           outline: none;
-          border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          border-color: #6366f1;
+          background: white;
+          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        .score-section {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .score-label {
-          font-size: 0.85rem;
-          font-weight: 700;
-          color: #1f2937;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .score-input {
-          padding: 0.75rem;
-          border: 2px solid #e5e7eb;
-          border-radius: 8px;
-          font-size: 0.95rem;
+        .form-input {
+          width: 100%;
+          padding: 1rem;
+          border: 2px solid #e2e8f0;
+          border-radius: 12px;
+          font-size: 1rem;
+          font-family: inherit;
           transition: all 0.3s ease;
+          background: #f8fafc;
         }
 
-        .score-input:focus {
+        .form-input:focus {
           outline: none;
-          border-color: #667eea;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+          border-color: #6366f1;
+          background: white;
+          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
         }
 
-        .modal-actions {
+        .form-actions {
           display: flex;
           gap: 1rem;
-          padding-top: 1.5rem;
-          border-top: 1px solid #e5e7eb;
+          justify-content: flex-end;
+          margin-top: 1rem;
         }
 
-        .btn-cancel {
-          flex: 1;
-          padding: 0.75rem 1.5rem;
-          background: #f3f4f6;
-          color: #374151;
-          border: 2px solid #e5e7eb;
-          border-radius: 8px;
-          font-size: 0.95rem;
+        .form-btn-cancel,
+        .form-btn-submit {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 1rem 2rem;
+          border-radius: 12px;
+          font-size: 1rem;
           font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-
-        .btn-cancel:hover {
-          background: #e5e7eb;
-          border-color: #d1d5db;
-        }
-
-        .btn-submit {
-          flex: 1;
-          padding: 0.75rem 1.5rem;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
           border: none;
-          border-radius: 8px;
-          font-size: 0.95rem;
-          font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
         }
 
-        .btn-submit:hover {
+        .form-btn-cancel {
+          background: white;
+          color: #64748b;
+          border: 2px solid #e2e8f0;
+        }
+
+        .form-btn-cancel:hover:not(:disabled) {
+          background: #f8fafc;
+          border-color: #cbd5e1;
+        }
+
+        .form-btn-submit {
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          color: white;
+          box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+        }
+
+        .form-btn-submit:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+          box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
         }
 
-        .btn-submit:active {
-          transform: translateY(0);
-        }
-
-        .btn-submit:disabled {
+        .form-btn-submit:disabled,
+        .form-btn-cancel:disabled {
           opacity: 0.5;
           cursor: not-allowed;
-          transform: none;
         }
 
-        @media (max-width: 768px) {
-          .evaluation-container {
-            padding: 1.5rem;
-          }
-
-          .evaluation-header {
-            padding: 2rem 1.5rem;
-          }
-
-          .evaluation-header h1 {
-            font-size: 1.8rem;
-          }
-
-          .papers-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .decision-options {
-            grid-template-columns: 1fr;
-          }
-
-          .evaluation-modal-body {
-            padding: 1.5rem;
-          }
-        }
-
-        /* Professional UI Additions */
-        .papers-section-professional {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-        }
-
-        .section-header-professional {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding-bottom: 1rem;
-          border-bottom: 2px solid #e5e7eb;
-        }
-
-        .section-header-professional h2 {
-          font-size: 1.5rem;
-          color: #1f2937;
-          font-weight: 700;
-          margin: 0;
-        }
-
-        .count-badge-professional {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 0.35rem 0.85rem;
-          border-radius: 20px;
-          font-size: 0.85rem;
-          font-weight: 700;
-          min-width: 35px;
-          text-align: center;
-        }
-
-        .papers-grid-professional {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-          gap: 2rem;
-          width: 100%;
-        }
-
-        .paper-card-professional {
-          background: white;
-          border-radius: 14px;
-          overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          border: 2px solid transparent;
-        }
-
-        .paper-card-professional:hover {
-          box-shadow: 0 20px 50px rgba(102, 126, 234, 0.25);
-          transform: translateY(-6px);
-          border-color: #667eea;
-        }
-
-        .paper-card-professional.evaluated-card-professional {
-          background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-          border-color: #06b6d4;
-        }
-
-        .paper-card-professional.evaluated-card-professional:hover {
-          border-color: #0891b2;
-          box-shadow: 0 20px 50px rgba(6, 182, 212, 0.25);
-        }
-
-        .paper-card-header-professional {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 1.75rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 1rem;
-        }
-
-        .paper-card-header-professional.evaluated-header-professional {
-          background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
-        }
-
-        .paper-title-section-professional {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-
-        .paper-title-section-professional h3 {
-          margin: 0;
-          font-size: 1.15rem;
-          font-weight: 700;
-          line-height: 1.4;
-          color: white;
-          text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-        }
-
-        .paper-author-professional {
-          margin: 0;
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: rgba(255, 255, 255, 0.9);
-        }
-
-        .status-badge-professional {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0.4rem 0.75rem;
-          border-radius: 6px;
-          font-size: 0.7rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          white-space: nowrap;
-          flex-shrink: 0;
-        }
-
-        .status-badge-professional.status-pending {
-          background: rgba(255, 255, 255, 0.3);
-          color: white;
-          border: 1px solid rgba(255, 255, 255, 0.6);
-        }
-
-        .status-badge-professional.status-accepted {
-          background: #10b981;
-          color: white;
-        }
-
-        .status-badge-professional.status-minor {
-          background: #f59e0b;
-          color: white;
-        }
-
-        .status-badge-professional.status-rejected {
-          background: #ef4444;
-          color: white;
-        }
-
-        .paper-card-body-professional {
-          padding: 1.75rem;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
-          background: white;
-        }
-
-        .paper-info-grid-professional {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1.25rem;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-          padding: 1.5rem;
-          border-radius: 10px;
-          border: 1px solid #e2e8f0;
-        }
-
-        .info-row-professional {
-          display: flex;
-          flex-direction: column;
-          gap: 0.4rem;
-        }
-
-        .info-row-professional.decision-row-professional {
-          grid-column: 1 / -1;
-        }
-
-        .info-label-professional {
-          font-size: 0.7rem;
-          font-weight: 800;
-          color: #667eea;
-          text-transform: uppercase;
-          letter-spacing: 0.6px;
-        }
-
-        .info-value-professional {
-          font-size: 0.9rem;
-          color: #1f2937;
-          font-weight: 600;
-          line-height: 1.5;
-        }
-
-        .info-value-professional.decision-value {
-          font-weight: 700;
-          color: #059669;
-          font-size: 1rem;
-        }
-
-        .abstract-section-professional {
-          background: linear-gradient(135deg, #fafbfc 0%, #f3f6f9 100%);
-          padding: 1.25rem;
-          border-radius: 10px;
-          border-left: 4px solid #667eea;
-          border: 1px solid #e0e7ff;
-        }
-
-        .abstract-label-professional {
-          font-size: 0.7rem;
-          font-weight: 800;
-          color: #667eea;
-          text-transform: uppercase;
-          letter-spacing: 0.6px;
-          margin: 0 0 0.75rem 0;
-        }
-
-        .abstract-text-professional {
-          margin: 0;
-          font-size: 0.875rem;
-          color: #475569;
-          line-height: 1.7;
-        }
-
-        .feedback-section-professional {
-          background: linear-gradient(135deg, #fafbfc 0%, #f3f6f9 100%);
-          padding: 1.25rem;
-          border-radius: 10px;
-          border-left: 4px solid #06b6d4;
-          border: 1px solid #cffafe;
-        }
-
-        .feedback-label-professional {
-          font-size: 0.7rem;
-          font-weight: 800;
-          color: #06b6d4;
-          text-transform: uppercase;
-          letter-spacing: 0.6px;
-          margin: 0 0 0.75rem 0;
-        }
-
-        .feedback-text-professional {
-          margin: 0;
-          font-size: 0.875rem;
-          color: #475569;
-          line-height: 1.7;
-        }
-
-        .paper-actions-professional {
-          display: flex;
-          gap: 0.75rem;
-          padding: 1.25rem;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-          border-top: 1px solid #e2e8f0;
-        }
-
-        .btn-action-primary-professional {
-          flex: 1;
-          padding: 0.75rem 1rem;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 0.875rem;
-          font-weight: 700;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-
-        .btn-action-primary-professional:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-action-secondary-professional {
-          flex: 1;
-          padding: 0.75rem 1rem;
-          background: white;
-          color: #667eea;
-          border: 2px solid #667eea;
-          border-radius: 8px;
-          font-size: 0.875rem;
-          font-weight: 700;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-        }
-
-        .btn-action-secondary-professional:hover {
-          background: #667eea;
-          color: white;
-          transform: translateY(-2px);
-          box-shadow: 0 10px 25px rgba(102, 126, 234, 0.25);
-        }
-
-        .empty-state-professional {
-          grid-column: 1 / -1;
-          text-align: center;
-          padding: 4rem 2rem;
-          background: white;
-          border-radius: 14px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .empty-state-professional svg {
-          color: #cbd5e1;
-          margin-bottom: 1.5rem;
-        }
-
-        .empty-state-professional h3 {
-          margin: 0 0 0.5rem 0;
-          font-size: 1.25rem;
-          color: #1f2937;
-          font-weight: 700;
-        }
-
-        .empty-state-professional p {
-          margin: 0;
-          font-size: 1rem;
-          color: #6b7280;
-          font-weight: 500;
-        }
-
-        .loading-state-professional {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 60vh;
-          gap: 2rem;
-        }
-
-        .spinner-professional {
-          width: 60px;
-          height: 60px;
-          border: 4px solid #f0f0f0;
-          border-top: 4px solid #667eea;
-          border-radius: 50%;
+        .spinner {
           animation: spin 1s linear infinite;
         }
 
@@ -1554,30 +1933,50 @@ export default function EvaluatePapers() {
           to { transform: rotate(360deg); }
         }
 
-        .loading-text-professional {
-          text-align: center;
-        }
-
-        .loading-text-professional h3 {
-          margin: 0 0 0.5rem 0;
-          font-size: 1.2rem;
-          color: #2d3748;
-          font-weight: 700;
-        }
-
-        .loading-text-professional p {
-          margin: 0;
-          color: #718096;
-          font-size: 0.95rem;
-        }
-
+        /* Modal Responsive */
         @media (max-width: 768px) {
-          .papers-grid-professional {
+          .evaluation-modal-overlay {
+            padding: 1rem;
+          }
+
+          .evaluation-modal-modern {
+            max-height: 95vh;
+          }
+
+          .modal-header-modern {
+            padding: 2rem 1.5rem;
+          }
+
+          .modal-close-btn {
+            top: 1.5rem;
+            right: 1.5rem;
+          }
+
+          .modal-body-modern {
+            padding: 1.5rem;
+          }
+
+          .paper-details-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+          }
+
+          .modal-action-buttons {
             grid-template-columns: 1fr;
           }
 
-          .paper-info-grid-professional {
+          .decision-buttons {
             grid-template-columns: 1fr;
+          }
+
+          .form-actions {
+            flex-direction: column-reverse;
+          }
+
+          .form-btn-cancel,
+          .form-btn-submit {
+            width: 100%;
+            justify-content: center;
           }
         }
       `}</style>
