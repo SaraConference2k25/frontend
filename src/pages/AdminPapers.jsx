@@ -17,6 +17,7 @@ export default function AdminPapers() {
   const [evaluators, setEvaluators] = useState(sampleEvaluators)
   const [loading, setLoading] = useState(false)
   const [filterStatus, setFilterStatus] = useState('all')
+  const [searchQuery, setSearchQuery] = useState('')
   // Evaluator search and filter states
   const [evaluatorSearch, setEvaluatorSearch] = useState('')
   const [evaluatorDepartmentFilter, setEvaluatorDepartmentFilter] = useState('all')
@@ -29,10 +30,24 @@ export default function AdminPapers() {
   // Memoize filtered papers early - needed for infinite scroll effect
   const filteredPapers = useMemo(() => {
     return (Array.isArray(papers) ? papers : []).filter(paper => {
-      if (filterStatus === 'all') return true
-      return paper.status === filterStatus
+      // Filter by status
+      if (filterStatus !== 'all' && paper.status !== filterStatus) return false
+      
+      // Filter by search query
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase()
+        const searchFields = [
+          paper.paperTitle || paper.name || '',
+          paper.email || '',
+          paper.department || '',
+          paper.paperId || ''
+        ]
+        return searchFields.some(field => field.toLowerCase().includes(query))
+      }
+      
+      return true
     })
-  }, [papers, filterStatus])
+  }, [papers, filterStatus, searchQuery])
 
   useEffect(() => {
     // load papers and evaluators from backend if available
@@ -1162,6 +1177,66 @@ export default function AdminPapers() {
           {/* Papers Table with Infinite Scroll - Show only when not loading */}
           {!loading && (
           <section className="table-section-professional" ref={tableRef}>
+            {/* Search and Filter Bar */}
+            <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', flexWrap: 'wrap', alignItems: 'center', padding: '1.5rem', backgroundColor: '#fafbfc', borderRadius: '8px' }}>
+              {/* Search Box */}
+              <div style={{ flex: '1', minWidth: '300px', position: 'relative', display: 'flex', alignItems: 'center' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: 'absolute', left: '12px', color: '#999', pointerEvents: 'none' }}>
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search by title, email, department, ID..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: '100%',
+                    paddingLeft: '40px',
+                    paddingRight: '12px',
+                    padding: '0.65rem 12px 0.65rem 40px',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    fontFamily: 'inherit',
+                    transition: 'all 0.2s',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = '#667eea'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
+                />
+              </div>
+
+              {/* Status Filter Dropdown */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <label style={{ fontSize: '0.85rem', fontWeight: '600', color: '#666' }}>Status:</label>
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  style={{
+                    padding: '0.65rem 12px',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    fontFamily: 'inherit',
+                    backgroundColor: 'white',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => e.currentTarget.style.borderColor = '#667eea'}
+                  onBlur={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
+                >
+                  <option value="all">All Papers</option>
+                  <option value="PENDING_ASSIGNMENT">Pending Assignment</option>
+                  <option value="UNDER_REVIEW">Under Review</option>
+                  <option value="ACCEPTED">Accepted</option>
+                  <option value="REJECTED">Rejected</option>
+                </select>
+              </div>
+
+            </div>
+
             {/* Scroll Info */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '0.9rem', color: '#666' }}>
               <span>Showing {visiblePapers.length} of {filteredPapers.length} papers</span>
@@ -1179,7 +1254,7 @@ export default function AdminPapers() {
                       <th style={{ padding: '0.65rem 0.75rem', textAlign: 'left', fontWeight: '700', fontSize: '0.85rem', color: '#2d3748', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Dept</th>
                       <th style={{ padding: '0.65rem 0.75rem', textAlign: 'left', fontWeight: '700', fontSize: '0.85rem', color: '#2d3748', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Submitted</th>
                       <th style={{ padding: '0.65rem 0.75rem', textAlign: 'left', fontWeight: '700', fontSize: '0.85rem', color: '#2d3748', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Evaluator</th>
-                      <th style={{ padding: '0.65rem 0.75rem', textAlign: 'left', fontWeight: '700', fontSize: '0.85rem', color: '#2d3748', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Status</th>
+                      <th style={{ padding: '0.65rem 0.75rem', textAlign: 'center', fontWeight: '700', fontSize: '0.85rem', color: '#2d3748', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Status</th>
                       <th style={{ padding: '0.65rem 0.75rem', textAlign: 'center', fontWeight: '700', fontSize: '0.85rem', color: '#2d3748', letterSpacing: '0.05em', textTransform: 'uppercase' }}>Action</th>
                     </tr>
                   </thead>
@@ -1290,11 +1365,15 @@ export default function AdminPapers() {
                   </tbody>
                 </table>
               </div>
-            ) : (
+            ) : papers.length > 0 && filteredPapers.length === 0 ? (
               <div className="empty-state">
-                <p>No papers found matching the selected status.</p>
+                <p>No papers found matching your filters.</p>
               </div>
-            )}
+            ) : papers.length === 0 ? (
+              <div className="empty-state">
+                <p>Loading papers...</p>
+              </div>
+            ) : null}
 
             {/* Infinite scroll sentinel */}
             {visiblePapers.length < filteredPapers.length && (

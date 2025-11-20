@@ -24,6 +24,8 @@ export default function AdminEvaluators() {
     confirmPassword: false
   })
   const [isLoading, setIsLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterStatus, setFilterStatus] = useState('all')
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
@@ -31,6 +33,23 @@ export default function AdminEvaluators() {
   useEffect(() => {
     loadEvaluators()
   }, [])
+
+  // Filter evaluators based on search query and status
+  const filteredEvaluators = evaluators.filter(evaluator => {
+    const query = searchQuery.toLowerCase()
+    const matchesSearch = !query || [
+      evaluator.name || '',
+      evaluator.email || '',
+      evaluator.username || '',
+      evaluator.department || ''
+    ].some(field => field.toLowerCase().includes(query))
+
+    const matchesStatus = filterStatus === 'all' || 
+      (filterStatus === 'active' && evaluator.workload > 0) ||
+      (filterStatus === 'available' && evaluator.workload === 0)
+
+    return matchesSearch && matchesStatus
+  })
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -570,6 +589,63 @@ export default function AdminEvaluators() {
             </div>
           </div>
 
+          {/* Search and Filter Bar */}
+          <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', flexWrap: 'wrap', alignItems: 'center', padding: '1.5rem', backgroundColor: '#fafbfc', borderRadius: '8px' }}>
+            {/* Search Box */}
+            <div style={{ flex: '1', minWidth: '300px', position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ position: 'absolute', left: '12px', color: '#999', pointerEvents: 'none' }}>
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input
+                type="text"
+                placeholder="Search by name, email, username, department..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  paddingLeft: '40px',
+                  paddingRight: '12px',
+                  padding: '0.65rem 12px 0.65rem 40px',
+                  border: '2px solid #e2e8f0',
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  fontFamily: 'inherit',
+                  transition: 'all 0.2s',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.currentTarget.style.borderColor = '#667eea'}
+                onBlur={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
+              />
+            </div>
+
+            {/* Status Filter Dropdown */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: '600', color: '#666' }}>Status:</label>
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                style={{
+                  padding: '0.65rem 12px',
+                  border: '2px solid #e2e8f0',
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  fontFamily: 'inherit',
+                  backgroundColor: 'white',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => e.currentTarget.style.borderColor = '#667eea'}
+                onBlur={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
+              >
+                <option value="all">All Evaluators</option>
+                <option value="active">Active</option>
+                <option value="available">Available</option>
+              </select>
+            </div>
+          </div>
+
           {/* Evaluators Table */}
           <section className="evaluators-table-section">
             <div className="table-container">
@@ -585,7 +661,7 @@ export default function AdminEvaluators() {
                   </tr>
                 </thead>
                 <tbody>
-                  {evaluators.map(evaluator => (
+                  {filteredEvaluators.map(evaluator => (
                     <tr key={evaluator.id} className="evaluator-row">
                       <td>
                         <div className="evaluator-info">
