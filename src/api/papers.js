@@ -149,7 +149,20 @@ export async function assignEvaluatorToPaper(paperId, evaluatorId) {
     method: 'POST'
   })
 
-  return await handleResponse(res)
+  const data = await handleResponse(res)
+  console.log('✅ Evaluator assigned successfully:', data)
+  
+  // After assigning evaluator, update status to UNDER_REVIEW
+  console.log(`📝 Auto-updating paper ${paperId} status to UNDER_REVIEW...`)
+  try {
+    const updatedPaper = await updatePaperStatus(paperId, 'UNDER_REVIEW')
+    console.log('✅ Status updated to UNDER_REVIEW:', updatedPaper)
+    return updatedPaper
+  } catch (error) {
+    console.error('⚠️ Failed to update status to UNDER_REVIEW:', error)
+    // Return the original assignment response even if status update fails
+    return data
+  }
 }
 
 /**
