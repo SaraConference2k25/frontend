@@ -485,11 +485,8 @@ export default function EvaluatePapers() {
                   </style>
                 </div>
                 <h2 style={{ color: '#333', fontSize: '1.3rem', fontWeight: '700', margin: '0 0 0.5rem 0', letterSpacing: '-0.5px' }}>
-                  Loading Papers
+                  Loading...
                 </h2>
-                <p style={{ color: '#999', fontSize: '0.95rem', margin: 0 }}>
-                  Please wait while we fetch your assigned papers...
-                </p>
               </div>
             </div>
           ) : submittedPapers.length === 0 ? (
