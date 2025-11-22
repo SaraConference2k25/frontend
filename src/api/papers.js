@@ -168,9 +168,9 @@ export async function assignEvaluatorToPaper(paperId, evaluatorId) {
 /**
  * Get papers assigned to a specific evaluator
  */
-export async function getPapersByEvaluator(evaluatorId) {
-  console.log('📄 Fetching papers for evaluator ID:', evaluatorId)
-  const res = await fetch(`${API_BASE}/api/papers/evaluator/${evaluatorId}`)
+export async function getPapersByEvaluator(evaluatorUsername) {
+  console.log('📄 Fetching papers for evaluator:', evaluatorUsername)
+  const res = await fetch(`${API_BASE}/api/papers/evaluator/${encodeURIComponent(evaluatorUsername)}`)
   return await handleResponse(res)
 }
 

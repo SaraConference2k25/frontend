@@ -2599,15 +2599,49 @@ html {
 }
 
 .expand-icon {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     color: var(--primary-color);
-    transition: transform 0.3s ease;
+    transition: color 0.3s ease;
     font-weight: 700;
     cursor: pointer;
+    display: inline-block;
+    width: 1.8rem;
+    height: 1.8rem;
+    line-height: 1.8rem;
+    text-align: center;
+    user-select: none;
+    -webkit-user-select: none;
+    padding: 0 !important;
+    margin: 0 !important;
+    flex-shrink: 0;
+    letter-spacing: 0 !important;
+}
+
+.expand-icon:active {
+    font-size: 1.1rem !important;
+    line-height: 1.8rem !important;
+    height: 1.8rem !important;
+    width: 1.8rem !important;
+}
+
+.expand-icon:focus {
+    outline: none;
+    font-size: 1.1rem !important;
+    line-height: 1.8rem !important;
+    height: 1.8rem !important;
+    width: 1.8rem !important;
+}
+
+.expand-icon:hover {
+    color: var(--primary-color-hover);
 }
 
 .paper-card.evaluated.expanded .expand-icon {
-    transform: rotate(90deg);
+    /* No transform - using different characters (▶ and ▼) */
+    font-size: 1.1rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    line-height: 1.8rem;
 }
 
 .paper-expanded-content {
