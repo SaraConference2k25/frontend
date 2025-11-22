@@ -195,6 +195,26 @@ export async function updatePaperStatus(paperId, status) {
   return data
 }
 
+/**
+ * Submit paper evaluation
+ * @param {Object} evaluationData - Evaluation data with paperId, status, evaluatorComments, and evaluator info
+ */
+export async function evaluatePaper(evaluationData) {
+  console.log('📋 Submitting paper evaluation...', evaluationData)
+  
+  const res = await fetch(`${API_BASE}/api/admin/evaluators/evaluate-paper`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(evaluationData)
+  })
+
+  const data = await handleResponse(res)
+  console.log('✅ Paper evaluation submitted successfully:', data)
+  return data
+}
+
 export default {
   submitPaper,
   getAllPapers,
@@ -206,5 +226,6 @@ export default {
   deletePaper,
   assignEvaluatorToPaper,
   getPapersByEvaluator,
-  updatePaperStatus
+  updatePaperStatus,
+  evaluatePaper
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { getPapersByEvaluator, updatePaperStatus } from '../api/papers'
+import { getPapersByEvaluator, updatePaperStatus, evaluatePaper } from '../api/papers'
 import { samplePapers } from '../data/sampleData'
 
 export default function EvaluatePapers() {
@@ -83,25 +83,26 @@ export default function EvaluatePapers() {
     }))
   }
 
-  // Helper: construct the public URL for a paper file.
-  // Assumption: paper PDF files are placed in the project's `public/papers/` folder
-  // and are served at `/papers/<fileName>` by the dev/build server.
+  // Helper: get the file URL for a paper
   const getPaperUrl = (paper) => {
     if (!paper) return ''
-    // prefer explicit fileName; fall back to sanitized title
-    const fileName = paper.fileName || `${paper.title.replace(/\s+/g, '_')}.pdf`
-    return `/papers/${fileName}`
+    // Use the fileUrl from backend first, then fall back to fileName
+    if (paper.fileUrl) return paper.fileUrl
+    if (paper.paperFileUrl) return paper.paperFileUrl
+    if (paper.fileName) return `/papers/${paper.fileName}`
+    return ''
   }
 
-  // Open paper in a new tab/window for viewing
+  // Open paper in Google Docs Viewer
   const viewPaper = (paper) => {
     const url = getPaperUrl(paper)
     if (!url) {
       alert('Paper file not available')
       return
     }
-    // Open in a new tab; letting browser handle PDF viewing
-    window.open(url, '_blank', 'noopener')
+    // Use Google's online PDF viewer
+    const googleViewerUrl = `https://docs.google.com/viewerng/viewer?url=${encodeURIComponent(url)}`
+    window.open(googleViewerUrl, '_blank', 'noopener')
   }
 
   // Download paper file
@@ -170,6 +171,78 @@ export default function EvaluatePapers() {
 
     // Mark saved in local UI state
     setSavedComments(prev => ({ ...prev, [paperId]: new Date().toISOString() }))
+  }
+
+  const handleSubmitPaperEvaluation = async (paper) => {
+    try {
+      const paperId = paper.paperId || paper.id
+      const decision = paperDecisions[paperId]
+      const feedback = paperFeedback[paperId]
+
+      if (!decision || !feedback || feedback.trim().length === 0) {
+        alert('Please select a decision and provide comments before submitting.')
+        return
+      }
+
+      // Map frontend decision to backend status
+      const statusMap = {
+        'accept-minor': 'ACCEPTED',
+        'accept-major': 'ACCEPTED',
+        'reject': 'REJECTED'
+      }
+      const backendStatus = statusMap[decision] || decision
+
+      // Prepare evaluation data
+      const evaluation = {
+        paperId: paperId,
+        status: backendStatus,
+        evaluatorComments: feedback,
+        evaluator: {
+          userId: user.id || user.userId,
+          username: user.username
+        }
+      }
+
+      console.log('📤 Submitting paper evaluation:', evaluation)
+
+      // Call backend to submit evaluation
+      const response = await evaluatePaper(evaluation)
+      console.log('✅ Evaluation submitted:', response)
+
+      // Update local state
+      setSubmittedPapers(prev =>
+        prev.map(p => {
+          const isSelected = (p.paperId || p.id) === paperId
+          return isSelected
+            ? {
+                ...p,
+                status: backendStatus,
+                feedback: feedback,
+                evaluatedBy: user.name || user.username,
+                evaluatedDate: new Date().toISOString().split('T')[0]
+              }
+            : p
+        })
+      )
+
+      // Clear decision and feedback for this paper
+      setPaperDecisions(prev => {
+        const updated = { ...prev }
+        delete updated[paperId]
+        return updated
+      })
+      setPaperFeedback(prev => {
+        const updated = { ...prev }
+        delete updated[paperId]
+        return updated
+      })
+
+      alert('Paper evaluation submitted successfully!')
+      toggleExpandPaper(paperId) // Collapse the paper after submission
+    } catch (error) {
+      console.error('❌ Error submitting evaluation:', error)
+      alert('Failed to submit evaluation. Please try again.')
+    }
   }
 
   const handleSubmitSelected = () => {
@@ -246,7 +319,6 @@ export default function EvaluatePapers() {
     try {
       // Map frontend status to backend status
       const statusMap = {
-        'pending': 'PENDING_ASSIGNMENT',
         'approved': 'ACCEPTED',
         'rejected': 'REJECTED'
       }
@@ -255,9 +327,22 @@ export default function EvaluatePapers() {
       // Get paper ID (handle both paperId and id fields)
       const paperId = selectedPaper.paperId || selectedPaper.id
       
-      // Call backend to update paper status
-      console.log('Submitting evaluation for paper:', paperId, 'Status:', backendStatus)
-      await updatePaperStatus(paperId, backendStatus)
+      // Prepare evaluation data for backend
+      const evaluation = {
+        paperId: paperId,
+        status: backendStatus,
+        evaluatorComments: evaluationData.feedback,
+        evaluator: {
+          userId: user.id || user.userId,
+          username: user.username
+        }
+      }
+      
+      console.log('Submitting evaluation for paper:', paperId, 'Data:', evaluation)
+      
+      // Call backend to submit evaluation
+      const response = await evaluatePaper(evaluation)
+      console.log('Evaluation response:', response)
 
       // Update local state
       setSubmittedPapers(prev => 
@@ -266,10 +351,10 @@ export default function EvaluatePapers() {
           return isSelected
             ? { 
                 ...paper, 
-                status: evaluationData.status,
+                status: backendStatus,
                 feedback: evaluationData.feedback,
                 score: evaluationData.score,
-                evaluatedBy: user.name,
+                evaluatedBy: user.name || user.username,
                 evaluatedDate: new Date().toISOString().split('T')[0]
               }
             : paper
@@ -713,6 +798,19 @@ export default function EvaluatePapers() {
                             </label>
                           </div>
                         </div>
+
+                        {/* Submit button for individual paper */}
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '1.5rem' }}>
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => handleSubmitPaperEvaluation(paper)}
+                            disabled={!paperDecisions[paper.id] || !(paperFeedback[paper.id] && paperFeedback[paper.id].trim().length > 0)}
+                            title="Submit this paper's evaluation"
+                            style={{ padding: '8px 24px', fontSize: '0.95rem', minWidth: 120 }}
+                          >
+                            Submit
+                          </button>
+                        </div>
                       </div>
                       
                       {paper.evaluatedBy && (
@@ -726,18 +824,6 @@ export default function EvaluatePapers() {
               ))}
             </div>
 
-            {/* Submit button for selected evaluated papers */}
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
-              <button
-                className="btn btn-primary"
-                onClick={handleSubmitSelected}
-                disabled={evaluatedPapers.filter(p => paperDecisions[p.id]).length === 0}
-                title="Submit evaluated papers"
-                style={{ padding: '8px 14px' }}
-              >
-                Submit
-              </button>
-            </div>
           </section>
             </>
           )}
