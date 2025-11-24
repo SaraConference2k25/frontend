@@ -274,8 +274,9 @@ npm list --depth=0
 # Start development server with hot module replacement
 npm run dev
 
-# Server will start on http://localhost:3000 (configured in vite.config.js)
-# Note: Default Vite port is 5173, but this project uses port 3000
+# Server will start on http://localhost:3000
+# Note: Port 3000 is configured in vite.config.js (server.port: 3000)
+# Default Vite port is 5173, but this project uses port 3000
 ```
 
 The development server includes:
@@ -607,7 +608,7 @@ vercel --prod
    ```nginx
    server {
      listen 80;
-     server_name saraconference2k25.org;
+     server_name your-domain.com;  # Replace with your actual domain
      root /var/www/dist;
      index index.html;
 
