@@ -1,7 +1,14 @@
 {
-  "name": "for-sara-web",
+  "name": "sara-conference-2025-frontend",
   "version": "1.0.0",
+  "description": "Enterprise-grade conference management system for Sara Conference 2025",
   "private": true,
+  "license": "UNLICENSED",
+  "author": "Sara Conference Organization",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SaraConference2k25/frontend"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
