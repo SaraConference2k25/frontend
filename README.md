@@ -274,7 +274,8 @@ npm list --depth=0
 # Start development server with hot module replacement
 npm run dev
 
-# Server will start on http://localhost:3000
+# Server will start on http://localhost:3000 (configured in vite.config.js)
+# Note: Default Vite port is 5173, but this project uses port 3000
 ```
 
 The development server includes:
@@ -315,13 +316,12 @@ Admin Account:
 The application uses Vite for build optimization. Configuration is in `vite.config.js`:
 
 ```javascript
+// vite.config.js
 {
   plugins: [react()],              // React plugin with Fast Refresh
   root: '.',                       // Project root directory
   build: {
     outDir: 'dist',               // Output directory for production build
-    sourcemap: false,             // Disable source maps in production
-    minify: 'terser',             // Minification strategy
     rollupOptions: {
       input: './index.html'       // Entry point
     }
@@ -331,7 +331,7 @@ The application uses Vite for build optimization. Configuration is in `vite.conf
   },
   server: {
     host: '0.0.0.0',              // Listen on all network interfaces
-    port: 3000,                   // Development server port
+    port: 3000,                   // Development server port (custom)
     open: false,                  // Don't auto-open browser
     strictPort: false             // Try next port if 3000 is busy
   }
@@ -933,7 +933,7 @@ Special thanks to all contributors who have helped build and improve this platfo
 
 ### Version History
 
-- **v1.0.0** (November 2025) - Initial enterprise release
+- **v1.0.0** (2025) - Initial enterprise release
   - Multi-role user system
   - Paper submission workflow
   - Evaluation dashboard
