@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { getPapersByEvaluator, updatePaperStatus, evaluatePaper } from '../api/papers'
+import { getPapersByEvaluator, updatePaperStatus, evaluatePaper, saveReviewComments } from '../api/papers'
 import { samplePapers } from '../data/sampleData'
 
 export default function EvaluatePapers() {
@@ -11,6 +11,7 @@ export default function EvaluatePapers() {
   const [expandedPapers, setExpandedPapers] = useState({})
   const [paperDecisions, setPaperDecisions] = useState({})
   const [paperFeedback, setPaperFeedback] = useState({})
+  const [savedComments, setSavedComments] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [submittedPapers, setSubmittedPapers] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
@@ -40,6 +41,49 @@ export default function EvaluatePapers() {
         const papers = await getPapersByEvaluator(user.username)
         console.log('Papers loaded from backend:', papers)
         setSubmittedPapers(Array.isArray(papers) ? papers : [])
+        
+        // Load saved comments and decisions from papers
+        const feedbackState = {}
+        const commentsState = {}
+        const decisionsState = {}
+        
+        papers.forEach(paper => {
+          const paperId = paper.paperId || paper.id
+          
+          // Load existing evaluator comments
+          if (paper.evaluatorComments) {
+            feedbackState[paperId] = paper.evaluatorComments
+            commentsState[paperId] = paper.updatedAt ? new Date(paper.updatedAt).toLocaleString() : new Date().toLocaleString()
+          }
+          
+          // Load saved decision from toggleStatus field
+          if (paper.toggleStatus) {
+            // Normalize toggleStatus to match radio button values
+            let normalizedDecision = String(paper.toggleStatus).toLowerCase().trim()
+            
+            // Map various formats to radio button values
+            if (normalizedDecision === 'accept_minor' || normalizedDecision === 'acceptminor') {
+              normalizedDecision = 'accept-minor'
+            } else if (normalizedDecision === 'accept_major' || normalizedDecision === 'acceptmajor') {
+              normalizedDecision = 'accept-major'
+            } else if (normalizedDecision === 'rejected' || normalizedDecision === 'reject') {
+              normalizedDecision = 'reject'
+            }
+            
+            console.log(`📝 Loaded decision for ${paperId}: ${paper.toggleStatus} -> ${normalizedDecision}`)
+            decisionsState[paperId] = normalizedDecision
+            
+            // Also mark as saved if not already marked
+            if (!commentsState[paperId]) {
+              commentsState[paperId] = paper.updatedAt ? new Date(paper.updatedAt).toLocaleString() : new Date().toLocaleString()
+            }
+          }
+        })
+        
+        console.log('📋 Loaded decisions:', decisionsState)
+        setPaperFeedback(feedbackState)
+        setSavedComments(commentsState)
+        setPaperDecisions(decisionsState)
       } catch (error) {
         console.error('Failed to load papers:', error)
         // Fallback to sample data
@@ -157,20 +201,39 @@ export default function EvaluatePapers() {
     }))
   }
 
-  // Track saved comment timestamps per paper
-  const [savedComments, setSavedComments] = useState({})
+  const handleSaveComments = async (paperId) => {
+    const comments = paperFeedback[paperId] || ''
+    const decision = paperDecisions[paperId]
 
-  const handleSaveComments = (paperId) => {
-    const comment = paperFeedback[paperId]
-    if (!comment || comment.trim() === '') return
+    if (!comments.trim()) {
+      alert('Please enter comments before saving')
+      return
+    }
 
-    // Update submittedPapers with the saved comment
-    setSubmittedPapers(prev => (
-      prev.map(p => p.id === paperId ? { ...p, feedback: comment, commentsSavedAt: new Date().toISOString() } : p)
-    ))
+    if (!decision) {
+      alert('Please select an evaluation decision before saving')
+      return
+    }
 
-    // Mark saved in local UI state
-    setSavedComments(prev => ({ ...prev, [paperId]: new Date().toISOString() }))
+    try {
+      console.log(`📝 Saving review for paper ${paperId}: decision=${decision}, comments=${comments}`)
+      // Call backend API to save review comments with decision as toggleStatus
+      await saveReviewComments(paperId, comments, decision)
+      
+      // Update submittedPapers with the saved comment
+      setSubmittedPapers(prev => (
+        prev.map(p => (p.paperId || p.id) === paperId ? { ...p, feedback: comments, evaluatorComments: comments, commentsSavedAt: new Date().toISOString() } : p)
+      ))
+
+      // Mark saved in local UI state with current timestamp
+      setSavedComments(prev => ({ ...prev, [paperId]: new Date().toLocaleString() }))
+      
+      console.log('✅ Review saved successfully')
+      alert('Review saved successfully!')
+    } catch (error) {
+      console.error('Error saving comments:', error)
+      alert('Error saving review: ' + error.message)
+    }
   }
 
   const handleSubmitPaperEvaluation = async (paper) => {
@@ -380,8 +443,8 @@ export default function EvaluatePapers() {
 
   const pendingPapers = normalizedPapers.filter(paper => {
     const status = (paper.status || '').toUpperCase()
-    // Only show papers that are UNDER_REVIEW for evaluation
-    return status === 'UNDER_REVIEW'
+    // Show papers that are pending assignment or under review
+    return status === 'PENDING_ASSIGNMENT' || status === 'UNDER_REVIEW'
   })
   const evaluatedPapers = normalizedPapers.filter(paper => {
     const status = (paper.status || '').toUpperCase()

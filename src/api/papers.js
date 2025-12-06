@@ -182,10 +182,15 @@ export async function getPapersByEvaluator(evaluatorUsername) {
 export async function updatePaperStatus(paperId, status) {
   console.log(`📝 Updating paper ${paperId} status to ${status}...`)
   
-  const url = `${API_BASE}/api/papers/update-status?paperId=${encodeURIComponent(paperId)}&status=${encodeURIComponent(status)}`
-
-  const res = await fetch(url, {
-    method: 'PATCH'
+  const res = await fetch(`${API_BASE}/api/papers/update-status`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      paperId: paperId,
+      status: status
+    })
   })
 
   const data = await handleResponse(res)
@@ -214,6 +219,32 @@ export async function evaluatePaper(evaluationData) {
   return data
 }
 
+/**
+ * Save review comments for a paper
+ * @param {string} paperId - The paper ID
+ * @param {string} evaluatorComments - The evaluator comments/feedback
+ * @param {string} toggleStatus - The toggle status for saving
+ */
+export async function saveReviewComments(paperId, evaluatorComments, toggleStatus = '') {
+  console.log(`💬 Saving review comments for paper ${paperId}...`)
+  
+  const res = await fetch(`${API_BASE}/api/papers/save-review-comments`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      paperId: paperId,
+      evaluatorComments: evaluatorComments,
+      toggleStatus: toggleStatus
+    })
+  })
+
+  const data = await handleResponse(res)
+  console.log('✅ Review comments saved successfully:', data)
+  return data
+}
+
 export default {
   submitPaper,
   getAllPapers,
@@ -226,5 +257,6 @@ export default {
   assignEvaluatorToPaper,
   getPapersByEvaluator,
   updatePaperStatus,
-  evaluatePaper
+  evaluatePaper,
+  saveReviewComments
 }
