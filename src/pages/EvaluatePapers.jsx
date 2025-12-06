@@ -12,6 +12,7 @@ export default function EvaluatePapers() {
   const [paperDecisions, setPaperDecisions] = useState({})
   const [paperFeedback, setPaperFeedback] = useState({})
   const [savedComments, setSavedComments] = useState({})
+  const [initialComments, setInitialComments] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [submittedPapers, setSubmittedPapers] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
@@ -46,12 +47,15 @@ export default function EvaluatePapers() {
         const feedbackState = {}
         const commentsState = {}
         const decisionsState = {}
+        const initialCommentsState = {}
         
         papers.forEach(paper => {
           const paperId = paper.paperId || paper.id
           
           // Load existing evaluator comments
           if (paper.evaluatorComments) {
+            // Store initial comments separately to prevent override
+            initialCommentsState[paperId] = paper.evaluatorComments
             feedbackState[paperId] = paper.evaluatorComments
             commentsState[paperId] = paper.updatedAt ? new Date(paper.updatedAt).toLocaleString() : new Date().toLocaleString()
           }
@@ -84,6 +88,7 @@ export default function EvaluatePapers() {
         setPaperFeedback(feedbackState)
         setSavedComments(commentsState)
         setPaperDecisions(decisionsState)
+        setInitialComments(initialCommentsState)
       } catch (error) {
         console.error('Failed to load papers:', error)
         // Fallback to sample data
@@ -799,7 +804,7 @@ export default function EvaluatePapers() {
                             className="feedback-textarea"
                             placeholder="Select a decision first to provide comments..."
                             disabled={!paperDecisions[paper.id]}
-                            value={paperFeedback[paper.id] || paper.feedback || ''}
+                            value={paperFeedback.hasOwnProperty(paper.id) ? paperFeedback[paper.id] : (initialComments[paper.id] || '')}
                             onChange={(e) => handleFeedbackChange(paper.id, e.target.value)}
                             rows="8"
                           />
