@@ -181,19 +181,18 @@ export async function getPapersByEvaluator(evaluatorUsername) {
  */
 export async function updatePaperStatus(paperId, status) {
   console.log(`📝 Updating paper ${paperId} status to ${status}...`)
-  console.log(`🔗 API URL: ${API_BASE}/api/papers/update-status?paperId=${encodeURIComponent(paperId)}&status=${encodeURIComponent(status)}`)
   
-  const res = await fetch(`${API_BASE}/api/papers/update-status?paperId=${encodeURIComponent(paperId)}&status=${encodeURIComponent(status)}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json'
-    }
+  const url = `${API_BASE}/api/papers/update-status?paperId=${encodeURIComponent(paperId)}&status=${encodeURIComponent(status)}`
+
+  const res = await fetch(url, {
+    method: 'PATCH'
   })
 
   const data = await handleResponse(res)
   console.log('✅ Paper status updated successfully:', data)
   return data
 }
+
 
 /**
  * Submit paper evaluation

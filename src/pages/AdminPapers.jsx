@@ -5,6 +5,8 @@ import { sampleEvaluators, samplePapers } from '../data/sampleData'
 import { getAllPapers, assignEvaluatorToPaper, updatePaperStatus } from '../api/papers'
 import { getEvaluators } from '../api/evaluators'
 
+const API_BASE = import.meta.env.VITE_API_URL
+
 export default function AdminPapers() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [selectedPaper, setSelectedPaper] = useState(null)
@@ -147,7 +149,7 @@ export default function AdminPapers() {
     const fileName = paper.fileName || `paper_${paper.paperId}.pdf`
     // For now, just trigger a download with sample URL
     // In production, this would be the actual paper file URL from backend
-    link.href = `http://98.70.26.80:8069/api/papers/${paper.paperId}/download` // Adjust URL as needed
+    link.href = `${API_BASE}/api/papers/${paper.paperId}/download` // Adjust URL as needed
     link.download = fileName
     link.click()
   }
