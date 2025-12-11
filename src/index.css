@@ -6916,25 +6916,37 @@ html {
 }
 
 
+/* ==================== BACK BUTTON - FIXED AND RESPONSIVE ==================== */
 .back-btn {
-  background: none;              /* No background */
-  color: #000000;                /* Black arrow */
-  border: none;                  /* No border */
-  font-size: 36px;               /* Arrow size */
-  font-weight: bold;             /* Bold arrow */
-  cursor: pointer;               /* Pointer cursor on hover */
-  padding: 0;                    /* No padding */
+  background: none;
+  color: #374151;
+  border: none;
+  font-size: 24px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 12px;
   transition: all 0.3s ease;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  /* Subtle shadow */
-  position: fixed;
-  top: 20px;
-  left: 40px;
+  position: relative;
+  top: auto;
+  left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  z-index: 10;
 }
 
 .back-btn:hover {
-  color: #667eea;                /* Blue on hover */
-  transform: translateX(-5px) scale(1.2);   /* Moves left and grows */
-  text-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);  /* Colored shadow on hover */
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateX(-3px);
+}
+
+.back-btn:active {
+  transform: translateX(-1px) scale(0.95);
 }
 
 .back-btn::after {
@@ -6943,22 +6955,48 @@ html {
   left: 100%;
   top: 50%;
   transform: translateY(-50%);
-  margin-left: 10px;
+  margin-left: 8px;
   padding: 6px 12px;
-  background: #000000;
+  background: #1f2937;
   color: white;
   border-radius: 6px;
-  font-size: 14px;
-  font-weight: normal;
+  font-size: 13px;
+  font-weight: 500;
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .back-btn:hover::after {
   opacity: 1;
+}
+
+/* Mobile - hide tooltip, adjust button */
+@media (max-width: 768px) {
+  .back-btn {
+    font-size: 20px;
+    width: 40px;
+    height: 40px;
+    padding: 6px 10px;
+    margin-bottom: 0.75rem;
+  }
+  
+  .back-btn::after {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .back-btn {
+    font-size: 18px;
+    width: 36px;
+    height: 36px;
+    padding: 4px 8px;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+  }
 }
 
 .dashboard-info-section {
@@ -7008,4 +7046,732 @@ html {
   margin: 0;
   font-size: 1rem;
   color: #2d3748;
+}
+
+/* ==================== AUTH PAGES COMPREHENSIVE RESPONSIVENESS ==================== */
+
+/* Auth Container - Tablet */
+@media (max-width: 992px) {
+    .auth-container {
+        flex-direction: column-reverse;
+    }
+    
+    .auth-showcase {
+        min-height: 35vh;
+        padding: 2rem 1.5rem;
+    }
+    
+    .auth-panel {
+        padding: 2rem 1.5rem;
+        min-height: 65vh;
+    }
+    
+    .showcase-content h3 {
+        font-size: 2rem;
+    }
+    
+    .showcase-content p {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .showcase-content img {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+}
+
+/* Auth Container - Mobile */
+@media (max-width: 768px) {
+    .auth-container {
+        flex-direction: column;
+    }
+    
+    .auth-showcase {
+        display: none;
+    }
+    
+    .auth-panel {
+        padding: 1.5rem 1rem;
+        min-height: 100vh;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+    
+    .auth-form-wrapper {
+        max-width: 100%;
+        width: 100%;
+    }
+    
+    .form-header {
+        margin-bottom: 2rem;
+    }
+    
+    .form-header h2 {
+        font-size: 1.75rem;
+    }
+    
+    .form-header p {
+        font-size: 0.9375rem;
+    }
+    
+    .form .form-control {
+        margin-bottom: 1.25rem;
+    }
+    
+    .form-control label {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control input,
+    .form-control select {
+        padding: 1rem 0.875rem;
+        font-size: 1rem;
+        border-radius: 8px;
+    }
+    
+    .form .btn {
+        padding: 1rem;
+        font-size: 1rem;
+        min-height: 48px;
+    }
+    
+    .form-footer {
+        margin-top: 1.5rem;
+        font-size: 0.9375rem;
+    }
+    
+    .password-toggle-btn {
+        padding: 0.5rem;
+    }
+}
+
+/* Auth Container - Small Mobile */
+@media (max-width: 480px) {
+    .auth-panel {
+        padding: 1.25rem 1rem;
+        padding-top: 1.5rem;
+    }
+    
+    .form-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .form-header p {
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+    
+    .form .form-control {
+        margin-bottom: 1rem;
+    }
+    
+    .form-control label {
+        font-size: 0.8125rem;
+    }
+    
+    .form-control input,
+    .form-control select {
+        padding: 0.875rem 0.75rem;
+        font-size: 0.9375rem;
+    }
+    
+    .form .btn {
+        padding: 0.875rem;
+        font-size: 0.9375rem;
+    }
+    
+    .form-footer {
+        margin-top: 1.25rem;
+        font-size: 0.875rem;
+    }
+    
+    .error-message,
+    .success-message {
+        padding: 0.75rem;
+        font-size: 0.8125rem;
+        margin-bottom: 1rem;
+    }
+}
+
+/* Auth Container - Extra Small Mobile (iPhone SE, etc.) */
+@media (max-width: 374px) {
+    .auth-panel {
+        padding: 1rem 0.75rem;
+    }
+    
+    .form-header h2 {
+        font-size: 1.375rem;
+    }
+    
+    .form-header p {
+        font-size: 0.8125rem;
+    }
+    
+    .form-control input,
+    .form-control select {
+        padding: 0.75rem 0.625rem;
+        font-size: 0.875rem;
+    }
+    
+    .form .btn {
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* ==================== HOME PAGE COMPREHENSIVE RESPONSIVENESS ==================== */
+
+/* Home Navbar Responsive */
+.main-navbar {
+    padding: 0.75rem 1rem;
+}
+
+@media (max-width: 992px) {
+    .navbar-container {
+        padding: 0 0.5rem;
+    }
+    
+    .navbar-menu {
+        gap: 1rem;
+    }
+    
+    .navbar-menu a {
+        font-size: 0.875rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-navbar {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .navbar-brand img {
+        height: 36px;
+    }
+    
+    .navbar-login .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* Home Hero Section Responsive */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 3rem 1rem;
+        min-height: auto;
+    }
+    
+    .hero-content h1 {
+        font-size: 1.75rem;
+        line-height: 1.3;
+    }
+    
+    .hero-content p {
+        font-size: 1rem;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .hero-buttons .btn {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 2rem 1rem;
+    }
+    
+    .hero-content h1 {
+        font-size: 1.5rem;
+    }
+    
+    .hero-content p {
+        font-size: 0.9375rem;
+    }
+}
+
+/* Home Content Sections Responsive */
+.instruction-content {
+    padding: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .instruction-content {
+        padding: 1.25rem 1rem;
+    }
+    
+    .instruction-content h1,
+    .instruction-content h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .instruction-content h3 {
+        font-size: 1.125rem;
+    }
+    
+    .instruction-steps ol,
+    .instruction-steps ul {
+        padding-left: 1.25rem;
+    }
+    
+    .instruction-steps li {
+        font-size: 0.9375rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.6;
+    }
+    
+    .important-note {
+        padding: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .important-note h4 {
+        font-size: 1rem;
+    }
+    
+    .home-section {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+    }
+    
+    .home-section h2 {
+        font-size: 1.25rem;
+    }
+    
+    .home-section p {
+        font-size: 0.9375rem;
+    }
+    
+    .info-table {
+        font-size: 0.875rem;
+    }
+    
+    .info-table td {
+        padding: 0.625rem 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .instruction-content {
+        padding: 1rem 0.75rem;
+    }
+    
+    .instruction-content h1,
+    .instruction-content h2 {
+        font-size: 1.25rem;
+    }
+    
+    .instruction-steps li {
+        font-size: 0.875rem;
+    }
+    
+    .info-table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .info-table td {
+        padding: 0.5rem;
+        font-size: 0.8125rem;
+    }
+}
+
+/* ==================== UPLOAD PAPER PAGE RESPONSIVENESS ==================== */
+
+@media (max-width: 768px) {
+    .upload-paper-content {
+        padding: 1rem;
+    }
+    
+    .upload-form-section {
+        padding: 1.25rem 1rem;
+    }
+    
+    .form-section h3 {
+        font-size: 1rem;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .form-row .form-control {
+        width: 100%;
+    }
+    
+    .file-upload-area {
+        padding: 1.5rem 1rem;
+    }
+    
+    .file-upload-area svg {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .file-upload-area p {
+        font-size: 0.875rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .upload-paper-content {
+        padding: 0.75rem;
+    }
+    
+    .upload-form-section {
+        padding: 1rem 0.75rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .page-header p {
+        font-size: 0.8125rem;
+    }
+}
+
+/* ==================== MY PAPERS PAGE RESPONSIVENESS ==================== */
+
+@media (max-width: 768px) {
+    .my-papers-content {
+        padding: 1rem;
+    }
+    
+    .page-header-compact {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .status-filter-tabs {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .status-filter-tabs button {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8125rem;
+        flex: 1;
+        min-width: calc(50% - 0.25rem);
+    }
+    
+    .paper-card {
+        padding: 1rem;
+    }
+    
+    .paper-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .paper-title {
+        font-size: 1rem;
+    }
+    
+    .paper-meta {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .paper-meta-item {
+        font-size: 0.8125rem;
+    }
+    
+    .paper-card-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-icon {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .my-papers-content {
+        padding: 0.75rem;
+    }
+    
+    .status-filter-tabs button {
+        padding: 0.5rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .paper-card {
+        padding: 0.875rem;
+    }
+    
+    .paper-title {
+        font-size: 0.9375rem;
+    }
+    
+    .status-badge {
+        font-size: 0.6875rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* ==================== ADMIN PAPERS & EVALUATORS PAGES RESPONSIVENESS ==================== */
+
+@media (max-width: 768px) {
+    .admin-papers-content,
+    .admin-evaluators-content {
+        padding: 1rem;
+    }
+    
+    .search-filter-bar {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .search-input-wrapper {
+        width: 100%;
+    }
+    
+    .search-input-wrapper input {
+        width: 100%;
+    }
+    
+    .filter-dropdown {
+        width: 100%;
+    }
+    
+    /* Table becomes scrollable */
+    .table-wrapper-professional {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+    
+    .papers-table-professional,
+    .evaluators-table {
+        min-width: 800px;
+    }
+    
+    /* Modal Responsive */
+    .modal-overlay {
+        padding: 1rem;
+    }
+    
+    .modal-professional,
+    .assignment-modal {
+        max-width: 100%;
+        max-height: 90vh;
+        margin: 0;
+    }
+    
+    .modal-header-professional {
+        padding: 1rem;
+    }
+    
+    .modal-body-professional {
+        padding: 1rem;
+    }
+    
+    .modal-actions-professional {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-actions-professional .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-papers-content,
+    .admin-evaluators-content {
+        padding: 0.75rem;
+    }
+    
+    .papers-table-professional,
+    .evaluators-table {
+        min-width: 700px;
+        font-size: 0.8125rem;
+    }
+    
+    .papers-table-professional td,
+    .evaluators-table td {
+        padding: 0.625rem 0.5rem;
+    }
+}
+
+/* ==================== EVALUATE PAPERS PAGE RESPONSIVENESS ==================== */
+
+@media (max-width: 768px) {
+    .evaluate-papers-content {
+        padding: 1rem;
+    }
+    
+    .evaluation-card {
+        padding: 1rem;
+    }
+    
+    .evaluation-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .evaluation-actions {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .evaluation-actions .btn {
+        flex: 1;
+        min-width: calc(50% - 0.25rem);
+        padding: 0.625rem 0.75rem;
+        font-size: 0.8125rem;
+    }
+    
+    .decision-options {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .decision-option {
+        width: 100%;
+    }
+    
+    .feedback-textarea {
+        min-height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .evaluate-papers-content {
+        padding: 0.75rem;
+    }
+    
+    .evaluation-card {
+        padding: 0.875rem;
+    }
+    
+    .evaluation-actions .btn {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.625rem;
+    }
+}
+
+/* ==================== GLOBAL MOBILE TOUCH TARGETS & ACCESSIBILITY ==================== */
+
+/* Ensure all interactive elements have minimum touch target of 44x44px */
+@media (max-width: 768px) {
+    button,
+    .btn,
+    a.btn,
+    input[type="submit"],
+    input[type="button"],
+    .nav-item,
+    select {
+        min-height: 44px;
+    }
+    
+    /* Improve tap highlight */
+    button,
+    a,
+    input,
+    select,
+    textarea {
+        -webkit-tap-highlight-color: rgba(102, 126, 234, 0.2);
+    }
+    
+    /* Prevent zoom on input focus for iOS */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="tel"],
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+    
+    /* Better focus states for mobile */
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+    
+    /* Smooth scrolling for the whole page */
+    html {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Prevent horizontal scroll */
+    body {
+        overflow-x: hidden;
+    }
+}
+
+/* ==================== LOADING STATES ==================== */
+
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+/* ==================== SMOOTH TRANSITIONS FOR ALL SCREEN SIZES ==================== */
+
+* {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-duration: 0.15s;
+    transition-timing-function: ease-out;
 }

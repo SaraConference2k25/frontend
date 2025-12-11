@@ -84,8 +84,8 @@ export default function Register() {
     <div className="auth-container">
       <div className="auth-panel">
         <div className="auth-form-wrapper">
-          <div classname="testing">
-          <button class="back-btn" data-tooltip="Back" onClick={backButton}>←</button>
+          <div className="back-btn-wrapper">
+            <button className="back-btn" data-tooltip="Back" onClick={backButton}>←</button>
           </div>
           <div className="form-header">
             <h2>Join Our Community</h2>
